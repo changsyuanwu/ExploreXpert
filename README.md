@@ -1,6 +1,8 @@
 # CS346 Project
 
-[Proposal Wiki Page](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Project-Proposal)
+## Proposal
+
+[Wiki Page](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Project-Proposal)
 
 ## Getting started
 
