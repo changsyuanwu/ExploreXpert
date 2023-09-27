@@ -1,5 +1,9 @@
 # CS346 Project
 
+## Team members
+
+Chang-Syuan Wu (c275wu), Mick Wang (m479wang), Richard Zhang (r468zhan), Yi Bo Cheng (ybcheng)
+
 ## Proposal
 
 [Project Proposal Wiki Page](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Project-Proposal)
