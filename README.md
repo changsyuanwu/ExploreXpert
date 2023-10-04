@@ -1,4 +1,4 @@
-# CS346 Project
+# CS346 Project (ExploreXpert)
 
 ## Team members
 
