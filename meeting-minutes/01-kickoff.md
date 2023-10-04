@@ -1,9 +1,10 @@
-Members present: Chang, Yi Bo, Richard
+Members present: Chang, Yi Bo, Richard, Mick
 
 Task Assignment:
 * Richard - Add interactive map
 * Chang - Auth + User Login
 * Yi Bo - Calendar Tab
+* Mick - Weather
 
-Need to decide on project name
+Decided on project name
 * ExploreXpert
