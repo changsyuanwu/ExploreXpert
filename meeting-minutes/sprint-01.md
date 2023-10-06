@@ -1,3 +1,5 @@
+**Day 1:**
+
 Members present: Chang, Yi Bo, Richard, Mick
 
 Task Assignment:
@@ -8,3 +10,15 @@ Task Assignment:
 
 Decided on project name
 * ExploreXpert
+
+**Day 2:**
+
+Members present: Chang, Yi Bo, Richard, Mick
+
+Decided on mock application design\
+Decided to continue with Google Maps API
+
+**Day 3:**
+
+Members present:
+
