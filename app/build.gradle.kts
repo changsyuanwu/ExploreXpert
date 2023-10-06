@@ -14,6 +14,7 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+        resConfigs("en")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -62,9 +63,20 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
-    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
+    // FirebaseUI for Firebase Realtime Database
+    implementation("com.firebaseui:firebase-ui-database:8.0.2")
+
+    // FirebaseUI for Cloud Firestore
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
+
+    // FirebaseUI for Firebase Auth
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2")
+
+    // FirebaseUI for Cloud Storage
+    implementation("com.firebaseui:firebase-ui-storage:8.0.2")
 
     // Add the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -73,6 +85,7 @@ dependencies {
 
     // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.annotation:annotation:1.6.0")
