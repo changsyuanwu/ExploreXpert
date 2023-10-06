@@ -41,13 +41,13 @@ class AuthActivity : ComponentActivity() {
     }
 
     // Choose authentication providers
-    val providers = arrayListOf(
+    private val providers = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().build(),
         AuthUI.IdpConfig.GoogleBuilder().build(),
     )
 
     // Create and launch sign-in intent
-    val signInIntent = AuthUI.getInstance()
+    private val signInIntent = AuthUI.getInstance()
         .createSignInIntentBuilder()
         .setAvailableProviders(providers)
         .setTheme(R.style.Theme_ExploreXpert)
