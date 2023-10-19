@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/fragment_horizontal_margin"
     android:paddingBottom="@dimen/fragment_vertical_margin"
     android:background="@drawable/login_background_proto"
-    tools:context=".ui.login.LoginFragment">
+    tools:context=".ui.view.LoginFragment">
     <!-- Photo by <a href="https://unsplash.com/@paulberthelon?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Paul Berthelon Bravo</a> on <a href="https://unsplash.com/photos/blue-sunny-sky-BGXhuJIbx78?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a> -->
 
     <ProgressBar

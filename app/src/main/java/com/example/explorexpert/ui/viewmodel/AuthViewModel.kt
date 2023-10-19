@@ -1,15 +1,23 @@
-package com.example.explorexpert.ui.login
+package com.example.explorexpert.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.example.explorexpert.data.LoginRepository
+import com.example.explorexpert.data.repository.LoginRepository
 import com.example.explorexpert.data.Result
 
 import com.example.explorexpert.R
+import com.example.explorexpert.ui.login.LoggedInUserView
+import com.example.explorexpert.ui.login.LoginFormState
+import com.example.explorexpert.ui.login.LoginResult
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val loginRepository: LoginRepository
+) : ViewModel() {
 
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm

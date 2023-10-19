@@ -1,9 +1,10 @@
-package com.example.explorexpert.ui.login
+package com.example.explorexpert.ui.viewmodelfactory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.explorexpert.data.LoginDataSource
-import com.example.explorexpert.data.LoginRepository
+import com.example.explorexpert.data.repository.LoginRepository
+import com.example.explorexpert.ui.viewmodel.AuthViewModel
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
@@ -13,8 +14,8 @@ class LoginViewModelFactory : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            return LoginViewModel(
+        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+            return AuthViewModel(
                 loginRepository = LoginRepository(
                     dataSource = LoginDataSource()
                 )

@@ -1,4 +1,4 @@
-package com.example.explorexpert.ui.login
+package com.example.explorexpert.ui.view
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,17 +11,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import com.example.explorexpert.databinding.FragmentLoginBinding
 
 import com.example.explorexpert.R
+import com.example.explorexpert.ui.login.LoggedInUserView
+import com.example.explorexpert.ui.viewmodel.AuthViewModel
+import com.example.explorexpert.ui.viewmodelfactory.LoginViewModelFactory
 
 class LoginFragment : Fragment() {
 
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var loginViewModel: AuthViewModel
     private var _binding: FragmentLoginBinding? = null
 
     // This property is only valid between onCreateView and
@@ -42,11 +42,11 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
+            .get(AuthViewModel::class.java)
 
         val usernameEditText = binding.username
         val passwordEditText = binding.password
-        val loginButton = binding.login
+        val loginButton = binding.btnLogin
         val loadingProgressBar = binding.loading
 
         loginViewModel.loginFormState.observe(viewLifecycleOwner,

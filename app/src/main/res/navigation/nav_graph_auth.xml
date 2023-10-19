@@ -7,7 +7,7 @@
     <!-- Login Fragment -->
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.explorexpert.ui.login.LoginFragment"
+        android:name="com.example.explorexpert.ui.view.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
@@ -20,7 +20,7 @@
     <!-- Register Fragment -->
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.explorexpert.ui.RegistrationFragment"
+        android:name="com.example.explorexpert.ui.view.RegistrationFragment"
         android:label="Register"
         tools:layout="@layout/fragment_registration">
         <action
