@@ -19,7 +19,7 @@
             android:name=".SplashScreenActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.ExploreXpert">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,14 +29,12 @@
         <activity
             android:name=".AuthActivity"
             android:exported="false"
-            android:label="AuthActivity"
-            android:theme="@style/Theme.ExploreXpert">
+            android:label="AuthActivity">
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:label="MainActivity"
-            android:theme="@style/Theme.ExploreXpert">
+            android:label="MainActivity">
         </activity>
     </application>
 
