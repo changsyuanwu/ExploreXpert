@@ -77,6 +77,9 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")
 
 
+    // Material UI
+    implementation("com.google.android.material:material:1.10.0")
+
     // Testing stuff
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -100,6 +103,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-auth")
     // FirebaseUI for Firebase Realtime Database
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
     // FirebaseUI for Cloud Firestore

@@ -32,8 +32,8 @@ class AuthViewModel @Inject constructor(
     }
 
     data class LoginFormState(
-        val usernameError: Int? = null,
-        val passwordError: Int? = null,
+        val emailError: String? = null,
+        val passwordError: String? = null,
         val isDataValid: Boolean = false
     )
 
@@ -53,6 +53,24 @@ class AuthViewModel @Inject constructor(
     lateinit var signInRequest: BeginSignInRequest
     lateinit var signUpRequest: BeginSignInRequest
     private var showOneTapUI = true
+
+    fun loginWithEmailAndPassword(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    if (user != null && user.isEmailVerified) {
+                        _loginResult.value = LoginResult(true, "Successfully logged in.")
+                    } else {
+                        _loginResult.value = LoginResult(false, "Please verify your email first.")
+                    }
+                } else {
+                    _loginResult.value =
+                        LoginResult(false, "Authentication failed. Please check your email and password.")
+                    Log.d(TAG, "Login attempt failed. ${task.exception?.message}")
+                }
+            }
+    }
 
     // Google SSO related code adapted from Google's tutorial at https://developers.google.com/identity/sign-in/android/sign-in
     fun processGoogleSSOCredential(data: Intent?) {
@@ -150,27 +168,32 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun loginDataChanged(username: String, password: String) {
-        if (!isUserNameValid(username)) {
-            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
+    fun loginDataChanged(email: String, password: String) {
+        if (!isEmailValid(email)) {
+            _loginForm.value = LoginFormState(emailError = "Email is not a valid email")
         } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
+            _loginForm.value = LoginFormState(passwordError = "Password is too short")
         } else {
             _loginForm.value = LoginFormState(isDataValid = true)
         }
     }
 
-    // A placeholder username validation check
-    private fun isUserNameValid(username: String): Boolean {
-        return if (username.contains("@")) {
-            Patterns.EMAIL_ADDRESS.matcher(username).matches()
+    // A basic username validation check
+    // Just checks for wh
+    private fun isEmailValid(email: String): Boolean {
+        return if (email.contains("@")) {
+            Patterns.EMAIL_ADDRESS.matcher(email).matches()
         } else {
-            username.isNotBlank()
+            email.isNotBlank()
         }
     }
 
     // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
         return password.length > 5
+    }
+
+    fun logout() {
+        auth.signOut()
     }
 }

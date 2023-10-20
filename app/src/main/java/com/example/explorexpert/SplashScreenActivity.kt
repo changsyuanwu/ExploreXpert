@@ -9,7 +9,9 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashScreenActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
@@ -40,6 +42,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun checkAuthStatus(): Boolean {
-        return auth.currentUser != null
+        return false
+        //return auth.currentUser != null
     }
 }

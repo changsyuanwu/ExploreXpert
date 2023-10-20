@@ -85,7 +85,7 @@
             android:layout_margin="16dp">
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:autofillHints="@string/prompt_email"
@@ -109,7 +109,7 @@
                 android:selectAllOnFocus="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/username" />
+                app:layout_constraintTop_toBottomOf="@id/email" />
 
             <Button
                 android:id="@+id/btnLogin"
@@ -143,7 +143,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/btnSignupNav"
+                    android:id="@+id/btnSignUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sign up"
