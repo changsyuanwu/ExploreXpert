@@ -42,6 +42,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun checkAuthStatus(): Boolean {
-        return auth.currentUser != null
+        return false
+//        return auth.currentUser != null
     }
 }
