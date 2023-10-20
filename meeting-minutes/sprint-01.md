@@ -22,7 +22,7 @@ Decided to continue with Google Maps API
 
 Members present: Chang, Yi Bo, Richard, Mick
 
-Login setup completed
-Calendar tab finished
-Navigation all set up
+Login setup completed\
+Calendar tab finished\
+Navigation all set up\
 Integrated Google Maps API
