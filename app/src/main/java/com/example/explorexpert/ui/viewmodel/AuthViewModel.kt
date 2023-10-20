@@ -4,19 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.example.explorexpert.data.repository.LoginRepository
-import com.example.explorexpert.data.Result
 
 import com.example.explorexpert.R
+import com.example.explorexpert.data.repository.UserRepository
 import com.example.explorexpert.ui.login.LoggedInUserView
 import com.example.explorexpert.ui.login.LoginFormState
 import com.example.explorexpert.ui.login.LoginResult
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-@HiltViewModel
+
 class AuthViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val auth: FirebaseAuth,
+    private val userRepo: UserRepository
 ) : ViewModel() {
 
     private val _loginForm = MutableLiveData<LoginFormState>()
@@ -24,18 +25,6 @@ class AuthViewModel @Inject constructor(
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
-
-    fun login(username: String, password: String) {
-        // can be launched in a separate asynchronous job
-        val result = loginRepository.login(username, password)
-
-        if (result is Result.Success) {
-            _loginResult.value =
-                LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-        } else {
-            _loginResult.value = LoginResult(error = R.string.login_failed)
-        }
-    }
 
     fun loginDataChanged(username: String, password: String) {
         if (!isUserNameValid(username)) {

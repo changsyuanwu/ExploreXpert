@@ -1,7 +1,6 @@
 package com.example.explorexpert.ui.view
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import android.os.Bundle
@@ -12,21 +11,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.example.explorexpert.databinding.FragmentLoginBinding
 
 import com.example.explorexpert.R
 import com.example.explorexpert.ui.login.LoggedInUserView
 import com.example.explorexpert.ui.viewmodel.AuthViewModel
-import com.example.explorexpert.ui.viewmodelfactory.LoginViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private lateinit var loginViewModel: AuthViewModel
+    companion object {
+        private val TAG = "LoginFragment"
+    }
+
+    @Inject
+    lateinit var authViewModel: AuthViewModel
+
+    private lateinit var navController: NavController
     private var _binding: FragmentLoginBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val REQ_ONE_TAP = 888
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,20 +48,19 @@ class LoginFragment : Fragment() {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-            .get(AuthViewModel::class.java)
+
+        navController = findNavController()
 
         val usernameEditText = binding.username
         val passwordEditText = binding.password
         val loginButton = binding.btnLogin
         val loadingProgressBar = binding.loading
 
-        loginViewModel.loginFormState.observe(viewLifecycleOwner,
+        authViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
                 if (loginFormState == null) {
                     return@Observer
@@ -63,7 +74,7 @@ class LoginFragment : Fragment() {
                 }
             })
 
-        loginViewModel.loginResult.observe(viewLifecycleOwner,
+        authViewModel.loginResult.observe(viewLifecycleOwner,
             Observer { loginResult ->
                 loginResult ?: return@Observer
                 loadingProgressBar.visibility = View.GONE
@@ -85,7 +96,7 @@ class LoginFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable) {
-                loginViewModel.loginDataChanged(
+                authViewModel.loginDataChanged(
                     usernameEditText.text.toString(),
                     passwordEditText.text.toString()
                 )
@@ -95,21 +106,25 @@ class LoginFragment : Fragment() {
         passwordEditText.addTextChangedListener(afterTextChangedListener)
         passwordEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loginViewModel.login(
-                    usernameEditText.text.toString(),
-                    passwordEditText.text.toString()
-                )
+//                authViewModel.login(
+//                    usernameEditText.text.toString(),
+//                    passwordEditText.text.toString()
+//                )
             }
             false
         }
 
         loginButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
-            loginViewModel.login(
-                usernameEditText.text.toString(),
-                passwordEditText.text.toString()
-            )
+//            authViewModel.login(
+//                usernameEditText.text.toString(),
+//                passwordEditText.text.toString()
+//            )
         }
+    }
+
+    private fun configureGoogleSSO(){
+
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
