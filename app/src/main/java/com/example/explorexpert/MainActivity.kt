@@ -1,6 +1,11 @@
 package com.example.explorexpert
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle
+
+import androidx.fragment.app.commit;
+import androidx.fragment.app.add;
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,36 +21,17 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : ComponentActivity() {
-
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            ExploreXpertTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+        super.onCreate(savedInstanceState);
+        val manager = supportFragmentManager;
+
+        if (savedInstanceState == null) {
+            manager.commit {
+                setReorderingAllowed(true);
+                add<MapsFragment>(R.id.map_fragment);
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ExploreXpertTheme {
-        Greeting("Android")
-    }
 }
