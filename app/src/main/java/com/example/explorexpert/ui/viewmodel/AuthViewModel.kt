@@ -2,13 +2,11 @@ package com.example.explorexpert.ui.viewmodel
 
 import android.content.Intent
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Patterns
 import androidx.lifecycle.viewModelScope
-
-import com.example.explorexpert.R
 import com.example.explorexpert.data.model.User
 import com.example.explorexpert.data.repository.UserRepository
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -17,7 +15,10 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.R
+import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private val TAG = "AuthViewModel"
+        private const val TAG = "AuthViewModel"
     }
 
     data class LoginFormState(
@@ -42,17 +43,92 @@ class AuthViewModel @Inject constructor(
         val message: String,
     )
 
+    data class RegisterFormState(
+        val emailError: String? = null,
+        val passwordError: String? = null,
+        val confirmPasswordError: String? = null,
+        val isDataValid: Boolean = false
+    )
 
-    private val _loginForm = MutableLiveData<LoginFormState>()
-    val loginFormState: LiveData<LoginFormState> = _loginForm
+    data class RegisterResult(
+        val isSuccess: Boolean,
+        val message: String,
+    )
+
+    private val _loginFormState = MutableLiveData<LoginFormState>()
+    val loginFormState: LiveData<LoginFormState> = _loginFormState
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
+
+    private val _registerFormState = MutableLiveData<RegisterFormState>()
+    val registerFormState: LiveData<RegisterFormState> = _registerFormState
+
+    private val _registerResult = MutableLiveData<RegisterResult>()
+    val registerResult: LiveData<RegisterResult> = _registerResult
 
     lateinit var oneTapClient: SignInClient
     lateinit var signInRequest: BeginSignInRequest
     lateinit var signUpRequest: BeginSignInRequest
     private var showOneTapUI = true
+
+    fun registerWithEmailAndPassword(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+
+                    if (user != null) {
+                        // Create user in collection for custom fields
+                        createUserInCollection(user.uid, firstName, lastName, user.email)
+
+                        // Update display name
+                        val displayName = "$firstName $lastName"
+                        user.updateProfile(buildProfileUpdateRequest(displayName))
+                            .addOnCompleteListener { updateTask ->
+                                sendEmailVerification(user)
+                                if (updateTask.isSuccessful) {
+                                    _registerResult.value =
+                                        RegisterResult(true, "Verification email sent")
+                                } else {
+                                    _registerResult.value = RegisterResult(
+                                        false,
+                                        "Registration successful but failed to update display name."
+                                    )
+                                    Log.d(TAG, "Registration successful but failed to update display name for UID ${user.uid}.")
+                                }
+                            }
+                    }
+                } else {
+                    _registerResult.value =
+                        RegisterResult(false, "Registration failed. Please try again later.")
+                    Log.d(TAG, "Registration failed. ${task.exception?.message}")
+                }
+            }
+    }
+
+    private fun sendEmailVerification(user: FirebaseUser) {
+        user.sendEmailVerification()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    _registerResult.value = RegisterResult(true, "Verification email sent.")
+                } else {
+                    _registerResult.value =
+                        RegisterResult(false, "Failed to send verification email.")
+                }
+            }
+    }
+
+    private fun buildProfileUpdateRequest(displayName: String): UserProfileChangeRequest {
+        return UserProfileChangeRequest.Builder()
+            .setDisplayName(displayName)
+            .build()
+    }
 
     fun loginWithEmailAndPassword(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
@@ -66,7 +142,10 @@ class AuthViewModel @Inject constructor(
                     }
                 } else {
                     _loginResult.value =
-                        LoginResult(false, "Authentication failed. Please check your email and password.")
+                        LoginResult(
+                            false,
+                            "Authentication failed. Please check your email and password."
+                        )
                     Log.d(TAG, "Login attempt failed. ${task.exception?.message}")
                 }
             }
@@ -141,7 +220,8 @@ class AuthViewModel @Inject constructor(
                             user.uid,
                             firstName,
                             lastName,
-                            user.email
+                            user.email,
+                            verified = true
                         )
                     }
                 } else {
@@ -153,9 +233,15 @@ class AuthViewModel @Inject constructor(
             }
     }
 
-    private fun createUserInCollection(userId: String, firstName: String, lastName: String, email: String?) {
+    private fun createUserInCollection(
+        userId: String,
+        firstName: String,
+        lastName: String,
+        email: String?,
+        verified: Boolean = false
+    ) {
         if (userId != null && firstName != null && lastName != null && email != null) {
-            val user = User(userId, firstName, lastName, email)
+            val user = User(userId, firstName, lastName, email, verified = verified)
             viewModelScope.launch {
                 try {
                     if (userRepo.getUserById(userId) == null) {
@@ -170,11 +256,23 @@ class AuthViewModel @Inject constructor(
 
     fun loginDataChanged(email: String, password: String) {
         if (!isEmailValid(email)) {
-            _loginForm.value = LoginFormState(emailError = "Email is not a valid email")
+            _loginFormState.value = LoginFormState(emailError = "Email is not a valid email")
         } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = "Password is too short")
+            _loginFormState.value = LoginFormState(passwordError = "Password is too short")
         } else {
-            _loginForm.value = LoginFormState(isDataValid = true)
+            _loginFormState.value = LoginFormState(isDataValid = true)
+        }
+    }
+
+    fun registerDataChanged(email: String, password: String, confirmPassword: String) {
+        if (!isEmailValid(email)) {
+            _registerFormState.value = RegisterFormState(emailError = "Email is not a valid email")
+        } else if (!isPasswordValid(password)) {
+            _registerFormState.value = RegisterFormState(passwordError = "Password is too short")
+        } else if (!doPasswordsMatch(password, confirmPassword)) {
+            _registerFormState.value = RegisterFormState(confirmPasswordError = "Passwords do not match!")
+        } else {
+            _registerFormState.value = RegisterFormState(isDataValid = true)
         }
     }
 
@@ -190,7 +288,11 @@ class AuthViewModel @Inject constructor(
 
     // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5
+        return password.length > 10
+    }
+
+    private fun doPasswordsMatch(password: String, confirmPassword: String): Boolean {
+        return password == confirmPassword
     }
 
     fun logout() {

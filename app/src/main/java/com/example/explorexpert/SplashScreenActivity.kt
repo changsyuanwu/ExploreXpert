@@ -43,6 +43,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
     private fun checkAuthStatus(): Boolean {
         return false
+        // TODO("Take this out before demo")
         //return auth.currentUser != null
     }
 }
