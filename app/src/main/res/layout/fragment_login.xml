@@ -13,18 +13,6 @@
     tools:context=".ui.view.LoginFragment">
     <!-- Photo by <a href="https://unsplash.com/@paulberthelon?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Paul Berthelon Bravo</a> on <a href="https://unsplash.com/photos/blue-sunny-sky-BGXhuJIbx78?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a> -->
 
-    <ProgressBar
-        android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3" />
-
     <androidx.cardview.widget.CardView
         android:id="@+id/btnLoginWithGoogle"
         android:layout_width="0dp"
