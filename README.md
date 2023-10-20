@@ -8,10 +8,6 @@ Chang-Syuan Wu (c275wu), Mick Wang (m479wang), Richard Zhang (r468zhan), Yi Bo C
 
 [Project Proposal Wiki Page](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Project-Proposal)
 
-## Release Notes
-
-[v0.1 Release Notes](https://git.uwaterloo.ca/c275wu/cs346-project/-/blob/documentation/releases/v0.1-release-notes.md)
-
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
