@@ -20,5 +20,9 @@ Decided to continue with Google Maps API
 
 **Day 3:**
 
-Members present:
+Members present: Chang, Yi Bo, Richard, Mick
 
+Login setup completed
+Calendar tab finished
+Navigation all set up
+Integrated Google Maps API
