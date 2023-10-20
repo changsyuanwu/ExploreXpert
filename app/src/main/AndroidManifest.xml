@@ -43,7 +43,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:label="MainActivity">
+            android:label="MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
     </application>
 
