@@ -1,37 +1,77 @@
 package com.example.explorexpert
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle
-
-import androidx.fragment.app.commit;
-import androidx.fragment.app.add;
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.explorexpert.databinding.ActivityMainBinding
 import com.example.explorexpert.ui.theme.ExploreXpertTheme
+import com.example.explorexpert.HomeFragment
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
-        val manager = supportFragmentManager;
+class MainActivity : AppCompatActivity() {
 
-        if (savedInstanceState == null) {
-            manager.commit {
-                setReorderingAllowed(true);
-                add<MapsFragment>(R.id.map_fragment);
+    private lateinit var binding : ActivityMainBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        swapFragment(HomeFragment())
+
+        binding.bottomNav.setOnItemSelectedListener{
+            when(it.itemId){
+                R.id.nav_home -> swapFragment(HomeFragment())
+                R.id.nav_calendar -> swapFragment(CalendarFragment())
+                R.id.nav_map -> swapFragment(MapsFragment())
+                else -> {
+
+                }
             }
+            true
         }
+//        setContent {
+//            ExploreXpertTheme {
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//                    Greeting("Android")
+//                }
+//            }
+//        }
     }
 
+    // function to swap fragments in the fragment container
+    private fun swapFragment(fragment: Fragment){
+        // get fragment manager from current activity
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction().replace(R.id.container, fragment)?.commit()
+
+    }
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    ExploreXpertTheme {
+        Greeting("Android")
+    }
 }
