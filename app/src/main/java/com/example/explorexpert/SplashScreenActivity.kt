@@ -20,8 +20,6 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
-
-
         auth = FirebaseAuth.getInstance()
 
         val isAuthenticated = checkAuthStatus()
@@ -39,7 +37,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun checkAuthStatus(): Boolean {
-        return false
-//        return auth.currentUser != null
+        //return false
+        return auth.currentUser != null
     }
 }

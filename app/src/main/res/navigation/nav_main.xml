@@ -5,27 +5,27 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.explorexpert.ui.view.Home"
+        android:name="com.example.explorexpert.ui.view.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_explore"
-        android:name="com.example.explorexpert.ui.view.Explore"
+        android:name="com.example.explorexpert.ui.view.ExploreFragment"
         android:label="ExploreFragment"
         tools:layout="@layout/fragment_explore" />
     <fragment
         android:id="@+id/navigation_calendar"
-        android:name="com.example.explorexpert.ui.view.Calendar"
+        android:name="com.example.explorexpert.ui.view.CalendarFragment"
         android:label="CalendarFragment"
         tools:layout="@layout/fragment_calendar" />
     <fragment
         android:id="@+id/navigation_map"
-        android:name="com.example.explorexpert.ui.view.Map"
+        android:name="com.example.explorexpert.ui.view.MapsFragment"
         android:label="MapFragment"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/navigation_weather"
-        android:name="com.example.explorexpert.ui.view.Weather"
+        android:name="com.example.explorexpert.ui.view.WeatherFragment"
         android:label="weatherFragment"
         tools:layout="@layout/fragment_weather" />
 
