@@ -3,24 +3,25 @@
     <item
         android:title="Home"
         android:id="@+id/nav_home"
-        android:icon="@drawable/ic_home" />
+        android:icon="@drawable/outline_home_24" />
+    <item
+        android:title="Map"
+        android:id="@+id/nav_map"
+        android:icon="@drawable/outline_map_24" />
 
     <item
-        android:title="Explore"
-        android:id="@+id/nav_explore"
-        android:icon="@drawable/ic_explore" />
+        android:title="Plan"
+        android:id="@+id/nav_plan"
+        android:icon="@drawable/baseline_favorite_border_24" />
 
     <item
         android:title="Calendar"
         android:id="@+id/nav_calendar"
-        android:icon="@drawable/ic_calendar" />
+        android:icon="@drawable/baseline_calendar_month_24" />
     <item
         android:title="Weather"
         android:id="@+id/nav_weather"
-        android:icon="@drawable/ic_weather" />
-    <item
-        android:title="Map"
-        android:id="@+id/nav_map"
-        android:icon="@drawable/ic_map" />
+        android:icon="@drawable/baseline_wb_sunny_24" />
+
 </menu>
 
