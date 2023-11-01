@@ -18,12 +18,12 @@ class SplashScreenActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_screen)
-
-        // Hide the status bar and make the splash screen as a full screen activity.
-        window.decorView.windowInsetsController?.hide(
-            WindowInsets.Type.statusBars()
-        )
+//        setContentView(R.layout.activity_splash_screen)
+//
+//        // Hide the status bar and make the splash screen as a full screen activity.
+//        window.decorView.windowInsetsController?.hide(
+//            WindowInsets.Type.statusBars()
+//        )
 
         auth = FirebaseAuth.getInstance()
 

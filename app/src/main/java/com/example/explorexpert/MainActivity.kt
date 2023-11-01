@@ -1,22 +1,17 @@
 package com.example.explorexpert
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.explorexpert.databinding.ActivityMainBinding
 import com.example.explorexpert.ui.theme.ExploreXpertTheme
-import com.example.explorexpert.HomeFragment
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.google.firebase.auth.FirebaseAuth
+import com.example.explorexpert.ui.view.CalendarFragment
+import com.example.explorexpert.ui.view.HomeFragment
+import com.example.explorexpert.ui.view.MapsFragment
 
 class MainActivity : AppCompatActivity() {
 
