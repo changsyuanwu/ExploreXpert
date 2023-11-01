@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Plan"
-        android:textSize="24sp"
+        android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginTop="24dp"
         android:layout_marginStart="24dp"
@@ -31,12 +31,12 @@
         app:layout_constraintTop_toBottomOf="@id/txtPlan" />
 
     <TextView
-        android:id="@+id/txtSavedLocations"
+        android:id="@+id/txtSaved"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:textSize="16sp"
-        android:text="Saved Locations"
+        android:text="Saved Items"
         app:layout_constraintStart_toEndOf="@id/txtTrips"
         app:layout_constraintTop_toTopOf="@id/txtTrips" />
 
@@ -49,5 +49,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTrips" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/horizontalDivider"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Button
+            android:id="@+id/btnCreateATrip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="Create a Trip"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
