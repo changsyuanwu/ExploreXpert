@@ -15,3 +15,11 @@ Task Assignment:
 * Mick:
     - Finish navigation bar
     - Add local weather info
+
+*Day 2*
+
+Members present: Chang, Yi Bo, Richard, Mick
+
+Proceeding well.
+Bottom navigation bar for app has been merged
+
