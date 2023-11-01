@@ -31,9 +31,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_calendar -> swapFragment(CalendarFragment())
                 R.id.nav_map -> swapFragment(MapsFragment())
                 R.id.nav_plan -> swapFragment(PlanFragment())
-                else -> {
-
-                }
+                else -> false
             }
             true
         }
