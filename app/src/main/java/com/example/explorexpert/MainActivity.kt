@@ -12,6 +12,7 @@ import com.example.explorexpert.ui.theme.ExploreXpertTheme
 import com.example.explorexpert.ui.view.CalendarFragment
 import com.example.explorexpert.ui.view.HomeFragment
 import com.example.explorexpert.ui.view.MapsFragment
+import com.example.explorexpert.ui.view.WeatherFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> swapFragment(HomeFragment())
                 R.id.nav_calendar -> swapFragment(CalendarFragment())
                 R.id.nav_map -> swapFragment(MapsFragment())
+                R.id.nav_weather -> swapFragment(WeatherFragment())
                 else -> {
 
                 }

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FIND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:name=".ExploreXpert"
@@ -23,6 +24,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+        <meta-data
+            android:name="openweather.API_KEY"
+            android:value="${WEATHER_API_KEY}" />
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
