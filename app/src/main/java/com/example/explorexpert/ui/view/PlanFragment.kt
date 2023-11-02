@@ -5,11 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import com.example.explorexpert.R
 import com.example.explorexpert.databinding.FragmentPlanBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,17 +40,10 @@ class PlanFragment : Fragment() {
 
     private fun configureButtons() {
         binding.btnCreateATrip.setOnClickListener {
-            val createTripBottomSheet = CreateTripBottomSheet()
-            createTripBottomSheet.show(childFragmentManager, "CreateTripModalBottomSheet")
+            val createTripBottomSheetDialogFragment = CreateTripBottomSheetDialogFragment()
+            createTripBottomSheetDialogFragment.show(childFragmentManager, CreateTripBottomSheetDialogFragment.TAG)
         }
     }
 
-    class CreateTripBottomSheet: BottomSheetDialogFragment() {
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View? = inflater.inflate(R.layout.create_trip_bottom_sheet, container, false)
 
-    }
 }
