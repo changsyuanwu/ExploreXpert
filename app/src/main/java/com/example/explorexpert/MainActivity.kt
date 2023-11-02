@@ -13,7 +13,9 @@ import com.example.explorexpert.ui.view.CalendarFragment
 import com.example.explorexpert.ui.view.HomeFragment
 import com.example.explorexpert.ui.view.MapsFragment
 import com.example.explorexpert.ui.view.PlanFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
