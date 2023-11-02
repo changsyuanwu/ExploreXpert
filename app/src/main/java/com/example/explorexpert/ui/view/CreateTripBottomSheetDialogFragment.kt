@@ -32,12 +32,14 @@ class CreateTripBottomSheetDialogFragment: BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        configureButtons()
     }
 
     private fun configureButtons() {
         binding.btnBottomSheetCreateTrip.setOnClickListener {
-
+            val tripName = binding.txtInputTripName.editText?.text.toString()
+            createTripViewModel.createTrip(tripName)
+            this.dismiss()
         }
     }
 

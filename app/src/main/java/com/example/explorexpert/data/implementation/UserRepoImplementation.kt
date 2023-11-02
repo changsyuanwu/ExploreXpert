@@ -16,7 +16,7 @@ class UserRepoImplementation @Inject constructor(
 ): UserRepository {
 
     companion object {
-        private val TAG = "UserRepository"
+        private const val TAG = "UserRepository"
     }
 
     private val userCollection = db.collection("users")

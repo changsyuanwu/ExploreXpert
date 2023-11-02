@@ -1,4 +1,10 @@
 package com.example.explorexpert.data.repository
 
-class TripRepository {
+import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.model.User
+
+interface TripRepository {
+
+    suspend fun setTrip(trip: Trip): String
+
 }
