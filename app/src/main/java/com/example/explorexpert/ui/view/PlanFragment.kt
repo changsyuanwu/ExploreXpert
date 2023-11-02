@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.explorexpert.R
 import com.example.explorexpert.databinding.FragmentPlanBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,6 +39,22 @@ class PlanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        configureButtons()
+    }
+
+    private fun configureButtons() {
+        binding.btnCreateATrip.setOnClickListener {
+            val createTripBottomSheet = CreateTripBottomSheet()
+            createTripBottomSheet.show(childFragmentManager, "CreateTripModalBottomSheet")
+        }
+    }
+
+    class CreateTripBottomSheet: BottomSheetDialogFragment() {
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View? = inflater.inflate(R.layout.create_trip_bottom_sheet, container, false)
 
     }
 }

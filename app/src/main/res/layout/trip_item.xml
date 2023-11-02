@@ -22,16 +22,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <!--
+                Image by Freepik
+                https://www.freepik.com/free-vector/hand-drawn-flat-groovy-psychedelic-pattern-design_17807366.htm
+            -->
             <ImageView
                 android:id="@+id/imgTrip"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:contentDescription="trip image"
                 android:scaleType="centerCrop"
-                android:src="@tools:sample/avatars"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/trip_default_image" />
 
             <Button
                 android:id="@+id/btnSavedItems"
