@@ -23,3 +23,9 @@ Members present: Chang, Yi Bo, Richard, Mick
 * Proceeding well.
 * Bottom navigation bar for app has been completed and merged
 
+**Day 3**
+
+Members present: Chang, Yi Bo, Richard, Mick
+
+* Moved app to Material UI 3 for easy modern components
+

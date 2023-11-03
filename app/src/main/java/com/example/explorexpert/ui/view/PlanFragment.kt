@@ -1,0 +1,112 @@
+package com.example.explorexpert.ui.view
+
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.marginBottom
+import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.explorexpert.adapters.TripAdapter
+import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.databinding.FragmentPlanBinding
+import com.example.explorexpert.ui.viewmodel.PlanViewModel
+import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class PlanFragment : Fragment() {
+
+    companion object {
+        private val TAG = "PlanFragment"
+    }
+
+    @Inject
+    lateinit var planViewModel: PlanViewModel
+
+    private var _binding: FragmentPlanBinding? = null
+
+    private lateinit var adapter: TripAdapter
+
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // Inflate the layout for this fragment
+        _binding = FragmentPlanBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        configureRecyclerView()
+        configureButtons()
+        configureObservers()
+    }
+
+    private fun configureButtons() {
+        binding.btnCreateATrip.setOnClickListener {
+            val createTripBottomSheetDialogFragment = CreateTripBottomSheetDialogFragment()
+            createTripBottomSheetDialogFragment.show(
+                childFragmentManager,
+                CreateTripBottomSheetDialogFragment.TAG
+            )
+        }
+    }
+
+    private fun configureRecyclerView() {
+        adapter = TripAdapter(object : TripAdapter.ItemClickListener {
+            override fun onItemClick(trip: Trip) {
+                // Summon dialog for viewing trip saved items
+            }
+        })
+
+        binding.tripRecyclerView.adapter = adapter
+        binding.tripRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+
+        adapter.registerAdapterDataObserver(
+            ScrollToTopObserver(binding.tripRecyclerView)
+        )
+
+        // Pad the bottom of the trip recycler view so we can scroll past the "create a trip" button
+        val tripRecyclerViewBottomPadding =
+            binding.btnCreateATrip.height + dpToPixels(binding.btnCreateATrip.marginBottom) + dpToPixels(34)
+        binding.tripRecyclerView.updatePadding(bottom = tripRecyclerViewBottomPadding)
+    }
+
+    private fun dpToPixels(dp: Int): Int {
+        val scale = resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
+    private fun configureObservers() {
+        planViewModel.trips.observe(viewLifecycleOwner) { trips ->
+            adapter.submitList(trips)
+            adapter.notifyDataSetChanged()
+        }
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                planViewModel.fetchTrips()
+
+                Log.d(TAG, tab?.text.toString())
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+        })
+    }
+}

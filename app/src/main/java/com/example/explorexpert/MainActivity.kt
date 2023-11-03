@@ -7,13 +7,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.explorexpert.databinding.ActivityMainBinding
-import com.example.explorexpert.ui.theme.ExploreXpertTheme
 import com.example.explorexpert.ui.view.CalendarFragment
 import com.example.explorexpert.ui.view.HomeFragment
 import com.example.explorexpert.ui.view.MapsFragment
+import com.example.explorexpert.ui.view.PlanFragment
+import dagger.hilt.android.AndroidEntryPoint
 import com.example.explorexpert.ui.view.WeatherFragment
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
         swapFragment(HomeFragment())
 
@@ -30,9 +34,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_calendar -> swapFragment(CalendarFragment())
                 R.id.nav_map -> swapFragment(MapsFragment())
                 R.id.nav_weather -> swapFragment(WeatherFragment())
-                else -> {
-
-                }
+                R.id.nav_plan -> swapFragment(PlanFragment())
+                else -> false
             }
             true
         }
