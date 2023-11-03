@@ -39,13 +39,13 @@
             android:name=".AuthActivity"
             android:exported="false"
             android:label="AuthActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/Theme.ExploreXpert">
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:label="MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/Theme.ExploreXpert">
         </activity>
     </application>
 

@@ -9,10 +9,10 @@
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home" />
     <fragment
-        android:id="@+id/navigation_explore"
-        android:name="com.example.explorexpert.ui.view.ExploreFragment"
-        android:label="ExploreFragment"
-        tools:layout="@layout/fragment_explore" />
+        android:id="@+id/navigation_plan"
+        android:name="com.example.explorexpert.ui.view.PlanFragment"
+        android:label="PlanFragment"
+        tools:layout="@layout/fragment_plan" />
     <fragment
         android:id="@+id/navigation_calendar"
         android:name="com.example.explorexpert.ui.view.CalendarFragment"
