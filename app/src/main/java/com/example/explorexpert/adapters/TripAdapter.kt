@@ -1,5 +1,6 @@
 package com.example.explorexpert.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
@@ -13,6 +14,10 @@ import com.example.explorexpert.utils.ImageLoaderUtil
 class TripAdapter(
     private val itemClickListener: ItemClickListener
 ): ListAdapter<Trip, TripAdapter.ViewHolder>(DiffCallback()) {
+
+    companion object {
+        const val TAG = "TripAdapter"
+    }
 
     inner class ViewHolder(private val binding: TripItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(trip: Trip) {
