@@ -23,8 +23,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
-        swapFragment(HomeFragment())
+        swapFragment(HomeFragment());
 
         binding.bottomNav.setOnItemSelectedListener{
             when(it.itemId){
