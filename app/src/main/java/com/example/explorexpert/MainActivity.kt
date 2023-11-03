@@ -16,13 +16,10 @@ import com.example.explorexpert.ui.view.MapsFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
-    private lateinit var mapFragment: MapsFragment;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("created");
         binding = ActivityMainBinding.inflate(layoutInflater)
-        mapFragment = MapsFragment();
 
         setContentView(binding.root)
         swapFragment(HomeFragment());
@@ -31,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.nav_home -> swapFragment(HomeFragment())
                 R.id.nav_calendar -> swapFragment(CalendarFragment())
-                R.id.nav_map -> swapFragment(mapFragment)
+                R.id.nav_map -> swapFragment(MapsFragment())
                 else -> {
 
                 }

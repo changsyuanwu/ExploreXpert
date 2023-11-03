@@ -1,6 +1,5 @@
 package com.example.explorexpert.ui.view
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -23,6 +22,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.io.IOException
 import kotlin.random.Random
 
 class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
@@ -43,6 +43,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
+            // TODO: figure out correct retrieval
             currLat = savedInstanceState.getDouble("CURR_LAT_KEY");
             currLong = savedInstanceState.getDouble("CURR_LONG_KEY");
         }
@@ -59,44 +60,44 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment;
         mapFragment.getMapAsync(this);
 
-//        var geocoder: Geocoder = Geocoder(requireContext());
-//        var list = geocoder.getFromLocationName("Waterloo, Ontario", 1);
-//        println(list?.get(0));
+        searchView = view.findViewById(R.id.mapSearchView);
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                val geocoder: Geocoder = Geocoder(requireActivity());
+                val location: String = searchView.getQuery().toString();
 
-//        searchView = view.findViewById(R.id.mapSearchView);
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                val location: String = searchView.getQuery().toString();
-//                println(location);
-//                if (location != null) {
-//
-//                    var addressList = geocoder.getFromLocationName(location, 1);
-//
-//                    val address = addressList?.get(0);
-//                    var latlng: LatLng;
-//                    if (address != null) {
-//                        latlng = LatLng(address.getLatitude(), address.getLongitude());
-//                    } else {
-//                        latlng = LatLng(currLat, currLong);
-//                    };
-//
-//                    map.addMarker(
-//                        MarkerOptions().position(latlng).title("Marker")
-//                    );
-//                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 10f));
-//                }
-//                return false;
-//            }
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                return false;
-//            }
-//        });
+                // TODO: really similar to getAddressFromLatLng(), fix later
+                if (location != null) {
+                    try {
+                        var addressList = geocoder.getFromLocationName(location, 1);
+
+                        if (addressList != null && addressList.isNotEmpty()) {
+                            val address = addressList[0];
+                            var latlng: LatLng = LatLng(address.latitude, address.longitude);
+                            val addrStr = getAddressFromLatLng(latlng);
+
+                            map.clear();
+                            map.addMarker(
+                                MarkerOptions().position(latlng).title(addrStr)
+                            );
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 12f));
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace();
+                    }
+                }
+                return false;
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false;
+            }
+        });
         return view;
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
-        // retrieve view model data
+        // TODO: save important values for other fragments
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -105,13 +106,11 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 //        currLat = 43.4723;
 //        currLong = -80.5449;
         map = googleMap;
-        val latlng = LatLng(currLat, currLong);
+//        val latlng = LatLng(currLat, currLong);
 
-        map.addMarker(MarkerOptions().position(latlng).title("Marker"));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 12.0f));
 
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setMyLocationButtonEnabled(true);
+        map.uiSettings.isZoomControlsEnabled = true;
+        map.uiSettings.isMyLocationButtonEnabled = true;
         map.setPadding(0, 0, 0, 200);
         map.setOnMarkerClickListener(this);
 
@@ -129,24 +128,53 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
             if (location != null) {
-                lastLocation = location
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+                lastLocation = location;
+                val currentLatLng = LatLng(location.latitude, location.longitude);
+                val currAddrStr = getAddressFromLatLng(currentLatLng);
+                map.addMarker(MarkerOptions().position(currentLatLng).title(currAddrStr));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f));
             }
         }
     }
 
+    private fun getAddressFromLatLng(latlng: LatLng): String {
+        val geocoder: Geocoder = Geocoder(requireActivity());
+        val addressList: List<Address>?;
+        val address: Address?;
+        var addressStr: String = "";
+
+        try {
+            addressList = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1);
+
+            if (addressList != null && addressList.isNotEmpty()) {
+                address = addressList[0];
+                for (i: Int in 0..address.maxAddressLineIndex) {
+                    if (i != 0) {
+                        addressStr += '\n';
+                    }
+                    addressStr += address.getAddressLine(i);
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace();
+        }
+
+        return addressStr;
+    }
+
+    override fun onMarkerClick(p0: Marker): Boolean {
+        return false;
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        inflater.inflate()
+        //TODO: implement this
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState);
         outState.putDouble("CURR_LAT_KEY", currLat);
         outState.putDouble("CURR_LONG_KEY", currLong);
-    }
-
-    override fun onMarkerClick(p0: Marker): Boolean {
-        return false;
+        // TODO: fix this
     }
 }
