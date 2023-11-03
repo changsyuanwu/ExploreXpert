@@ -6,6 +6,7 @@ import com.example.explorexpert.data.repository.TripRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -36,5 +37,48 @@ class TripRepoImplementation @Inject constructor(
             deferred.await()
         }
     }
+
+    override suspend fun getTripsByUserId(userId: String): List<Trip> =
+        withContext(Dispatchers.IO) {
+            try {
+                val ownedTripsQueryResult = tripCollection
+                    .whereEqualTo("ownerUserId", userId)
+                    .get()
+                    .await()
+
+                val ownedTrips = ownedTripsQueryResult.documents.mapNotNull { document ->
+                    try {
+                        val trip = document.toObject(Trip::class.java)
+                        trip?.id = document.id
+                        trip
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error casting document to trip object: ${e.message}")
+                        null
+                    }
+                }
+
+                // Add support for shared trips later
+//                val sharedWithTripsQueryResult = tripCollection
+//                    .where
+//                    .get()
+//                    .await()
+//
+//                val sharedWithTrips = sharedWithTripsQueryResult.documents.mapNotNull { document ->
+//                    try {
+//                        val trip = document.toObject(Trip::class.java)
+//                        trip?.id = document.id
+//                        trip
+//                    } catch (e: Exception) {
+//                        Log.e(TAG, "Error casting document to trip object: ${e.message}")
+//                        null
+//                    }
+//                }
+
+                return@withContext ownedTrips
+            } catch (e: Exception) {
+                Log.e(TAG, "Error reading trips query: ${e.message}")
+                return@withContext emptyList()
+            }
+        }
 
 }

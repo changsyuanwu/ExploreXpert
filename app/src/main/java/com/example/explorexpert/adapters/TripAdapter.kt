@@ -8,9 +8,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.databinding.TripItemBinding
+import com.example.explorexpert.utils.ImageLoaderUtil
 
 class TripAdapter(
-    private val itemClickListener: OnItemClickListener
+    private val itemClickListener: ItemClickListener
 ): ListAdapter<Trip, TripAdapter.ViewHolder>(DiffCallback()) {
 
     inner class ViewHolder(private val binding: TripItemBinding): RecyclerView.ViewHolder(binding.root) {
@@ -18,6 +19,11 @@ class TripAdapter(
             binding.txtTripName.text = trip.name
             binding.btnSavedItems.text = "${trip.savedItemIds.size} items"
 
+            // ImageLoaderUtil.loadImageIntoView(binding.imgTrip, URL, false)
+
+            binding.tripItemContainer.setOnClickListener {
+                itemClickListener.onItemClick(trip)
+            }
         }
     }
 
@@ -31,6 +37,10 @@ class TripAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val trip = getItem(position)
         holder.bind(trip)
+    }
+
+    interface ItemClickListener {
+        fun onItemClick(trip: Trip)
     }
 
     private class DiffCallback : DiffUtil.ItemCallback<Trip>() {

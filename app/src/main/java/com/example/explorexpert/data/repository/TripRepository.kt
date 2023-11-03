@@ -7,4 +7,5 @@ interface TripRepository {
 
     suspend fun setTrip(trip: Trip): String
 
+    suspend fun getTripsByUserId(userId: String): List<Trip>
 }
