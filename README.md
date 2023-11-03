@@ -19,8 +19,7 @@ Instructions. Details on how to install and launch your application.
 * [Meeting Minutes](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Meeting-Minutes)
 
 ## Software Releases
-* [Release Notes](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Release-Notes)
- * [Release v0.1](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Release-Notes/Release-v0.1)
+* [Releases](https://git.uwaterloo.ca/c275wu/cs346-project/-/releases)
 
 ## License
 For open source projects, say how it is licensed.
