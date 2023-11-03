@@ -28,13 +28,16 @@ import kotlin.random.Random
 class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                         GoogleMap.OnMarkerClickListener {
 
+    // UW coordinates
     private var currLat: Double = 43.4723;
     private var currLong: Double = -80.5449;
-//    private const val KEY_LATLNG = ""
+
+    private var currLatLng: LatLng? = null;
+    private val KEY_LATLNG = "latlong";
 
     private lateinit var searchView: SearchView;
     private lateinit var map: GoogleMap;
-    private lateinit var lastLocation: Location;
+    private lateinit var lastAccLocation: Location;
     private lateinit var fusedLocationClient: FusedLocationProviderClient;
 
     companion object {
@@ -42,11 +45,6 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            // TODO: figure out correct retrieval
-            currLat = savedInstanceState.getDouble("CURR_LAT_KEY");
-            currLong = savedInstanceState.getDouble("CURR_LONG_KEY");
-        }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
 
@@ -59,6 +57,11 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment;
         mapFragment.getMapAsync(this);
+
+        if (savedInstanceState != null) {
+            // TODO: remove this chunk and use a ViewModel (doesn't work here)
+            currLatLng = savedInstanceState.getParcelable(KEY_LATLNG);
+        }
 
         searchView = view.findViewById(R.id.mapSearchView);
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -81,6 +84,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                                 MarkerOptions().position(latlng).title(addrStr)
                             );
                             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 12f));
+                            currLatLng = latlng;
                         }
                     } catch (e: IOException) {
                         e.printStackTrace();
@@ -101,14 +105,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-//        var lat = currLat ?: Random.nextDouble(0.0, 180.0) - 90
-//        var long = currLong ?: Random.nextDouble(0.0, 360.0) - 180;
-//        currLat = 43.4723;
-//        currLong = -80.5449;
         map = googleMap;
-//        val latlng = LatLng(currLat, currLong);
-
-
         map.uiSettings.isZoomControlsEnabled = true;
         map.uiSettings.isMyLocationButtonEnabled = true;
         map.setPadding(0, 0, 0, 200);
@@ -128,8 +125,10 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
             if (location != null) {
-                lastLocation = location;
-                val currentLatLng = LatLng(location.latitude, location.longitude);
+                lastAccLocation = location;
+                var currentLatLng = LatLng(location.latitude, location.longitude);
+                if (currLatLng != null) currentLatLng = currLatLng as LatLng;
+
                 val currAddrStr = getAddressFromLatLng(currentLatLng);
                 map.addMarker(MarkerOptions().position(currentLatLng).title(currAddrStr));
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f));
@@ -167,14 +166,6 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate()
-        //TODO: implement this
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState);
-        outState.putDouble("CURR_LAT_KEY", currLat);
-        outState.putDouble("CURR_LONG_KEY", currLong);
-        // TODO: fix this
+        // TODO: implement this
     }
 }
