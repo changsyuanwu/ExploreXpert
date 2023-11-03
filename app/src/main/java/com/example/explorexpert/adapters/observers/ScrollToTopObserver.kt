@@ -21,7 +21,7 @@ class ScrollToTopObserver(
     }
     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
         // Skip this to avoid losing scroll position when rotating device
-        // recycler.scrollToPosition(0)
+        recycler.scrollToPosition(0)
     }
     override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
         recycler.scrollToPosition(0)

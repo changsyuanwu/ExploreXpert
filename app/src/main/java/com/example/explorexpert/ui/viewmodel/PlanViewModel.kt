@@ -1,5 +1,6 @@
 package com.example.explorexpert.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,7 +30,9 @@ class PlanViewModel @Inject constructor(
     fun fetchTrips() {
         viewModelScope.launch {
             if (auth.currentUser != null) {
-                mutableTrips.value = tripRepo.getTripsByUserId(auth.currentUser!!.uid)
+                val tripsToDisplay = tripRepo.getTripsByUserId(auth.currentUser!!.uid)
+
+                mutableTrips.value = (tripsToDisplay)
             }
         }
     }
