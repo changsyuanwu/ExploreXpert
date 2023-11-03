@@ -9,12 +9,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.explorexpert.databinding.ActivityMainBinding
-import com.example.explorexpert.ui.theme.ExploreXpertTheme
 import com.example.explorexpert.ui.view.CalendarFragment
 import com.example.explorexpert.ui.view.HomeFragment
 import com.example.explorexpert.ui.view.MapsFragment
 import com.example.explorexpert.ui.view.PlanFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
