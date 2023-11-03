@@ -108,7 +108,6 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         map = googleMap;
         map.uiSettings.isZoomControlsEnabled = true;
         map.uiSettings.isMyLocationButtonEnabled = true;
-        map.setPadding(0, 0, 0, 200);
         map.setOnMarkerClickListener(this);
 
         setUpMap();
