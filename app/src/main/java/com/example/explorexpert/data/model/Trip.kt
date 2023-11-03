@@ -1,5 +1,7 @@
 package com.example.explorexpert.data.model
 
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.ServerTimestamp
 import java.util.UUID
 
 data class Trip(
@@ -10,4 +12,8 @@ data class Trip(
     val ownerUserId: String = "",
     val sharedUsers: MutableList<SharedUserRecord> = mutableListOf(),
     val savedItemIds: MutableList<String> = mutableListOf(),
+    @ServerTimestamp
+    val createdAt: Timestamp? = null,
+    @ServerTimestamp
+    var updatedAt: Timestamp? = null,
 )

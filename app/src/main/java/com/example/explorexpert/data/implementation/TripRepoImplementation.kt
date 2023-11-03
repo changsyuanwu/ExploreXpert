@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -43,6 +44,7 @@ class TripRepoImplementation @Inject constructor(
             try {
                 val ownedTripsQueryResult = tripCollection
                     .whereEqualTo("ownerUserId", userId)
+                    .orderBy("updatedAt", Query.Direction.DESCENDING)
                     .get()
                     .await()
 

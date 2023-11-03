@@ -69,7 +69,9 @@ class PlanFragment : Fragment() {
         })
 
         binding.tripRecyclerView.adapter = adapter
-        binding.tripRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val tripLayoutManager = LinearLayoutManager(requireContext())
+        binding.tripRecyclerView.layoutManager = tripLayoutManager
 
 
         adapter.registerAdapterDataObserver(
@@ -90,7 +92,6 @@ class PlanFragment : Fragment() {
     private fun configureObservers() {
         planViewModel.trips.observe(viewLifecycleOwner) { trips ->
             adapter.submitList(trips)
-            adapter.notifyDataSetChanged()
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
