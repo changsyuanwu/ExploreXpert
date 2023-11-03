@@ -1,14 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.view.Weather">
+    android:background="#001929"
+    tools:context=".ui.view.WeatherFragment">
+<!--    android:background="@drawable/weather_background"-->
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="weather" />
+    <RelativeLayout android:id="@+id/mainContainer" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:visibility="visible">
+        <LinearLayout android:id="@+id/addressContainer" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:id="@+id/address" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:textSize="24dp"
+                android:text="Waterloo, ON"/>
+        </LinearLayout>
 
-</FrameLayout>
+
+        <LinearLayout android:id="@+id/overviewContainer" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_centerInParent="true">
+
+            <TextView android:id="@+id/status" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:textSize="30dp"
+                android:layout_gravity="center"
+                android:textColor="#FFFFFF"
+                android:text="Clear Sky"/>
+            <TextView android:id="@+id/temp" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:textSize="90dp"
+                android:fontFamily="sans-serif-thin" android:layout_gravity="center"
+                android:textColor="#FFFFFF"
+                android:text="__°C"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout android:id="@+id/detailsContainer" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_alignParentBottom="true">
+
+        </LinearLayout>
+    </RelativeLayout>
+    <TextView android:id="@+id/errorText" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:layout_centerInParent="true"
+        android:visibility="gone" android:text="Something went wrong"/>
+
+</RelativeLayout>

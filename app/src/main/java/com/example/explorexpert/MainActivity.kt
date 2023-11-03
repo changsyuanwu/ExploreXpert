@@ -14,6 +14,7 @@ import com.example.explorexpert.ui.view.HomeFragment
 import com.example.explorexpert.ui.view.MapsFragment
 import com.example.explorexpert.ui.view.PlanFragment
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.explorexpert.ui.view.WeatherFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -25,13 +26,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
-        swapFragment(HomeFragment());
+        swapFragment(HomeFragment())
 
         binding.bottomNav.setOnItemSelectedListener{
             when(it.itemId){
                 R.id.nav_home -> swapFragment(HomeFragment())
                 R.id.nav_calendar -> swapFragment(CalendarFragment())
                 R.id.nav_map -> swapFragment(MapsFragment())
+                R.id.nav_weather -> swapFragment(WeatherFragment())
                 R.id.nav_plan -> swapFragment(PlanFragment())
                 else -> false
             }

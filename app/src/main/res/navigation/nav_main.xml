@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/navigation_weather"
         android:name="com.example.explorexpert.ui.view.WeatherFragment"
-        android:label="weatherFragment"
+        android:label="WeatherFragment"
         tools:layout="@layout/fragment_weather" />
 
 </navigation>
