@@ -42,9 +42,14 @@ class HomeFragment : Fragment() {
         binding.appBarLayout.statusBarForeground =
             MaterialShapeDrawable.createWithElevationOverlay(context)
 
+        showProgressIndicator()
+
         configureButtons()
         configureNavSideBar()
+
+        // Run this last
         configureUserDetails()
+
     }
 
     private fun configureUserDetails() {
@@ -61,6 +66,8 @@ class HomeFragment : Fragment() {
                 binding.navigationViewSideBar.findViewById<TextView>(R.id.txtEmailSideNav).text =
                     currentUserEmail
             }
+
+            hideProgressIndicator()
         }
     }
 
@@ -89,5 +96,13 @@ class HomeFragment : Fragment() {
         binding.btnMenuIcon.setOnClickListener {
             binding.drawerLayout.open()
         }
+    }
+
+    private fun showProgressIndicator() {
+        binding.progressIndicator.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressIndicator() {
+        binding.progressIndicator.visibility = View.INVISIBLE
     }
 }

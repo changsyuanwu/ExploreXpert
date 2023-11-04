@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.view.PlanFragment">
 
-
     <TextView
         android:id="@+id/txtPlan"
         android:layout_width="wrap_content"
@@ -33,13 +32,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:icon="@drawable/outline_luggage_24"
-            android:text="Trips" />
+            android:text="@string/trips" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:icon="@drawable/baseline_favorite_border_24"
-            android:text="Saved Items" />
+            android:text="@string/saved_items" />
 
 
     </com.google.android.material.tabs.TabLayout>
@@ -82,5 +81,16 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:indeterminate="true"
+        app:trackCornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

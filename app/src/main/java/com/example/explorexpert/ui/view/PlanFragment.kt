@@ -9,6 +9,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.explorexpert.R
 import com.example.explorexpert.adapters.TripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
 import com.example.explorexpert.data.model.Trip
@@ -45,6 +46,8 @@ class PlanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        showProgressIndicator()
 
         configureRecyclerView()
         configureButtons()
@@ -92,13 +95,22 @@ class PlanFragment : Fragment() {
     private fun configureObservers() {
         planViewModel.trips.observe(viewLifecycleOwner) { trips ->
             adapter.submitList(trips)
+            hideProgressIndicator()
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                planViewModel.fetchTrips()
-
-                Log.d(TAG, tab?.text.toString())
+                when (tab?.text) {
+                    getString(R.string.trips) -> {
+                        showProgressIndicator()
+                        planViewModel.fetchTrips()
+                        hideProgressIndicator()
+                    }
+                    getString(R.string.saved_items) -> {
+                        showProgressIndicator()
+                        hideProgressIndicator()
+                    }
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -109,5 +121,13 @@ class PlanFragment : Fragment() {
             }
 
         })
+    }
+
+    private fun showProgressIndicator() {
+        binding.progressIndicator.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressIndicator() {
+        binding.progressIndicator.visibility = View.INVISIBLE
     }
 }
