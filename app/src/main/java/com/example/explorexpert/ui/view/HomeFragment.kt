@@ -34,5 +34,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.appBarLayout.statusBarForeground = MaterialShapeDrawable.createWithElevationOverlay(context)
+
+        configureButtons()
+    }
+
+    private fun configureButtons() {
+        binding.btnMenuIcon.setOnClickListener {
+            binding.drawerLayout.open()
+        }
     }
 }

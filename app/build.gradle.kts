@@ -85,6 +85,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")
     implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
 
     // Material UI
     implementation("com.google.android.material:material:1.10.0")
