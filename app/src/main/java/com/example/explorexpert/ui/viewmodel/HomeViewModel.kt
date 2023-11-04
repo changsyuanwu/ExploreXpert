@@ -8,4 +8,8 @@ class HomeViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val tripRepo: TripRepository,
 ) {
+
+    fun logOut() {
+        auth.signOut()
+    }
 }
