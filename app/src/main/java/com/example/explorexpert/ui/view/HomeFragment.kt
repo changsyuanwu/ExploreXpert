@@ -96,6 +96,10 @@ class HomeFragment : Fragment() {
         binding.btnMenuIcon.setOnClickListener {
             binding.drawerLayout.open()
         }
+
+        binding.cardUserProfile.setOnClickListener {
+            binding.drawerLayout.open()
+        }
     }
 
     private fun showProgressIndicator() {
