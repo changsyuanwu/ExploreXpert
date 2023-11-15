@@ -133,6 +133,12 @@ dependencies {
 
     // Circular image view
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+
+    //for google calendar integrations
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.23.0")
+    implementation("com.google.apis:google-api-services-calendar:v3-rev305-1.23.0")
+    implementation("com.google.http-client:google-http-client-gson:1.19.0")
 }
 
 kapt {
