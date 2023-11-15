@@ -27,7 +27,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.explorexpert.R
-import com.example.explorexpert.data.model.WeatherAdapter
+import com.example.explorexpert.adapters.WeatherAdapter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.AutocompletePrediction
