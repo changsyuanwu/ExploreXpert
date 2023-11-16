@@ -20,10 +20,12 @@ import com.example.explorexpert.ui.view.WeatherFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
+    private lateinit var mapFragment: MapsFragment;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        mapFragment = MapsFragment();
 
         setContentView(binding.root)
         swapFragment(HomeFragment())
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.nav_home -> swapFragment(HomeFragment())
                 R.id.nav_calendar -> swapFragment(CalendarFragment())
-                R.id.nav_map -> swapFragment(MapsFragment())
+                R.id.nav_map -> swapFragment(mapFragment);
                 R.id.nav_weather -> swapFragment(WeatherFragment())
                 R.id.nav_plan -> swapFragment(PlanFragment())
                 else -> false
@@ -46,6 +48,5 @@ class MainActivity : AppCompatActivity() {
         // get fragment manager from current activity
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().replace(R.id.container, fragment)?.commit()
-
     }
 }
