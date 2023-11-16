@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.TripAdapter
@@ -63,6 +64,14 @@ class TripDialogFragment(
         binding.btnBackIcon.setOnClickListener {
             this.dismiss()
         }
+
+        binding.fabAddNote.setOnClickListener {
+            val addNoteBottomSheetDialogFragment = AddNoteBottomSheetDialogFragment()
+            addNoteBottomSheetDialogFragment.show(
+                childFragmentManager,
+                AddNoteBottomSheetDialogFragment.TAG
+            )
+        }
     }
 
     private fun configureRecyclerView() {
@@ -81,6 +90,9 @@ class TripDialogFragment(
         adapter.registerAdapterDataObserver(
             ScrollToTopObserver(binding.savedItemsRecyclerView)
         )
+
+        val verticalItemDivider = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        binding.savedItemsRecyclerView.addItemDecoration(verticalItemDivider)
     }
 
     private fun showProgressIndicator() {

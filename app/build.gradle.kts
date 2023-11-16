@@ -77,8 +77,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-places:16.0.0")
     implementation ("com.google.android.libraries.places:places:3.2.0")
-
-
     implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.annotation:annotation:1.6.0")
@@ -111,10 +109,10 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
 
     // GSON
-
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
-
+    // Expandable FAB
+    implementation("com.nambimobile.widgets:expandable-fab:1.2.1")
 
     // Firebase stuff
     // Import the BoM for the Firebase platform
