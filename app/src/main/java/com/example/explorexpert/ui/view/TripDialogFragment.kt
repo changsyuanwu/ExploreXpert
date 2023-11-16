@@ -6,6 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.explorexpert.R
+import com.example.explorexpert.adapters.SavedItemAdapter
+import com.example.explorexpert.adapters.TripAdapter
+import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.databinding.DialogTripBinding
 import com.example.explorexpert.databinding.FragmentPlanBinding
@@ -21,6 +25,8 @@ class TripDialogFragment(
 
     @Inject
     lateinit var tripViewModel: TripViewModel
+
+    private lateinit var adapter: SavedItemAdapter
 
     private var _binding: DialogTripBinding? = null
 
@@ -45,7 +51,7 @@ class TripDialogFragment(
 
         showProgressIndicator()
 
-//        configureRecyclerView()
+        configureRecyclerView()
         configureButtons()
 //        configureObservers()
     }
@@ -54,6 +60,26 @@ class TripDialogFragment(
         binding.btnBackIcon.setOnClickListener {
             this.dismiss()
         }
+    }
+
+    private fun configureRecyclerView() {
+        adapter = SavedItemAdapter(object : SavedItemAdapter.ItemClickListener {
+            override fun onItemClick(savedItem: SavedItem) {
+                // Summon dialog for showing saved item details
+//                val tripDialogFragment = TripDialogFragment(trip)
+//                tripDialogFragment.show(
+//                    childFragmentManager,
+//                    "tripDialog"
+//                )
+            }
+        })
+        binding.savedItemsRecyclerView.adapter = adapter
+
+        adapter.registerAdapterDataObserver(
+            ScrollToTopObserver(binding.savedItemsRecyclerView)
+        )
+
+
     }
 
     private fun showProgressIndicator() {
