@@ -35,6 +35,9 @@ class TripDialogFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.FullScreenDialogStyle)
+
+        tripViewModel.setTrip(trip)
+        tripViewModel.fetchSavedItems()
     }
 
     override fun onCreateView(
@@ -78,8 +81,6 @@ class TripDialogFragment(
         adapter.registerAdapterDataObserver(
             ScrollToTopObserver(binding.savedItemsRecyclerView)
         )
-
-
     }
 
     private fun showProgressIndicator() {

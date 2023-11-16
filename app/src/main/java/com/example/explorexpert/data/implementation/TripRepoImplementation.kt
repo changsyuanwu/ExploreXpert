@@ -1,6 +1,7 @@
 package com.example.explorexpert.data.implementation
 
 import android.util.Log
+import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,6 +21,8 @@ class TripRepoImplementation @Inject constructor(
     }
 
     private val tripCollection = db.collection("trips")
+    private val savedItemCollection = db.collection("savedItems")
+
     override suspend fun setTrip(trip: Trip): String {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<String>()
@@ -83,4 +86,73 @@ class TripRepoImplementation @Inject constructor(
             }
         }
 
+    private suspend fun saveItemToCollection(savedItem: SavedItem): String {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<String>()
+
+            savedItemCollection.document(savedItem.id)
+                .set(savedItem)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Saved an item with id ${savedItem.id}")
+                    deferred.complete(savedItem.id)
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Failed to save an item with id ${savedItem.id}", e)
+                    deferred.completeExceptionally(e)
+                }
+
+            deferred.await()
+        }
+    }
+
+    override suspend fun addItemToTrip(itemToAdd: SavedItem, tripToAddTo: Trip): Trip? {
+        return withContext(Dispatchers.IO) {
+            lateinit var itemId: String
+            try {
+                itemId = saveItemToCollection(itemToAdd)
+            }
+            catch (e) {
+                Log.w(TAG, "Failed to create a saved item with id ${itemToAdd.id}", e)
+                return@withContext null
+            }
+
+            val deferred = CompletableDeferred<Trip>()
+
+            tripToAddTo.savedItemIds.add(itemId)
+
+            tripCollection.document(tripToAddTo.id)
+                .set(tripToAddTo)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Updated trip (${tripToAddTo.id}) with item (${itemId})")
+                    deferred.complete(tripToAddTo)
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Failed to update trip (${tripToAddTo.id}) after creating item (${itemId})", e)
+                    deferred.completeExceptionally(e)
+                }
+            deferred.await()
+        }
+    }
+
+    private suspend fun getSavedItemById(savedItemId: String): SavedItem? {
+        return withContext(Dispatchers.IO) {
+            val savedItemDoc = savedItemCollection.document(savedItemId).get().await()
+
+            try {
+                val savedItem = savedItemDoc.toObject(SavedItem::class.java)
+                return@withContext savedItem
+            } catch (e: Exception) {
+                Log.e(TAG, "Error casting document to saved item object: ${e.message}")
+                null
+            }
+        }
+    }
+
+    override suspend fun getSavedItemsFromTrip(trip: Trip): List<SavedItem> {
+        return withContext(Dispatchers.IO) {
+            return@withContext trip.savedItemIds.mapNotNull { item ->
+                getSavedItemById(item)
+            }
+        }
+    }
 }
