@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.TripAdapter
@@ -55,9 +56,23 @@ class TripDialogFragment(
 
         showProgressIndicator()
 
+        configureUI()
         configureRecyclerView()
         configureButtons()
-//        configureObservers()
+        configureObservers()
+    }
+
+    private fun configureUI() {
+        binding.txtTripTitle.text = trip.name
+
+        if (trip.savedItemIds.size == 1) {
+            binding.txtNumItems.text = "1 item"
+        }
+        else {
+            binding.txtNumItems.text = "${trip.savedItemIds.size} items"
+        }
+
+//        binding.txtOwner.text = trip.ownerUserId
     }
 
     private fun configureButtons() {
@@ -66,7 +81,7 @@ class TripDialogFragment(
         }
 
         binding.fabAddNote.setOnClickListener {
-            val addNoteBottomSheetDialogFragment = AddNoteBottomSheetDialogFragment()
+            val addNoteBottomSheetDialogFragment = AddNoteBottomSheetDialogFragment(trip)
             addNoteBottomSheetDialogFragment.show(
                 childFragmentManager,
                 AddNoteBottomSheetDialogFragment.TAG
@@ -91,8 +106,18 @@ class TripDialogFragment(
             ScrollToTopObserver(binding.savedItemsRecyclerView)
         )
 
+        val itemsLayoutManager = LinearLayoutManager(requireContext())
+        binding.savedItemsRecyclerView.layoutManager = itemsLayoutManager
+
         val verticalItemDivider = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.savedItemsRecyclerView.addItemDecoration(verticalItemDivider)
+    }
+
+    private fun configureObservers() {
+        tripViewModel.savedItems.observe(viewLifecycleOwner) { savedItems ->
+            adapter.submitList(savedItems)
+            hideProgressIndicator()
+        }
     }
 
     private fun showProgressIndicator() {

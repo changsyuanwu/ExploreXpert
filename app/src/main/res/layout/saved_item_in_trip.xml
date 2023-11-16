@@ -44,8 +44,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="6dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
             >
 
             <TextView
@@ -63,21 +63,22 @@
         android:id="@+id/txtItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
+        android:layout_marginTop="4dp"
         android:text="Item Name"
-        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/cardItemType"
-        app:layout_constraintTop_toBottomOf="@id/cardItemType"
-        />
+        app:layout_constraintTop_toBottomOf="@id/cardItemType" />
 
     <TextView
         android:id="@+id/txtItemDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Item Description"
-        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@id/txtItemName"
-        app:layout_constraintTop_toBottomOf="@id/txtItemName"
-        />
+        app:layout_constraintTop_toBottomOf="@id/txtItemName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
