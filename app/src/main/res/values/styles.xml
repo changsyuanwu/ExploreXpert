@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="FullScreenDialogStyle" parent="Theme.ExploreXpert">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowAnimationStyle">@style/FadeInOutDialogAnimation</item>
+    </style>
+
+    <!-- Animations -->
+    <style name="FadeInOutDialogAnimation" parent="android:Theme.Black.NoTitleBar.Fullscreen">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <style name="SlideLeftDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_from_right</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_to_right</item>
+    </style>
+
+</resources>

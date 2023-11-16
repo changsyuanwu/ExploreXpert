@@ -68,6 +68,11 @@ class PlanFragment : Fragment() {
         adapter = TripAdapter(object : TripAdapter.ItemClickListener {
             override fun onItemClick(trip: Trip) {
                 // Summon dialog for viewing trip saved items
+                val tripDialogFragment = TripDialogFragment(trip)
+                tripDialogFragment.show(
+                    childFragmentManager,
+                    "tripDialog"
+                )
             }
         })
 

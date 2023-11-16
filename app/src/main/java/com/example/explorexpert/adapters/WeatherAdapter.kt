@@ -1,4 +1,4 @@
-package com.example.explorexpert.data.model
+package com.example.explorexpert.adapters
 
 import android.view.LayoutInflater
 import android.view.View
