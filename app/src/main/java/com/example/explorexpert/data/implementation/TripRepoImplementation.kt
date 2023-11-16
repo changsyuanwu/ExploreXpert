@@ -111,7 +111,7 @@ class TripRepoImplementation @Inject constructor(
             try {
                 itemId = saveItemToCollection(itemToAdd)
             }
-            catch (e) {
+            catch (e: Exception) {
                 Log.w(TAG, "Failed to create a saved item with id ${itemToAdd.id}", e)
                 return@withContext null
             }
