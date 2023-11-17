@@ -5,9 +5,10 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.UUID
 
 data class SavedItem(
-    val id: String = UUID.randomUUID().toString(),
+    var id: String = UUID.randomUUID().toString(),
     val type: SavedItemType = SavedItemType.BLANK,
     val imgURL: String = "",
+    val ownerUserId: String = "",
     val title: String = "",
     val description: String = "",
     val placeId: String = "",

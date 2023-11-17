@@ -175,4 +175,31 @@ class TripRepoImplementation @Inject constructor(
                 }
         }
     }
+
+    override suspend fun getSavedItemsByUserId(userId: String): List<SavedItem> =
+        withContext(Dispatchers.IO) {
+            try {
+                val ownedItemsQueryResult = savedItemCollection
+                    .whereEqualTo("ownerUserId", userId)
+                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
+
+                val ownedItems = ownedItemsQueryResult.documents.mapNotNull { document ->
+                    try {
+                        val item = document.toObject(SavedItem::class.java)
+                        item?.id = document.id
+                        item
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error casting document to saved item object: ${e.message}")
+                        null
+                    }
+                }
+
+                return@withContext ownedItems
+            } catch (e: Exception) {
+                Log.e(TAG, "Error reading saved items query: ${e.message}")
+                return@withContext emptyList()
+            }
+        }
 }

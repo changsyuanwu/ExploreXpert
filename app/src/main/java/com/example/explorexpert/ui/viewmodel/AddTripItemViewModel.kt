@@ -27,7 +27,8 @@ class AddTripItemViewModel@Inject constructor(
             val item = SavedItem(
                 type = SavedItemType.NOTE,
                 title = title,
-                description = description
+                description = description,
+                ownerUserId = auth.currentUser?.uid.toString(),
             )
             tripRepo.addItemToTrip(item, trip)
         }
@@ -40,6 +41,7 @@ class AddTripItemViewModel@Inject constructor(
                 title = place.name.toString(),
                 placeId = place.id.toString(),
                 description = place.address.toString(),
+                ownerUserId = auth.currentUser?.uid.toString(),
             )
             tripRepo.addItemToTrip(item, trip)
         }

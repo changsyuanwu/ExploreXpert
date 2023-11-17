@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.explorexpert.data.model.SavedItem
+import com.example.explorexpert.data.model.SavedItemType
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -23,8 +25,12 @@ class PlanViewModel @Inject constructor(
     private val mutableTrips = MutableLiveData<List<Trip>>()
     val trips: LiveData<List<Trip>> get() = mutableTrips
 
+    private val mutableSavedItems = MutableLiveData<List<SavedItem>>()
+    val savedItems: LiveData<List<SavedItem>> get() = mutableSavedItems
+
     init {
         fetchTrips()
+        fetchSavedItems()
     }
 
     fun fetchTrips() {
@@ -34,6 +40,20 @@ class PlanViewModel @Inject constructor(
                 mutableTrips.value = (tripsToDisplay)
             }
             Log.d(TAG, "Fetched trips")
+        }
+    }
+
+    fun fetchSavedItems() {
+        viewModelScope.launch {
+            if (auth.currentUser != null) {
+                val savedItemsToDisplay = tripRepo.getSavedItemsByUserId(auth.currentUser!!.uid)
+                    .filter { item ->
+                        item.type == SavedItemType.PLACE || item.type == SavedItemType.LINK
+                    }
+
+                mutableSavedItems.value = savedItemsToDisplay
+                Log.d(TAG, savedItemsToDisplay.toString())
+            }
         }
     }
 }
