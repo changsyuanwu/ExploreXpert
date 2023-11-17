@@ -43,7 +43,14 @@ class TripAdapter(
 
         fun bind(trip: Trip) {
             binding.txtTripName.text = trip.name
-            binding.btnSavedItems.text = "${trip.savedItemIds.size} items"
+
+            if (trip.savedItemIds.size == 1) {
+                binding.btnSavedItems.text = "1 item"
+            }
+            else {
+                binding.btnSavedItems.text = "${trip.savedItemIds.size} items"
+            }
+
 
             binding.tripItemContainer.setOnClickListener {
                 itemClickListener.onItemClick(trip)
