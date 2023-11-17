@@ -29,13 +29,14 @@
 
     <EditText
         android:id="@+id/et_eventInput"
-        android:layout_width="284dp"
-        android:layout_height="67dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:inputType="text"
         android:hint="Add Event"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.223"
+        android:inputType="text"
+        app:layout_constraintEnd_toStartOf="@+id/btnEventAdd"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateView" />
 
@@ -50,13 +51,10 @@
         android:id="@+id/btnEventAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="11dp"
+        android:layout_marginEnd="24dp"
         android:text="Add"
-        app:layout_constraintBottom_toTopOf="@+id/eventListView"
-        app:layout_constraintStart_toEndOf="@+id/et_eventInput"
-        app:layout_constraintTop_toBottomOf="@+id/dateView"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintBottom_toBottomOf="@+id/et_eventInput"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/et_eventInput" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
