@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,15 +19,21 @@ import com.example.explorexpert.R
 import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
 import com.example.explorexpert.data.model.SavedItem
+import com.example.explorexpert.data.model.SavedItemType
 import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.DialogTripBinding
 import com.example.explorexpert.ui.viewmodel.AddTripItemViewModel
 import com.example.explorexpert.ui.viewmodel.TripViewModel
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.net.FetchPhotoRequest
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
@@ -34,6 +41,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,6 +53,8 @@ class TripDialogFragment(
     lateinit var tripViewModel: TripViewModel
     @Inject
     lateinit var addTripItemViewModel: AddTripItemViewModel
+    @Inject
+    lateinit var tripRepo: TripRepository
 
     private lateinit var adapter: SavedItemAdapter
 

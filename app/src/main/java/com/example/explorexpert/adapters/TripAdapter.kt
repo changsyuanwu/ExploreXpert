@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.explorexpert.R
 import com.example.explorexpert.data.model.SavedItemType
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
@@ -70,6 +71,9 @@ class TripAdapter(
                 // If we managed to find a place with an usable image
                 if (placeToUseImageFor != null) {
                     binding.imgTrip.setImageBitmap(placePhotoBitmap)
+                }
+                else {
+                    binding.imgTrip.setImageResource(R.drawable.trip_default_image)
                 }
             }
         }
