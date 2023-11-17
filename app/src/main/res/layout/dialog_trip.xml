@@ -75,11 +75,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="Content"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- Scrollable content -->
-
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +86,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             >
-
 
             <ImageView
                 android:id="@+id/imgTripTitleImage"
@@ -149,15 +147,14 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/savedItemsRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
+                android:layout_height="0dp"
                 android:layout_marginTop="4dp"
+                android:clipToPadding="false"
                 android:paddingTop="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtOwner"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/txtOwner" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
