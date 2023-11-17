@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="FullScreenDialogStyle" parent="Theme.ExploreXpert">
+    <style name="FullScreenDialogSlideLeftStyle" parent="Theme.ExploreXpert">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowAnimationStyle">@style/SlideLeftDialogAnimation</item>
+    </style>
+
+    <style name="FullScreenDialogFadeInStyle" parent="Theme.ExploreXpert">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowAnimationStyle">@style/FadeInOutDialogAnimation</item>
+    </style>
+
+    <style name="FullScreenDialogSlideUpStyle" parent="Theme.ExploreXpert">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowAnimationStyle">@style/SlideUpDialogAnimation</item>
     </style>
 
     <!-- Animations -->
@@ -15,6 +27,11 @@
     <style name="SlideLeftDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_in_from_right</item>
         <item name="android:windowExitAnimation">@anim/slide_out_to_right</item>
+    </style>
+
+    <style name="SlideUpDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_to_bottom</item>
     </style>
 
 </resources>

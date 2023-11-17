@@ -213,4 +213,18 @@
 
     </com.nambimobile.widgets.efab.ExpandableFabLayout>
 
+    <com.google.android.material.search.SearchView
+        android:id="@+id/addPlaceSearchView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="Search for a place to save..."
+        app:closeIcon="@drawable/baseline_close_24"
+        app:iconifiedByDefault="true"
+        app:layout_anchor="@id/btnBackIcon"
+        app:searchHintIcon="@drawable/baseline_search_24"
+        app:searchIcon="@drawable/baseline_search_24">
+        <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
+        
+    </com.google.android.material.search.SearchView>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

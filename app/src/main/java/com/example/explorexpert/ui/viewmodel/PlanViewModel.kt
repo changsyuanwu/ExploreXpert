@@ -31,9 +31,9 @@ class PlanViewModel @Inject constructor(
         viewModelScope.launch {
             if (auth.currentUser != null) {
                 val tripsToDisplay = tripRepo.getTripsByUserId(auth.currentUser!!.uid)
-
                 mutableTrips.value = (tripsToDisplay)
             }
+            Log.d(TAG, "Fetched trips")
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.explorexpert.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
+import com.example.explorexpert.data.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,6 +16,7 @@ import javax.inject.Inject
 class TripViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val tripRepo: TripRepository,
+    private val userRepo: UserRepository,
 ) : ViewModel() {
 
     companion object {
@@ -32,12 +35,33 @@ class TripViewModel @Inject constructor(
                 val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip)
                 mutableSavedItems.value = savedItemsToDisplay
             }
+            Log.d(TAG, "Fetched items")
         }
 
+    }
+
+    fun refreshTrip() {
+        viewModelScope.launch {
+            val updatedTrip = tripRepo.getTripById(trip.id)
+            if (updatedTrip != null) {
+                setTrip(updatedTrip)
+                fetchSavedItems()
+            }
+        }
     }
 
     fun setTrip(tripToSet: Trip) {
         trip = tripToSet
     }
 
+    suspend fun getOwnerUserName(ownerUserId: String): String {
+        if (auth.currentUser != null) {
+            val owner = userRepo.getUserById(ownerUserId)
+
+            if (owner != null) {
+                return owner.firstName + " " + owner.lastName
+            }
+        }
+        return ""
+    }
 }
