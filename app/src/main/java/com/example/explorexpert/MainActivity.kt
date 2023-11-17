@@ -57,4 +57,8 @@ class MainActivity : AppCompatActivity() {
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().replace(R.id.container, fragment)?.commit()
     }
+
+    fun getMapFragment(): MapsFragment {
+        return mapFragment;
+    }
 }

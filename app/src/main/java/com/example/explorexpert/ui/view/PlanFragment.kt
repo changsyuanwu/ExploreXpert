@@ -9,6 +9,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.explorexpert.MainActivity
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.TripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
@@ -46,6 +47,11 @@ class PlanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Stub for grabbing info from map fragment, can move to other parts of module
+        if (isAdded) {
+            println((requireActivity() as MainActivity).getMapFragment().getMarkedAddress())
+        }
 
         showProgressIndicator()
 

@@ -26,6 +26,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                         GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     private var currLatLng: LatLng? = null
 
+    private var currAddress: String = "";
     private lateinit var searchView: SearchView
     private lateinit var map: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
@@ -100,7 +101,6 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
         map.setOnMyLocationButtonClickListener(object : GoogleMap.OnMyLocationButtonClickListener {
             override fun onMyLocationButtonClick(): Boolean {
-                println("clicked")
                 val location = map.getMyLocation()
                 val latlng = LatLng(location.latitude, location.longitude)
                 markLocation(latlng)
@@ -161,5 +161,10 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         )
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14f))
         currLatLng = latlng
+        currAddress = addrStr
+    }
+
+    fun getMarkedAddress(): String {
+        return currAddress
     }
 }

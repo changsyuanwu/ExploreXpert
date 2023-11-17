@@ -17,6 +17,7 @@ import android.widget.TextView
 //import androidx.compose.ui.tooling.data.EmptyGroup.location
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
+import com.example.explorexpert.MainActivity
 import com.example.explorexpert.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -45,6 +46,15 @@ class WeatherFragment : Fragment() {
         textView = view.findViewById(R.id.temp)
         status = view.findViewById(R.id.status)
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Stub for grabbing info from map fragment, can move to other parts of module
+        if (isAdded) {
+            println((requireActivity() as MainActivity).getMapFragment().getMarkedAddress())
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
