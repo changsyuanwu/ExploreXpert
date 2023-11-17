@@ -2,11 +2,13 @@ package com.example.explorexpert.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.ui.text.capitalize
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.databinding.SavedItemInTripBinding
+import java.util.Locale
 
 class SavedItemAdapter(
     private val itemClickListener: ItemClickListener
@@ -18,9 +20,13 @@ class SavedItemAdapter(
 
     inner class ViewHolder(private val binding: SavedItemInTripBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(savedItem: SavedItem) {
-            binding.txtItemName.text = savedItem.title
-            binding.txtItemDescription.text = savedItem.description
             binding.txtItemType.text = savedItem.type.toString()
+
+            binding.txtItemName.text = savedItem.title
+
+            binding.txtItemDescription.text = savedItem.description
+
+
         }
     }
 

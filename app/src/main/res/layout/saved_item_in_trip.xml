@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingHorizontal="24dp"
-    android:paddingVertical="12dp">
+    android:paddingVertical="24dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardImage"
@@ -21,12 +21,25 @@
 
             <ImageView
                 android:id="@+id/imgItem"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 app:srcCompat="@drawable/trip_default_image"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 />
+
+            <Button
+                android:id="@+id/iconButton"
+                style="?attr/materialIconButtonFilledStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/white"
+                app:icon="@drawable/baseline_favorite_24"
+                app:iconTint="#EC407A"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -44,15 +57,16 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="6dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
             >
 
             <TextView
                 android:id="@+id/txtItemType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Note"
+                android:text="NOTE"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -63,21 +77,22 @@
         android:id="@+id/txtItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
+        android:layout_marginTop="4dp"
         android:text="Item Name"
-        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/cardItemType"
-        app:layout_constraintTop_toBottomOf="@id/cardItemType"
-        />
+        app:layout_constraintTop_toBottomOf="@id/cardItemType" />
 
     <TextView
         android:id="@+id/txtItemDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Item Description"
-        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@id/txtItemName"
-        app:layout_constraintTop_toBottomOf="@id/txtItemName"
-        />
+        app:layout_constraintTop_toBottomOf="@id/txtItemName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

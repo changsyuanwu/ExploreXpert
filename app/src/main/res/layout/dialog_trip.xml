@@ -75,11 +75,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="Content"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- Scrollable content -->
-
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +86,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             >
-
 
             <ImageView
                 android:id="@+id/imgTripTitleImage"
@@ -149,18 +147,70 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/savedItemsRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
+                android:layout_height="0dp"
                 android:layout_marginTop="4dp"
+                android:clipToPadding="false"
                 android:paddingTop="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtOwner"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/txtOwner" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <com.nambimobile.widgets.efab.ExpandableFabLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- The next 3 Views will only display in portrait orientation -->
+        <com.nambimobile.widgets.efab.Overlay
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:overlay_color="#000000"
+            app:overlay_alpha="0.75"
+            app:overlay_orientation="portrait"/>
+
+        <com.nambimobile.widgets.efab.ExpandableFab
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="add item"
+            app:efab_closingAnimationDurationMs="200"
+            app:efab_closingAnticipateTension="0"
+            app:efab_color="@color/black"
+            app:efab_fabOptionSize="normal"
+            app:efab_firstFabOptionMarginPx="150"
+            app:efab_openingAnimationDurationMs="200"
+            app:efab_orientation="portrait"
+            app:efab_successiveFabOptionMarginPx="130" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/fabAddPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_search_24dp"
+            app:label_text="Save a place" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/fabAddNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/outline_sticky_note_2_24"
+            app:label_text="Add a note to your trip" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/fabAddLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/baseline_link_24"
+            app:label_text="Add an external link" />
+
+
+    </com.nambimobile.widgets.efab.ExpandableFabLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
