@@ -20,6 +20,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.example.explorexpert.MainActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -96,6 +97,15 @@ class WeatherFragment : Fragment() {
             searchPlace()
         }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Stub for grabbing info from map fragment, can move to other parts of module
+        if (isAdded) {
+            println((requireActivity() as MainActivity).getMapFragment().getMarkedAddress())
+        }
     }
 
     private fun searchPlace() {

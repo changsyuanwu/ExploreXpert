@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:id="@+id/map"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.view.MapsFragment">
+
+    <fragment
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <androidx.appcompat.widget.SearchView
-            android:id="@+id/mapSearchView"
-            android:layout_width="340dp"
-            android:layout_height="41dp"
-            android:layout_margin="10dp"
-            android:background="#FFFFFF"
-            android:elevation="5dp"
-            map:iconifiedByDefault="false"
-            map:queryHint="Search..." />
+        android:id="@+id/mapSearchView"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="10dp"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
+        map:iconifiedByDefault="false"
+        map:queryHint="Search..."
+        tools:layout_editor_absoluteX="26dp"
+        map:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp" />
 
-</fragment>
+</androidx.constraintlayout.widget.ConstraintLayout>
