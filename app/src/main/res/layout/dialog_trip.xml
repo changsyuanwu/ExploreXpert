@@ -87,28 +87,17 @@
             app:layout_constraintStart_toStartOf="parent"
             >
 
-            <ImageView
-                android:id="@+id/imgTripTitleImage"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/trip_default_image" />
-
-
             <TextView
                 android:id="@+id/txtTripTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 android:text="Trip Title"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imgTripTitleImage" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 android:id="@+id/txtOwner"
