@@ -18,6 +18,9 @@ import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.CreateTripViewModel
 import com.example.explorexpert.ui.viewmodel.TripViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,7 +75,9 @@ class TripDialogFragment(
             binding.txtNumItems.text = "${trip.savedItemIds.size} items"
         }
 
-//        binding.txtOwner.text = trip.ownerUserId
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(trip.ownerUserId)}"
+        }
     }
 
     private fun configureButtons() {
