@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.SavedItemType
-import com.example.explorexpert.databinding.SavedItemInTripBinding
+import com.example.explorexpert.databinding.SavedItemBinding
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -28,7 +28,8 @@ import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
 class SavedItemAdapter(
-    private val itemClickListener: ItemClickListener
+    private val itemClickListener: ItemClickListener,
+    private val isInTripDialog: Boolean = true,
 ): ListAdapter<SavedItem, SavedItemAdapter.ViewHolder>(DiffCallback()){
 
     companion object {
@@ -37,7 +38,7 @@ class SavedItemAdapter(
 
     private lateinit var appInfo: ApplicationInfo
 
-    inner class ViewHolder(private val binding: SavedItemInTripBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: SavedItemBinding): RecyclerView.ViewHolder(binding.root) {
 
         val context: Context = binding.imgItem.context
         private lateinit var placesClient: PlacesClient
@@ -144,7 +145,7 @@ class SavedItemAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = SavedItemInTripBinding.inflate(inflater, parent, false)
+        val binding = SavedItemBinding.inflate(inflater, parent, false)
 
         return ViewHolder(binding)
     }
