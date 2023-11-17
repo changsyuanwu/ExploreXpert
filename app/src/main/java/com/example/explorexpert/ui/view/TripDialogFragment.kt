@@ -65,6 +65,7 @@ class TripDialogFragment(
         setStyle(STYLE_NO_FRAME, R.style.FullScreenDialogSlideLeftStyle)
 
         tripViewModel.setTrip(trip)
+        addTripItemViewModel.setTrip(trip)
         tripViewModel.fetchSavedItems()
     }
 
@@ -119,11 +120,6 @@ class TripDialogFragment(
 
         binding.fabAddPlace.setOnClickListener {
             startPlaceSearch()
-//            val addPlaceDialogFragment = AddPlaceDialogFragment(trip)
-//            addPlaceDialogFragment.show(
-//                childFragmentManager,
-//                AddPlaceDialogFragment.TAG
-//            )
         }
     }
 
@@ -174,7 +170,7 @@ class TripDialogFragment(
         val fields = listOf(
             Place.Field.ID,
             Place.Field.NAME,
-            Place.Field.ADDRESS
+            Place.Field.PHOTO_METADATAS,
         )
 
         val roughBoundForCanada = RectangularBounds.newInstance(
