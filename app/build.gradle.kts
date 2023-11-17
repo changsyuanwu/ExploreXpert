@@ -100,16 +100,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-
     // Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
-
-    // retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-
-    // GSON
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Expandable FAB
     implementation("com.nambimobile.widgets:expandable-fab:1.2.1")
@@ -134,7 +127,7 @@ dependencies {
     // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-    //Convert API
+    // Convert API
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
@@ -142,12 +135,6 @@ dependencies {
 
     // Circular image view
     implementation("de.hdodenhof:circleimageview:3.1.0")
-
-
-    //for google calendar integrations
-    implementation("com.google.oauth-client:google-oauth-client-jetty:1.23.0")
-    implementation("com.google.apis:google-api-services-calendar:v3-rev305-1.23.0")
-    implementation("com.google.http-client:google-http-client-gson:1.19.0")
 }
 
 kapt {
