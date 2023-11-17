@@ -24,14 +24,23 @@ class AddTripItemViewModel@Inject constructor(
 
     fun addNote(title: String, description: String) {
         viewModelScope.launch {
-            val item = SavedItem(type = SavedItemType.NOTE, title = title, description = description)
+            val item = SavedItem(
+                type = SavedItemType.NOTE,
+                title = title,
+                description = description
+            )
             tripRepo.addItemToTrip(item, trip)
         }
     }
 
     fun addPlace(place: Place) {
         viewModelScope.launch {
-            val item = SavedItem(type = SavedItemType.PLACE, title = place.name.toString(), placeId = place.id.toString())
+            val item = SavedItem(
+                type = SavedItemType.PLACE,
+                title = place.name.toString(),
+                placeId = place.id.toString(),
+                description = place.address.toString(),
+            )
             tripRepo.addItemToTrip(item, trip)
         }
     }

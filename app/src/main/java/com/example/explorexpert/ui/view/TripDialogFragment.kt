@@ -170,7 +170,7 @@ class TripDialogFragment(
         val fields = listOf(
             Place.Field.ID,
             Place.Field.NAME,
-            Place.Field.PHOTO_METADATAS,
+            Place.Field.ADDRESS,
         )
 
         val roughBoundForCanada = RectangularBounds.newInstance(
