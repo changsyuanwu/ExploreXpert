@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:context=".ui.view.TripDialogFragment">
+
+    <!-- Circular progress indicator -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        app:trackCornerRadius="8dp" />
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <Button
+                android:id="@+id/btnBackIcon"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:contentDescription="Menu button"
+                app:icon="@drawable/baseline_arrow_back_ios_new_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnShareIcon"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="share"
+                app:icon="@drawable/outline_person_add_alt_24"
+                app:layout_constraintEnd_toStartOf="@id/btnEditIcon"
+                app:layout_constraintTop_toTopOf="@id/btnBackIcon" />
+
+            <Button
+                android:id="@+id/btnEditIcon"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:contentDescription="edit"
+                app:icon="@drawable/outline_edit_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnBackIcon" />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Note: A RecyclerView can also be used -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="Content"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Scrollable content -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <ImageView
+                android:id="@+id/imgTripTitleImage"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/trip_default_image" />
+
+
+            <TextView
+                android:id="@+id/txtTripTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:text="Trip Title"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgTripTitleImage" />
+
+            <TextView
+                android:id="@+id/txtOwner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="150dp"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/txtTripTitle"
+                app:layout_constraintStart_toStartOf="@id/txtTripTitle"
+                android:text="By ExploreXpert" />
+
+            <ImageView
+                android:id="@+id/iconCircle"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                app:srcCompat="@drawable/baseline_circle_24"
+                android:layout_marginStart="6dp"
+                app:tint="@color/black"
+                app:layout_constraintStart_toEndOf="@id/txtOwner"
+                app:layout_constraintTop_toTopOf="@id/txtOwner"
+                app:layout_constraintBottom_toBottomOf="@id/txtOwner"
+                />
+
+            <TextView
+                android:id="@+id/txtNumItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="0 items"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/txtOwner"
+                app:layout_constraintStart_toEndOf="@+id/iconCircle"
+                app:layout_constraintTop_toTopOf="@+id/txtOwner" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/savedItemsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:clipToPadding="false"
+                android:paddingTop="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtOwner" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.nambimobile.widgets.efab.ExpandableFabLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- The next 3 Views will only display in portrait orientation -->
+        <com.nambimobile.widgets.efab.Overlay
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:overlay_color="#000000"
+            app:overlay_alpha="0.75"
+            app:overlay_orientation="portrait"/>
+
+        <com.nambimobile.widgets.efab.ExpandableFab
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="add item"
+            app:efab_closingAnimationDurationMs="200"
+            app:efab_closingAnticipateTension="0"
+            app:efab_color="@color/black"
+            app:efab_fabOptionSize="normal"
+            app:efab_firstFabOptionMarginPx="150"
+            app:efab_openingAnimationDurationMs="200"
+            app:efab_orientation="portrait"
+            app:efab_successiveFabOptionMarginPx="130" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/fabAddPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_search_24dp"
+            app:label_text="Save a place" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/fabAddNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/outline_sticky_note_2_24"
+            app:label_text="Add a note to your trip" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/fabAddLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/baseline_link_24"
+            app:label_text="Add an external link" />
+
+
+    </com.nambimobile.widgets.efab.ExpandableFabLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

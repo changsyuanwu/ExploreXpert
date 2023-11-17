@@ -18,7 +18,6 @@ class CreateTripViewModel @Inject constructor(
         private const val TAG = "CreateTripViewModel"
     }
 
-
     fun createTrip(tripName: String) {
         if (tripName != "" && auth.currentUser != null) {
             val trip = Trip(

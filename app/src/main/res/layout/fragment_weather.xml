@@ -1,52 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#001929"
     tools:context=".ui.view.WeatherFragment">
-<!--    android:background="@drawable/weather_background"-->
-
-    <RelativeLayout android:id="@+id/mainContainer" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:visibility="visible">
-        <LinearLayout android:id="@+id/addressContainer" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:id="@+id/address" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textSize="24dp"
-                android:text="Waterloo, ON"/>
-        </LinearLayout>
 
 
-        <LinearLayout android:id="@+id/overviewContainer" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical"
-            android:layout_centerInParent="true">
+    <RelativeLayout
+        android:id="@+id/addressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
-            <TextView android:id="@+id/status" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textSize="30dp"
-                android:layout_gravity="center"
-                android:textColor="#FFFFFF"
-                android:text="Clear Sky"/>
-            <TextView android:id="@+id/temp" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textSize="90dp"
-                android:fontFamily="sans-serif-thin" android:layout_gravity="center"
-                android:textColor="#FFFFFF"
-                android:text="__°C"/>
+        <ImageView
+            android:id="@+id/locationIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="Location Icon"
+            android:src="@drawable/ic_location_icon" />
 
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/locationIcon"
+            android:paddingStart="8dp"
+            android:text="Loo"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp" />
 
-        </LinearLayout>
-
-
-        <LinearLayout android:id="@+id/detailsContainer" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical"
-            android:layout_alignParentBottom="true">
-
-        </LinearLayout>
+        <Button
+            android:id="@+id/searchIcon"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="Search Icon"
+            android:focusable="true"
+            android:onClick="onSearchIconClick"
+            android:background="@drawable/ic_search_24dp" />
     </RelativeLayout>
-    <TextView android:id="@+id/errorText" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:layout_centerInParent="true"
-        android:visibility="gone" android:text="Something went wrong"/>
+
+    <RelativeLayout
+        android:id="@+id/weatherInfoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addressContainer"
+        android:layout_centerHorizontal="true"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:id="@+id/weatherTextContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="25dp">
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rain"
+                    android:textColor="#FFFFFF"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-thin"
+                    android:text="__°C"
+                    android:textColor="#FFFFFF"
+                    android:textSize="80sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/weatherIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Weather Icon" />
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+    <!-- Scrollable section for weather of the following days -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/weatherRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/weatherInfoContainer"
+        android:background="#FFFFFF"
+        android:padding="16dp" />
+    <!-- weather_item.xml -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/temperatureTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:textColor="#FFF"
+        android:textSize="18sp" />
 
 </RelativeLayout>
