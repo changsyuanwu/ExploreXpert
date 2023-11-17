@@ -56,7 +56,7 @@
         android:padding="16dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="369dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:text="Rain"
                     android:textColor="#FFFFFF"
-                    android:textSize="30sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/temp"
@@ -83,13 +83,13 @@
                     android:fontFamily="sans-serif-thin"
                     android:text="__°C"
                     android:textColor="#FFFFFF"
-                    android:textSize="80sp" />
+                    android:textSize="70sp" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/weatherIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="195dp"
+                android:layout_height="match_parent"
                 android:contentDescription="Weather Icon" />
 
 
@@ -97,14 +97,61 @@
 
     </RelativeLayout>
     <!-- Scrollable section for weather of the following days -->
+
+
+    <RelativeLayout
+        android:id="@+id/travelWarningSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/weatherInfoContainer"
+        android:layout_marginTop="0dp"
+        android:padding="16dp"
+        android:background="@drawable/travel_warning_background">
+
+        <TextView
+            android:id="@+id/riskLevelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Travel Warning"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/riskLevelTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:numStars="5"
+            android:stepSize="0.1" />
+
+        <TextView
+            android:id="@+id/riskMessageTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ratingBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <!-- weather_item.xml -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/weatherRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/weatherInfoContainer"
+        android:layout_below="@+id/travelWarningSection"
+        android:layout_marginTop="4dp"
         android:background="#FFFFFF"
         android:padding="16dp" />
-    <!-- weather_item.xml -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
