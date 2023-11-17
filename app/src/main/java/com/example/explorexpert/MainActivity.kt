@@ -20,23 +20,31 @@ import com.example.explorexpert.ui.view.WeatherFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
+    private lateinit var homeFragment: HomeFragment;
+    private lateinit var calendarFragment: CalendarFragment;
     private lateinit var mapFragment: MapsFragment;
+    private lateinit var weatherFragment: WeatherFragment;
+    private lateinit var planFragment: PlanFragment;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        homeFragment = HomeFragment();
+        calendarFragment = CalendarFragment();
         mapFragment = MapsFragment();
+        weatherFragment = WeatherFragment();
+        planFragment = PlanFragment();
 
         setContentView(binding.root)
-        swapFragment(HomeFragment())
+        swapFragment(homeFragment)
 
         binding.bottomNav.setOnItemSelectedListener{
             when(it.itemId){
-                R.id.nav_home -> swapFragment(HomeFragment())
-                R.id.nav_calendar -> swapFragment(CalendarFragment())
+                R.id.nav_home -> swapFragment(homeFragment)
+                R.id.nav_calendar -> swapFragment(calendarFragment)
                 R.id.nav_map -> swapFragment(mapFragment);
-                R.id.nav_weather -> swapFragment(WeatherFragment())
-                R.id.nav_plan -> swapFragment(PlanFragment())
+                R.id.nav_weather -> swapFragment(weatherFragment)
+                R.id.nav_plan -> swapFragment(planFragment)
                 else -> false
             }
             true
