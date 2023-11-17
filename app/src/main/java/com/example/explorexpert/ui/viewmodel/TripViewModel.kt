@@ -1,5 +1,6 @@
 package com.example.explorexpert.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,8 +35,19 @@ class TripViewModel @Inject constructor(
                 val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip)
                 mutableSavedItems.value = savedItemsToDisplay
             }
+            Log.d(TAG, "Fetched items")
         }
 
+    }
+
+    fun refreshTrip() {
+        viewModelScope.launch {
+            val updatedTrip = tripRepo.getTripById(trip.id)
+            if (updatedTrip != null) {
+                setTrip(updatedTrip)
+                fetchSavedItems()
+            }
+        }
     }
 
     fun setTrip(tripToSet: Trip) {

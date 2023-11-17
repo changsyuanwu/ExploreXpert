@@ -71,7 +71,7 @@ class PlanFragment : Fragment() {
                 val tripDialogFragment = TripDialogFragment(trip)
                 tripDialogFragment.show(
                     childFragmentManager,
-                    "tripDialog"
+                    TripDialogFragment.TAG
                 )
             }
         })
@@ -80,7 +80,6 @@ class PlanFragment : Fragment() {
 
         val tripLayoutManager = LinearLayoutManager(requireContext())
         binding.tripRecyclerView.layoutManager = tripLayoutManager
-
 
         adapter.registerAdapterDataObserver(
             ScrollToTopObserver(binding.tripRecyclerView)

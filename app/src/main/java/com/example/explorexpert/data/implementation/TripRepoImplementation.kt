@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class TripRepoImplementation @Inject constructor(
     db: FirebaseFirestore
-): TripRepository {
+) : TripRepository {
 
     companion object {
         private const val TAG = "TripRepository"
@@ -86,6 +86,20 @@ class TripRepoImplementation @Inject constructor(
             }
         }
 
+    override suspend fun getTripById(tripId: String): Trip? {
+        return withContext(Dispatchers.IO) {
+            val tripDoc = tripCollection.document(tripId).get().await()
+
+            try {
+                val trip = tripDoc.toObject(Trip::class.java)
+                return@withContext trip
+            } catch (e: Exception) {
+                Log.e(TAG, "Error casting document to trip object: ${e.message}")
+                null
+            }
+        }
+    }
+
     private suspend fun saveItemToCollection(savedItem: SavedItem): String {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<String>()
@@ -110,8 +124,7 @@ class TripRepoImplementation @Inject constructor(
             lateinit var itemId: String
             try {
                 itemId = saveItemToCollection(itemToAdd)
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.w(TAG, "Failed to create a saved item with id ${itemToAdd.id}", e)
                 return@withContext null
             }
@@ -127,7 +140,11 @@ class TripRepoImplementation @Inject constructor(
                     deferred.complete(tripToAddTo)
                 }
                 .addOnFailureListener { e ->
-                    Log.w(TAG, "Failed to update trip (${tripToAddTo.id}) after creating item (${itemId})", e)
+                    Log.w(
+                        TAG,
+                        "Failed to update trip (${tripToAddTo.id}) after creating item (${itemId})",
+                        e
+                    )
                     deferred.completeExceptionally(e)
                 }
             deferred.await()
@@ -150,9 +167,12 @@ class TripRepoImplementation @Inject constructor(
 
     override suspend fun getSavedItemsFromTrip(trip: Trip): List<SavedItem> {
         return withContext(Dispatchers.IO) {
-            return@withContext trip.savedItemIds.mapNotNull { item ->
-                getSavedItemById(item)
-            }
+            return@withContext trip.savedItemIds
+                .mapNotNull { item ->
+                    getSavedItemById(item)
+                }.sortedByDescending { item ->
+                    item.createdAt
+                }
         }
     }
 }

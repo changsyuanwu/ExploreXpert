@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.data.model.SavedItem
+import com.example.explorexpert.data.model.SavedItemType
 import com.example.explorexpert.databinding.SavedItemInTripBinding
 import java.util.Locale
 
@@ -26,7 +27,23 @@ class SavedItemAdapter(
 
             binding.txtItemDescription.text = savedItem.description
 
+            when (savedItem.type) {
+                SavedItemType.NOTE -> {
 
+                }
+
+                SavedItemType.LINK -> {
+                    // load image from website
+                }
+
+                SavedItemType.PLACE -> {
+                    // load image from google places
+                }
+
+                SavedItemType.BLANK -> {
+                    // Do nothing
+                }
+            }
         }
     }
 
