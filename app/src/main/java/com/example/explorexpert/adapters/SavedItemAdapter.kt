@@ -20,6 +20,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class SavedItemAdapter(
     inner class ViewHolder(private val binding: SavedItemInTripBinding): RecyclerView.ViewHolder(binding.root) {
 
         val context: Context = binding.imgItem.context
-        val placesClient = Places.createClient(context)
+        private lateinit var placesClient: PlacesClient
 
         fun bind(savedItem: SavedItem) {
             configurePlacesSDK()
@@ -49,6 +50,10 @@ class SavedItemAdapter(
             binding.txtItemName.text = savedItem.title
 
             binding.txtItemDescription.text = savedItem.description
+
+            binding.savedItemContainer.setOnClickListener {
+                itemClickListener.onItemClick(savedItem)
+            }
 
             when (savedItem.type) {
                 SavedItemType.NOTE -> {
@@ -66,7 +71,9 @@ class SavedItemAdapter(
 
                         if (place != null) {
                             val placePhotoBitmap = getPlacePhoto(place)
-                            binding.imgItem.setImageBitmap(placePhotoBitmap)
+                            if (placePhotoBitmap != null) {
+                                binding.imgItem.setImageBitmap(placePhotoBitmap)
+                            }
                         }
                     }
 
@@ -124,9 +131,9 @@ class SavedItemAdapter(
 
             val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
 
-            if (!Places.isInitialized()) {
-                Places.initialize(context, appId);
-            }
+            Places.initialize(context, appId);
+
+            placesClient = Places.createClient(context)
         }
 
         private fun configureAppInfo() {

@@ -1,7 +1,6 @@
 package com.example.explorexpert.ui.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import com.example.explorexpert.R
 import com.example.explorexpert.adapters.TripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
 import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.PlanViewModel
 import com.google.android.material.tabs.TabLayout
@@ -29,6 +29,9 @@ class PlanFragment : Fragment() {
 
     @Inject
     lateinit var planViewModel: PlanViewModel
+
+    @Inject
+    lateinit var tripRepo: TripRepository
 
     private var _binding: FragmentPlanBinding? = null
 
@@ -71,16 +74,19 @@ class PlanFragment : Fragment() {
     }
 
     private fun configureRecyclerView() {
-        adapter = TripAdapter(object : TripAdapter.ItemClickListener {
-            override fun onItemClick(trip: Trip) {
-                // Summon dialog for viewing trip saved items
-                val tripDialogFragment = TripDialogFragment(trip)
-                tripDialogFragment.show(
-                    childFragmentManager,
-                    TripDialogFragment.TAG
-                )
+        adapter = TripAdapter(
+            tripRepo,
+            object : TripAdapter.ItemClickListener {
+                override fun onItemClick(trip: Trip) {
+                    // Summon dialog for viewing trip saved items
+                    val tripDialogFragment = TripDialogFragment(trip)
+                    tripDialogFragment.show(
+                        childFragmentManager,
+                        TripDialogFragment.TAG
+                    )
+                }
             }
-        })
+        )
 
         binding.tripRecyclerView.adapter = adapter
 
@@ -93,7 +99,9 @@ class PlanFragment : Fragment() {
 
         // Pad the bottom of the trip recycler view so we can scroll past the "create a trip" button
         val tripRecyclerViewBottomPadding =
-            binding.btnCreateATrip.height + dpToPixels(binding.btnCreateATrip.marginBottom) + dpToPixels(34)
+            binding.btnCreateATrip.height + dpToPixels(binding.btnCreateATrip.marginBottom) + dpToPixels(
+                34
+            )
         binding.tripRecyclerView.updatePadding(bottom = tripRecyclerViewBottomPadding)
     }
 
@@ -116,6 +124,7 @@ class PlanFragment : Fragment() {
                         planViewModel.fetchTrips()
                         hideProgressIndicator()
                     }
+
                     getString(R.string.saved_items) -> {
                         showProgressIndicator()
                         hideProgressIndicator()

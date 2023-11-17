@@ -1,5 +1,6 @@
 package com.example.explorexpert
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import com.example.explorexpert.ui.view.MapsFragment
 import com.example.explorexpert.ui.view.PlanFragment
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.explorexpert.ui.view.WeatherFragment
+import com.google.android.libraries.places.api.Places
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -29,6 +31,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        // Initialize Google Places
+        val appInfo = applicationContext.packageManager
+            .getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
+        val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
+
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, appId);
+        }
+        val placesClient = Places.createClient(applicationContext)
+
         homeFragment = HomeFragment();
         calendarFragment = CalendarFragment();
         mapFragment = MapsFragment();
