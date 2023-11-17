@@ -13,12 +13,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.graphics.Color
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,14 +54,14 @@ class WeatherFragment : Fragment() {
     private lateinit var weatherRecyclerView: RecyclerView
     private lateinit var weatherAdapter: WeatherAdapter
     private lateinit var autoCompleteAdapter: ArrayAdapter<AutocompletePrediction>
-    private val AUTOCOMPLETE_REQUEST_CODE = 1
     private lateinit var appInfo: ApplicationInfo
     private var weatherItems: MutableList<WeatherAdapter.WeatherItem> = mutableListOf()
-    // Default location (University of Waterloo)
-    private var latitude = 43.4723
-    private var longitude = -80.5449
-    private lateinit var searchText : AutoCompleteTextView
+    private lateinit var addressTextView: TextView
 
+    // Default location (University of Waterloo)
+    private var defLatitude = 43.4723
+    private var defLongitude = -80.5449
+    private lateinit var weatherIconImageView: ImageView
 
 
     override fun onAttach(context: Context) {
@@ -76,17 +78,18 @@ class WeatherFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_weather, container, false)
         textView = view.findViewById(R.id.temp)
         status = view.findViewById(R.id.status)
+        addressTextView = view.findViewById(R.id.address)
         weatherRecyclerView = view.findViewById(R.id.weatherRecyclerView)
         weatherAdapter = WeatherAdapter(weatherItems)
         weatherRecyclerView.layoutManager = LinearLayoutManager(context)
         weatherRecyclerView.adapter = weatherAdapter
-        val weatherIconImageView: ImageView = view.findViewById(R.id.weatherIcon)
-        loadWeatherIcon(weatherIconImageView, "snow.png")
+        weatherIconImageView = view.findViewById(R.id.weatherIcon)
+        loadWeatherIcon(weatherIconImageView, "Snow")
 
         val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
 
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), appId);
+            Places.initialize(requireContext(), appId)
         }
         val placesClient = Places.createClient(requireContext())
 
@@ -100,7 +103,8 @@ class WeatherFragment : Fragment() {
 
     private fun searchPlace() {
         val placeFields = listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeFields).build(requireContext())
+        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeFields)
+            .build(requireContext())
         startAutocomplete.launch(intent)
     }
 
@@ -110,22 +114,21 @@ class WeatherFragment : Fragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         obtainLocation()
     }
+
     @SuppressLint("MissingPermission")
     private fun obtainLocation() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
-                    latitude = location.latitude
-                    longitude = location.longitude
-                    getTemp(latitude, longitude)
+                    getTemp(location.latitude, location.longitude)
                 } else {
                     println("Location is null")
-                    getTemp(latitude, longitude)
+                    getTemp(defLatitude, defLongitude)
                 }
             }
     }
 
-    private fun getTemp(latitude: Double, longitutde: Double) {
+    private fun getTemp(latitude: Double, longitude: Double) {
         val appId = appInfo.metaData?.getString("openweather.API_KEY")
         val weatherUrl = "https://api.openweathermap.org/data/2.5/weather?" +
                 "lat=$latitude&lon=$longitude&units=metric&appid=$appId"
@@ -135,22 +138,31 @@ class WeatherFragment : Fragment() {
             Response.Listener<String> { response ->
                 try {
                     val obj = JSONObject(response)
+                    Log.i(TAG, "Object: ${obj}")
                     val main = obj.getJSONObject("main")
                     val sys = obj.getJSONObject("sys")
                     val weather = obj.getJSONArray("weather").getJSONObject(0)
 
                     val temp = main.getDouble("temp")
                     val formattedTemp = String.format("%.1f°C", temp)
-
+                    val city = obj.getString("name")
                     val country = sys.getString("country")
+
+                    val address = "$city, $country"
+                    addressTextView.text = address
                     textView.text = formattedTemp
-                    status.text = weather.getString("main")
+                    val weatherStatus = weather.getString("main")
+                    status.text = weatherStatus
+
+                    loadWeatherIcon(weatherIconImageView, weatherStatus)
 
                     // Add weather data to the list for RecyclerView
                     val weatherItem =
                         WeatherAdapter.WeatherItem(formattedTemp, weather.getString("main"))
                     weatherItems.add(weatherItem)
                     weatherAdapter.notifyDataSetChanged()
+                    // Fetch travel advisory based on the country code
+                    fetchTravelAdvisoryData(country)
 
                 } catch (e: JSONException) {
                     textView.text = "Error parsing JSON"
@@ -170,12 +182,13 @@ class WeatherFragment : Fragment() {
                 val intent = result.data
                 if (intent != null) {
                     val place = Autocomplete.getPlaceFromIntent(intent)
-                    Log.i(TAG, "Place: ${place.name}, ${place.id}, ${place.address}")
-                    // Now you can use 'place' to get details of the selected place
-                    getTemp(
-                        place.latLng?.latitude ?: latitude,
-                        place.latLng?.longitude ?: longitude
+                    Log.i(
+                        TAG,
+                        "Place: ${place.latLng?.latitude}, ${place.latLng?.longitude}, ${place.address}"
                     )
+                    val latitude = place.latLng?.latitude ?: defLatitude
+                    val longitude = place.latLng?.longitude ?: defLongitude
+                    getTemp(latitude, longitude)
                 }
             } else if (result.resultCode == Activity.RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -189,13 +202,14 @@ class WeatherFragment : Fragment() {
 
     // Modify loadWeatherIcon method to handle different weather statuses
     private fun loadWeatherIcon(imageView: ImageView, weatherStatus: String) {
-        val imageName: String = when (weatherStatus.toLowerCase()) {
-            "clear" -> "clear_sky.png"
-            "clouds" -> "cloudy.png"
-            "rain" -> "rainy.png"
-            "snow" -> "snow.png"
+        Log.d(TAG, "Weather status received: '$weatherStatus'")
+        val imageName: String = when (weatherStatus) {
+            "Clear" -> "clear_sky.png"
+            "Clouds" -> "cloudy.png"
+            "Rain" -> "rainy.png"
+            "Snow" -> "snow.png"
             // Add more cases as needed for other weather statuses
-            else -> "unknown_weather.png"
+            else -> "snow.png"
         }
 
         try {
@@ -206,6 +220,79 @@ class WeatherFragment : Fragment() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    // Travel Advisory section
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    private fun fetchTravelAdvisoryData(countryCode: String) {
+        val url = "https://www.travel-advisory.info/api?countrycode=$countryCode"
+
+        val stringRequest = StringRequest(
+            Request.Method.GET,
+            url,
+            { response ->
+                handleTravelAdvisoryResponse(response, countryCode)
+            },
+            { error ->
+                // Handle error
+                Log.e(TAG, "Volley Error: ${error.message}")
+            })
+
+        // Add the request to the RequestQueue
+        Volley.newRequestQueue(requireContext()).add(stringRequest)
+    }
+
+    private fun handleTravelAdvisoryResponse(responseData: String?, countryCode: String) {
+        try {
+            val obj = JSONObject(responseData)
+            val data = obj.getJSONObject("data")
+            val advisory = data.getJSONObject(countryCode).getJSONObject("advisory")
+            val score = advisory.getDouble("score")
+            Log.i(TAG, "Object: ${score}")
+            val ratingBar: RatingBar? = view?.findViewById(R.id.ratingBar)
+            val riskMessageTextView: TextView? = view?.findViewById(R.id.riskMessageTextView)
+            val travelWarningSection: RelativeLayout? =
+                view?.findViewById(R.id.travelWarningSection)
+
+            // Set RatingBar rating
+            ratingBar?.rating = score.toFloat()
+
+            // Set the message based on score and update UI colors accordingly
+            val message = getRiskMessage(score)
+            riskMessageTextView?.text = message
+
+            // Update UI based on risk level (for background color)
+            updateUIBasedOnRiskLevel(score, travelWarningSection)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // Function to get the risk message based on the score
+    private fun getRiskMessage(score: Double): String {
+        return when {
+            score >= 4.5 -> "Extreme Warning: You should avoid any trips. Potential harm to your health and well-being."
+            score >= 3.5 -> "High Risk: Travel should be reduced to a necessary minimum and be conducted with good preparation and high attention."
+            score >= 2.5 -> "Medium Risk: High attention is advised when traveling around."
+            else -> "Low Risk: Travel is relatively safe."
+        }
+    }
+
+    // Function to update UI colors based on the risk level
+    private fun updateUIBasedOnRiskLevel(score: Double, travelWarningSection: RelativeLayout?) {
+        val color = when {
+            score >= 4.5 -> Color.parseColor("#FFCACA") // Pastel Red
+            score >= 3.5 -> Color.parseColor("#FFF7AE") // Pastel Yellow
+            score >= 2.5 -> Color.parseColor("#C9E6FF") // Pastel Blue
+            else -> Color.parseColor("#C4FFC4") // Pastel Green
+        }
+
+        // Update RelativeLayout background color
+        travelWarningSection?.setBackgroundColor(color)
     }
 
 
