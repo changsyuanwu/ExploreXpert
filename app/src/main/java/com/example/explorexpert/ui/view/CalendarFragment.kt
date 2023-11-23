@@ -11,7 +11,10 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
+import com.example.explorexpert.adapters.CalendarAdapter
 import com.example.explorexpert.data.model.CalendarEvent
 import com.example.explorexpert.databinding.FragmentCalendarBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
@@ -34,8 +37,8 @@ class CalendarFragment : Fragment() {
     lateinit var dateTV: TextView
     lateinit var calendarView: CalendarView
     lateinit var addBtn: Button
-    lateinit var eventListView: ListView
-    val allCalendarEvents = mutableMapOf<String, ArrayList<String>>()
+    lateinit var eventRecyclerView: RecyclerView
+    val allCalendarEvents = mutableMapOf<String, ArrayList<CalendarEvent>>()
     var allEvents = ArrayList<CalendarEvent>()
 
 
@@ -48,16 +51,34 @@ class CalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+        val view = inflater.inflate(R.layout.fragment_calendar, container, false)
+
+
+        // initialize calendar here
+
+        eventRecyclerView = view.findViewById(R.id.eventRecyclerView)
+
+        eventRecyclerView.layoutManager = LinearLayoutManager(activity)
+        /*
+        val data = ArrayList<CalendarEvent>()
+
+        // This will pass the ArrayList to our Adapter
+        val adapter = CalendarAdapter(data)
+
+        // Setting the Adapter with the recyclerview
+        eventRecyclerView.adapter = adapter*/
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
+
         calendarView = view.findViewById(R.id.calendarView) as CalendarView
         dateTV = view.findViewById(R.id.dateView) as TextView
-        eventListView = view.findViewById(R.id.eventListView) as ListView
-
 
         //set current date as default
         var selectedDate: String
@@ -75,19 +96,20 @@ class CalendarFragment : Fragment() {
             var currentList = allCalendarEvents[selectedDate]
             if (currentList == null) {
                 // no list, load an empty list
-                val emptyList: ArrayList<String> = arrayListOf()
+                val emptyList: ArrayList<CalendarEvent> = arrayListOf()
                 currentList = emptyList
             }
-            val listAdapter = context?.let {
+            val recyclerAdapter = context?.let {
                 ArrayAdapter(
                     it,
                     android.R.layout.simple_list_item_1,
                     currentList!!
                 )
             }
-            eventListView.setAdapter(listAdapter)
-        }
 
+            val adapter = CalendarAdapter(currentList)
+            eventRecyclerView.adapter = adapter
+        }
 
         addBtn = view.findViewById(R.id.btnEventAdd)
         addBtn.setOnClickListener {
@@ -100,22 +122,16 @@ class CalendarFragment : Fragment() {
                 if (value.isEmpty()) {
                     //Toast.makeText(context, "Please fill out the blank", Toast.LENGTH_LONG).show()
                 } else {
-                    var currentList: ArrayList<String> = arrayListOf()
+                    var currentList: ArrayList<CalendarEvent> = arrayListOf()
                     if (allCalendarEvents[selectedDate] == null) {
-                        currentList.add(value)
+                        currentList.add(CalendarEvent(value))
                         allCalendarEvents[selectedDate] = currentList
                     } else {
-                        allCalendarEvents[selectedDate]?.add(value)
+                        allCalendarEvents[selectedDate]?.add(CalendarEvent(value))
                         currentList = allCalendarEvents[selectedDate]!!
                     }
-                    val listAdapter = context?.let {
-                        ArrayAdapter(
-                            it,
-                            android.R.layout.simple_list_item_1,
-                            currentList
-                        )
-                    }
-                    eventListView.setAdapter(listAdapter)
+                    val adapter = CalendarAdapter(currentList)
+                    eventRecyclerView.adapter = adapter
                     editText.setText(null)
                 }
             }
