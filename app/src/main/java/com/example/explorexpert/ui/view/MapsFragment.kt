@@ -1,13 +1,18 @@
 package com.example.explorexpert.ui.view
 
+import android.app.Activity
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
+import android.widget.Button
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.explorexpert.R
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -19,18 +24,27 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import java.io.IOException
 
 
 class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                         GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     private var currLatLng: LatLng? = null
-
     private var currAddress: String = "";
-    private lateinit var searchView: SearchView
+
+    private var defaultLatLng = LatLng(43.4723, -80.5449)
+
+    private lateinit var appInfo: ApplicationInfo
     private lateinit var map: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var searchButton: Button
+    private lateinit var selectLocationButton: Button
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -38,6 +52,8 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        appInfo = requireContext().packageManager
+            .getApplicationInfo(requireContext().packageName, PackageManager.GET_META_DATA)
     }
 
     override fun onCreateView(
@@ -50,36 +66,53 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        searchView = view.findViewById(R.id.mapSearchView)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                val geocoder = Geocoder(requireActivity())
-                val location: String = searchView.query.toString()
+        val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), appId)
+        }
+        val placesClient = Places.createClient(requireContext())
 
-                try {
-                    val addressList = geocoder.getFromLocationName(location, 1)
-                    if (addressList != null && addressList.isNotEmpty()) {
-                        val address = addressList[0]
-                        val latlng = LatLng(address.latitude, address.longitude)
-                        markLocation(latlng)
+        val startAutocomplete =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val intent = result.data
+                    if (intent != null) {
+                        val place = Autocomplete.getPlaceFromIntent(intent)
+                        val lat = place.latLng?.latitude ?: defaultLatLng.latitude
+                        val long = place.latLng?.longitude ?: defaultLatLng.longitude
+                        markLocation(LatLng(lat, long))
                     }
-                } catch (e: IOException) {
-                    e.printStackTrace()
+                } else if (result.resultCode == AutocompleteActivity.RESULT_ERROR) {
+                    val status = Autocomplete.getStatusFromIntent(result.data)
+                    Log.e("MapsFragment", "Error during autocomplete: ${status.statusMessage}")
                 }
-                return false
             }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
-            }
-        })
+
+        searchButton = view.findViewById(R.id.btnSearch)
+        searchButton.setOnClickListener {
+            val placeFields = listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+            val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, placeFields)
+                .build(requireContext())
+            startAutocomplete.launch(intent)
+        }
+
+        selectLocationButton = view.findViewById(R.id.btnSelectThisLocation)
+        selectLocationButton.visibility = View.GONE
+        selectLocationButton.setOnClickListener {
+            val locationBottomSheetDialogFragment = LocationBottomSheetDialogFragment()
+            locationBottomSheetDialogFragment.show(
+                childFragmentManager,
+                LocationBottomSheetDialogFragment.TAG
+            )
+        }
+
         return view
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
-
-        map.setPadding(0, 150, 0, 0)
+        map.uiSettings.isMapToolbarEnabled = false
 
         map.setOnMarkerClickListener(this)
         map.setOnMapClickListener(this)
@@ -162,6 +195,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14f))
         currLatLng = latlng
         currAddress = addrStr
+        selectLocationButton.visibility = View.VISIBLE
     }
 
     fun getMarkedAddress(): String {

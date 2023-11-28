@@ -62,6 +62,8 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+
     }
 
     // function to swap fragments in the fragment container
@@ -73,5 +75,15 @@ class MainActivity : AppCompatActivity() {
 
     fun getMapFragment(): MapsFragment {
         return mapFragment;
+    }
+
+    fun swapToPlanFragment() {
+        swapFragment(planFragment);
+        binding.bottomNav.selectedItemId = R.id.nav_plan
+    }
+
+    fun swapToWeatherFragment() {
+        swapFragment(weatherFragment);
+        binding.bottomNav.selectedItemId = R.id.nav_weather
     }
 }

@@ -110,15 +110,6 @@ class WeatherFragment : Fragment() {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Stub for grabbing info from map fragment, can move to other parts of module
-        if (isAdded) {
-            println((requireActivity() as MainActivity).getMapFragment().getMarkedAddress())
-        }
-    }
-
     private fun searchPlace() {
         val placeFields = listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
         val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeFields)
