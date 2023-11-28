@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.example.explorexpert.R
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -44,6 +43,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     private lateinit var map: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var searchButton: Button
     private lateinit var selectLocationButton: Button
 
     companion object {
@@ -72,7 +72,23 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         }
         val placesClient = Places.createClient(requireContext())
 
-        val searchButton: Button = view.findViewById(R.id.btnSearch)
+        val startAutocomplete =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val intent = result.data
+                    if (intent != null) {
+                        val place = Autocomplete.getPlaceFromIntent(intent)
+                        val lat = place.latLng?.latitude ?: defaultLatLng.latitude
+                        val long = place.latLng?.longitude ?: defaultLatLng.longitude
+                        markLocation(LatLng(lat, long))
+                    }
+                } else if (result.resultCode == AutocompleteActivity.RESULT_ERROR) {
+                    val status = Autocomplete.getStatusFromIntent(result.data)
+                    Log.e("MapsFragment", "Error during autocomplete: ${status.statusMessage}")
+                }
+            }
+
+        searchButton = view.findViewById(R.id.btnSearch)
         searchButton.setOnClickListener {
             val placeFields = listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
             val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, placeFields)
@@ -83,8 +99,11 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         selectLocationButton = view.findViewById(R.id.btnSelectThisLocation)
         selectLocationButton.visibility = View.GONE
         selectLocationButton.setOnClickListener {
-            // TODO: popup menu for three things: find LOI, check weather, (add to plan/calendar?)
-            println("clicked")
+            val locationBottomSheetDialogFragment = LocationBottomSheetDialogFragment()
+            locationBottomSheetDialogFragment.show(
+                childFragmentManager,
+                LocationBottomSheetDialogFragment.TAG
+            )
         }
 
         return view
@@ -182,21 +201,4 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     fun getMarkedAddress(): String {
         return currAddress
     }
-
-    private val startAutocomplete =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data
-                if (intent != null) {
-                    val place = Autocomplete.getPlaceFromIntent(intent)
-                    val lat = place.latLng?.latitude ?: defaultLatLng.latitude
-                    val long = place.latLng?.longitude ?: defaultLatLng.longitude
-                    markLocation(LatLng(lat, long))
-                }
-            } else if (result.resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // Handle Autocomplete error
-                val status = Autocomplete.getStatusFromIntent(result.data)
-                Log.e("MapsFragment", "Error during autocomplete: ${status.statusMessage}")
-            }
-        }
 }
