@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.explorexpert.data.model.CalendarEvent
+import com.example.explorexpert.data.model.Event
 
 
-class CalendarAdapter(
-    private val eventItems: List<CalendarEvent>,
-) : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
+class EventAdapter(
+    private val eventItems: List<Event>,
+) : RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val eventTextView: TextView = itemView.findViewById(R.id.tvEvent)

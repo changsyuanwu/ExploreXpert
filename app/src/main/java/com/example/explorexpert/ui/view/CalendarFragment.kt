@@ -8,20 +8,22 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CalendarView
 import android.widget.EditText
-import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
-import com.example.explorexpert.adapters.CalendarAdapter
-import com.example.explorexpert.data.model.CalendarEvent
+import com.example.explorexpert.adapters.EventAdapter
+import com.example.explorexpert.data.model.Event
+import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.databinding.FragmentCalendarBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class CalendarFragment : Fragment() {
 
     companion object {
@@ -30,7 +32,12 @@ class CalendarFragment : Fragment() {
 
     @Inject
     lateinit var calendarViewModel: CalendarViewModel
+    @Inject
+    lateinit var eventRepo: EventRepository
+
     private var _binding: FragmentCalendarBinding? = null
+    private lateinit var eventAdapter: EventAdapter
+
     private val binding get() = _binding!!
 
 
@@ -38,12 +45,12 @@ class CalendarFragment : Fragment() {
     lateinit var calendarView: CalendarView
     lateinit var addBtn: Button
     lateinit var eventRecyclerView: RecyclerView
-    val allCalendarEvents = mutableMapOf<String, ArrayList<CalendarEvent>>()
-    var allEvents = ArrayList<CalendarEvent>()
+    val allCalendarEvents = mutableMapOf<String, ArrayList<Event>>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        calendarViewModel.fetchEvents()
     }
 
     override fun onCreateView(
@@ -59,6 +66,25 @@ class CalendarFragment : Fragment() {
         eventRecyclerView = view.findViewById(R.id.eventRecyclerView)
 
         eventRecyclerView.layoutManager = LinearLayoutManager(activity)
+
+
+
+
+        //for(event in calendarViewModel.events.value!!) {
+
+            /*
+            val date = event.startDate
+            if (allCalendarEvents[date] == null) {
+                val newList: ArrayList<Event> = arrayListOf()
+                newList.add(event)
+                allCalendarEvents[date] = newList
+            } else {
+                allCalendarEvents[date]?.add(event)
+            }*/
+        //}
+
+
+
         /*
         val data = ArrayList<CalendarEvent>()
 
@@ -74,11 +100,11 @@ class CalendarFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
-
         calendarView = view.findViewById(R.id.calendarView) as CalendarView
         dateTV = view.findViewById(R.id.dateView) as TextView
+
+        calendarViewModel.fetchEvents()
+
 
         //set current date as default
         var selectedDate: String
@@ -96,45 +122,56 @@ class CalendarFragment : Fragment() {
             var currentList = allCalendarEvents[selectedDate]
             if (currentList == null) {
                 // no list, load an empty list
-                val emptyList: ArrayList<CalendarEvent> = arrayListOf()
+                val emptyList: ArrayList<Event> = arrayListOf()
                 currentList = emptyList
             }
-            val recyclerAdapter = context?.let {
-                ArrayAdapter(
-                    it,
-                    android.R.layout.simple_list_item_1,
-                    currentList!!
-                )
-            }
 
-            val adapter = CalendarAdapter(currentList)
+            val adapter = EventAdapter(currentList)
             eventRecyclerView.adapter = adapter
         }
 
+        // add events to list
         addBtn = view.findViewById(R.id.btnEventAdd)
         addBtn.setOnClickListener {
-            // add events to list
-            addBtn = view.findViewById(R.id.btnEventAdd)
-            val editText = view.findViewById<EditText>(R.id.et_eventInput)
-            addBtn.setOnClickListener {
-                val value = editText.text.toString()
-
-                if (value.isEmpty()) {
-                    //Toast.makeText(context, "Please fill out the blank", Toast.LENGTH_LONG).show()
+            for (event in calendarViewModel.events.value!!) {
+                val date = event.startDate
+                if (allCalendarEvents[date] == null) {
+                    val newList: ArrayList<Event> = arrayListOf()
+                    newList.add(event)
+                    allCalendarEvents[date] = newList
                 } else {
-                    var currentList: ArrayList<CalendarEvent> = arrayListOf()
-                    if (allCalendarEvents[selectedDate] == null) {
-                        currentList.add(CalendarEvent(value))
-                        allCalendarEvents[selectedDate] = currentList
-                    } else {
-                        allCalendarEvents[selectedDate]?.add(CalendarEvent(value))
-                        currentList = allCalendarEvents[selectedDate]!!
-                    }
-                    val adapter = CalendarAdapter(currentList)
-                    eventRecyclerView.adapter = adapter
-                    editText.setText(null)
+                    allCalendarEvents[date]?.add(event)
                 }
             }
+
+
+            /*
+            TO DO: List is not loading, get query seems to be ok, but retrieved list is null
+                - try use debugger
+                - list seems to be loaded when using button listener (ie delay between fetch and loop)
+                -
+             */
+
+            /*
+            val editText = view.findViewById<EditText>(R.id.et_eventInput)
+
+            val value = editText.text.toString()
+            calendarViewModel.createEvent(value)
+            if (value.isNotEmpty()) {
+                var currentList: ArrayList<Event> = arrayListOf()
+                if (allCalendarEvents[selectedDate] == null) {
+                    currentList.add(Event(value))
+                    allCalendarEvents[selectedDate] = currentList
+                } else {
+                    allCalendarEvents[selectedDate]?.add(Event(value))
+                    currentList = allCalendarEvents[selectedDate]!!
+                }
+                val adapter = EventAdapter(currentList)
+                eventRecyclerView.adapter = adapter
+                editText.text = null
+            }*/
         }
     }
+
+
 }
