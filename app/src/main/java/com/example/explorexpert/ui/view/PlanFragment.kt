@@ -1,7 +1,6 @@
 package com.example.explorexpert.ui.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +8,14 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.explorexpert.MainActivity
 import com.example.explorexpert.R
+import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.TripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.PlanViewModel
 import com.google.android.material.tabs.TabLayout
@@ -29,9 +32,13 @@ class PlanFragment : Fragment() {
     @Inject
     lateinit var planViewModel: PlanViewModel
 
+    @Inject
+    lateinit var tripRepo: TripRepository
+
     private var _binding: FragmentPlanBinding? = null
 
-    private lateinit var adapter: TripAdapter
+    private lateinit var tripAdapter: TripAdapter
+    private lateinit var savedItemAdapter: SavedItemAdapter
 
     private val binding get() = _binding!!
 
@@ -47,9 +54,15 @@ class PlanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Stub for grabbing info from map fragment, can move to other parts of module
+        if (isAdded) {
+            println((requireActivity() as MainActivity).getMapFragment().getMarkedAddress())
+        }
+
         showProgressIndicator()
 
-        configureRecyclerView()
+        configureTripsRecyclerView()
+        configureSavedItemsRecyclerView()
         configureButtons()
         configureObservers()
     }
@@ -64,27 +77,61 @@ class PlanFragment : Fragment() {
         }
     }
 
-    private fun configureRecyclerView() {
-        adapter = TripAdapter(object : TripAdapter.ItemClickListener {
-            override fun onItemClick(trip: Trip) {
-                // Summon dialog for viewing trip saved items
+    private fun configureTripsRecyclerView() {
+        tripAdapter = TripAdapter(
+            tripRepo,
+            object : TripAdapter.ItemClickListener {
+                override fun onItemClick(trip: Trip) {
+                    // Summon dialog for viewing trip saved items
+                    val tripDialogFragment = TripDialogFragment(trip)
+                    tripDialogFragment.show(
+                        childFragmentManager,
+                        TripDialogFragment.TAG
+                    )
+                }
             }
-        })
+        )
 
-        binding.tripRecyclerView.adapter = adapter
+        binding.tripRecyclerView.adapter = tripAdapter
 
         val tripLayoutManager = LinearLayoutManager(requireContext())
         binding.tripRecyclerView.layoutManager = tripLayoutManager
 
-
-        adapter.registerAdapterDataObserver(
+        tripAdapter.registerAdapterDataObserver(
             ScrollToTopObserver(binding.tripRecyclerView)
         )
 
         // Pad the bottom of the trip recycler view so we can scroll past the "create a trip" button
         val tripRecyclerViewBottomPadding =
-            binding.btnCreateATrip.height + dpToPixels(binding.btnCreateATrip.marginBottom) + dpToPixels(34)
+            binding.btnCreateATrip.height + dpToPixels(binding.btnCreateATrip.marginBottom) + dpToPixels(
+                34
+            )
         binding.tripRecyclerView.updatePadding(bottom = tripRecyclerViewBottomPadding)
+    }
+
+    private fun configureSavedItemsRecyclerView() {
+        savedItemAdapter = SavedItemAdapter(
+            isInTripDialog = false,
+            itemClickListener =  object : SavedItemAdapter.ItemClickListener {
+                override fun onItemClick(savedItem: SavedItem) {
+                    // Summon dialog for showing saved item details
+//                val tripDialogFragment = TripDialogFragment(trip)
+//                tripDialogFragment.show(
+//                    childFragmentManager,
+//                    "tripDialog"
+//                )
+                }
+            }
+        )
+
+        binding.savedItemsRecyclerView.adapter = savedItemAdapter
+
+        val savedItemLayoutManager =LinearLayoutManager(requireContext())
+        binding.savedItemsRecyclerView.layoutManager = savedItemLayoutManager
+
+        savedItemAdapter.registerAdapterDataObserver(
+            ScrollToTopObserver(binding.savedItemsRecyclerView)
+        )
     }
 
     private fun dpToPixels(dp: Int): Int {
@@ -94,7 +141,12 @@ class PlanFragment : Fragment() {
 
     private fun configureObservers() {
         planViewModel.trips.observe(viewLifecycleOwner) { trips ->
-            adapter.submitList(trips)
+            tripAdapter.submitList(trips)
+            hideProgressIndicator()
+        }
+
+        planViewModel.savedItems.observe(viewLifecycleOwner) { savedItems ->
+            savedItemAdapter.submitList(savedItems)
             hideProgressIndicator()
         }
 
@@ -104,11 +156,17 @@ class PlanFragment : Fragment() {
                     getString(R.string.trips) -> {
                         showProgressIndicator()
                         planViewModel.fetchTrips()
-                        hideProgressIndicator()
+                        binding.tripRecyclerView.visibility = View.VISIBLE
+                        binding.btnCreateATrip.visibility = View.VISIBLE
+                        binding.savedItemsRecyclerView.visibility = View.GONE
                     }
+
                     getString(R.string.saved_items) -> {
                         showProgressIndicator()
-                        hideProgressIndicator()
+                        planViewModel.fetchSavedItems()
+                        binding.tripRecyclerView.visibility = View.GONE
+                        binding.btnCreateATrip.visibility = View.GONE
+                        binding.savedItemsRecyclerView.visibility = View.VISIBLE
                     }
                 }
             }

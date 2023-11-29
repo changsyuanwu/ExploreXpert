@@ -36,7 +36,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/trip_default_image" />
+                app:srcCompat="@drawable/placeholder" />
 
             <Button
                 android:id="@+id/btnSavedItems"
@@ -48,7 +48,6 @@
                 android:paddingHorizontal="16dp"
                 android:text="0 items"
                 android:textColor="@color/black"
-
                 app:icon="@drawable/outline_lock_24"
                 app:iconTint="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"

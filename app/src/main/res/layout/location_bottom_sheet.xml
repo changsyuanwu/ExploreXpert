@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="24dp">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/drag_handle">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnNearbyPlaces"
+            android:layout_width="136dp"
+            android:layout_height="80dp"
+            android:foreground="@drawable/ic_map"
+            android:onClick="onSuggestionsClick"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnAdd"
+            app:backgroundTint="#FF000000" />
+
+        <TextView
+            android:id="@+id/txtNearbyPlaces"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Suggest Nearby Places"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/btnNearbyPlaces"
+            app:layout_constraintStart_toStartOf="@id/btnNearbyPlaces"
+            app:layout_constraintEnd_toEndOf="@id/btnNearbyPlaces" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnAdd"
+            android:layout_width="136dp"
+            android:layout_height="80dp"
+            android:foreground="@drawable/ic_plus_white_24dp"
+            android:foregroundGravity="center|fill"
+            android:onClick="onAddClick"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnNearbyPlaces"
+            app:layout_constraintEnd_toStartOf="@id/btnWeather"
+            app:backgroundTint="#FF000000" />
+
+        <TextView
+            android:id="@+id/txtAdd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Add to Plan"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/btnAdd"
+            app:layout_constraintStart_toStartOf="@id/btnAdd"
+            app:layout_constraintEnd_toEndOf="@id/btnAdd" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnWeather"
+            android:layout_width="136dp"
+            android:layout_height="80dp"
+            android:foreground="@drawable/ic_weather"
+            android:foregroundGravity="center|fill"
+            android:onClick="onCheckWeatherClick"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnAdd"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:backgroundTint="#FF000000" />
+
+        <TextView
+            android:id="@+id/txtWeather"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Check Weather"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/btnWeather"
+            app:layout_constraintStart_toStartOf="@id/btnWeather"
+            app:layout_constraintEnd_toEndOf="@id/btnWeather" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

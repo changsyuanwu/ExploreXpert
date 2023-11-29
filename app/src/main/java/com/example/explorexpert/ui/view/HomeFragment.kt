@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.explorexpert.MainActivity
 import com.example.explorexpert.R
 import com.example.explorexpert.SplashScreenActivity
 import com.example.explorexpert.databinding.FragmentHomeBinding
