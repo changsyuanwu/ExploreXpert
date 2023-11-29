@@ -34,7 +34,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.timerTask
 
 @AndroidEntryPoint
 class TripDialogFragment(
@@ -111,6 +113,10 @@ class TripDialogFragment(
     private fun configureButtons() {
         binding.btnBackIcon.setOnClickListener {
             this.dismiss()
+        }
+
+        binding.btnRefreshIcon.setOnClickListener {
+            refreshTrip()
         }
 
         binding.fabAddNote.setOnClickListener {
@@ -202,6 +208,8 @@ class TripDialogFragment(
                         TAG, "Place: ${place.name}, ${place.id}"
                     )
                     addTripItemViewModel.addPlace(place)
+                    refreshTrip()
+                    scheduleTripItemsRefresh()
                 }
             } else if (result.resultCode == Activity.RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -215,6 +223,23 @@ class TripDialogFragment(
 
     fun refreshTrip() {
         tripViewModel.refreshTrip()
+    }
+
+    fun scheduleTripItemsRefresh() {
+        val timer = Timer()
+        var executionCount = 0
+
+        timer.scheduleAtFixedRate(
+            timerTask {
+                if (executionCount > 5) {
+                    this.cancel()
+                }
+                executionCount++
+                refreshTrip()
+            },
+            300,
+            1000
+        )
     }
 
     private fun showProgressIndicator() {
