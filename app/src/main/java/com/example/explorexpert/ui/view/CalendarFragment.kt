@@ -1,6 +1,7 @@
 package com.example.explorexpert.ui.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,14 +10,23 @@ import android.widget.Button
 import android.widget.CalendarView
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.view.marginBottom
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.EventAdapter
+import com.example.explorexpert.adapters.SavedItemAdapter
+import com.example.explorexpert.adapters.TripAdapter
+import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.implementation.EventRepoImplementation
 import com.example.explorexpert.data.model.Event
+import com.example.explorexpert.data.model.SavedItem
+import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.databinding.FragmentCalendarBinding
+import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
@@ -48,25 +58,23 @@ class CalendarFragment : Fragment() {
     val allCalendarEvents = mutableMapOf<String, ArrayList<Event>>()
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        calendarViewModel.fetchEvents()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        _binding = FragmentCalendarBinding.inflate(inflater, container, false)
+        return binding.root
+
+
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_calendar, container, false)
+        /*val view = inflater.inflate(R.layout.fragment_calendar, container, false)
 
 
         // initialize calendar here
 
         eventRecyclerView = view.findViewById(R.id.eventRecyclerView)
 
-        eventRecyclerView.layoutManager = LinearLayoutManager(activity)
-
+        eventRecyclerView.layoutManager = LinearLayoutManager(activity)*/
 
 
 
@@ -94,17 +102,23 @@ class CalendarFragment : Fragment() {
         // Setting the Adapter with the recyclerview
         eventRecyclerView.adapter = adapter*/
 
-        return view
+        //return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        configureEventsRecyclerView()
+        configureObservers()
+        configureButtons()
+/*
         calendarView = view.findViewById(R.id.calendarView) as CalendarView
         dateTV = view.findViewById(R.id.dateView) as TextView
 
-        calendarViewModel.fetchEvents()
+        //calendarViewModel.fetchEvents()
 
+        Log.d("zzzzzzzzzzz", "SIZE ${calendarViewModel.events.value?.size}")
 
         //set current date as default
         var selectedDate: String
@@ -133,6 +147,8 @@ class CalendarFragment : Fragment() {
         // add events to list
         addBtn = view.findViewById(R.id.btnEventAdd)
         addBtn.setOnClickListener {
+            Log.d("aaaaaaaaaaaaaa", "SIZE ${calendarViewModel.events.value?.size}")
+
             for (event in calendarViewModel.events.value!!) {
                 val date = event.startDate
                 if (allCalendarEvents[date] == null) {
@@ -170,8 +186,29 @@ class CalendarFragment : Fragment() {
                 eventRecyclerView.adapter = adapter
                 editText.text = null
             }*/
+        }*/
+    }
+
+    private fun configureEventsRecyclerView() {
+        val eventLayoutManager = LinearLayoutManager(requireContext())
+        binding.eventRecyclerView.layoutManager = eventLayoutManager
+
+    }
+    private fun configureObservers() {
+        calendarViewModel.events.observe(viewLifecycleOwner) { events ->
+            binding.eventRecyclerView.adapter = EventAdapter(events)
+        }
+        calendarViewModel.fetchEvents()
+    }
+
+    private fun configureButtons() {
+        binding.btnEventAdd.setOnClickListener {
+            val eventName = binding.etEventInput.text.toString()
+            calendarViewModel.createEvent(eventName)
+            calendarViewModel.fetchEvents()
         }
     }
+
 
 
 }
