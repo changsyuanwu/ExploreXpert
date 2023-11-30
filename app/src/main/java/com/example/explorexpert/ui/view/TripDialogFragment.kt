@@ -146,6 +146,9 @@ class TripDialogFragment(
 
             binding.btnAddDates.text = "$startDate ➡ $endDate"
         }
+        else {
+            binding.btnAddDates.text = "Add trip dates"
+        }
     }
 
     private fun configureButtons() {

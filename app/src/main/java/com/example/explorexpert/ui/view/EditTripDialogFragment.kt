@@ -92,6 +92,7 @@ class EditTripDialogFragment (
                 tripViewModel.updateTrip(newTripName, !isPublic)
             }
 
+            refreshParentFragment()
             refreshGrandparentFragment()
 
             this.dismiss()
