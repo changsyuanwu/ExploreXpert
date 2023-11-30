@@ -17,4 +17,8 @@ interface TripRepository {
     suspend fun getSavedItemsFromTrip(trip: Trip): List<SavedItem>
 
     suspend fun getSavedItemsByUserId(userId: String): List<SavedItem>
+
+    suspend fun removeSavedItem(savedItemId: String)
+
+
 }

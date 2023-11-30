@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
@@ -99,19 +100,25 @@ class TripDialogFragment(
     private fun configureUI() {
         binding.txtTripTitle.text = trip.name
 
-        if (trip.savedItemIds.size == 1) {
-            binding.txtNumItems.text = "1 item"
-        } else {
-            binding.txtNumItems.text = "${trip.savedItemIds.size} items"
-        }
+        configureSavedItemsCount(trip.savedItemIds.size)
 
         CoroutineScope(Dispatchers.Main).launch {
             binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(trip.ownerUserId)}"
         }
     }
 
+    private fun configureSavedItemsCount(savedItemsCount: Int) {
+        if (savedItemsCount == 1) {
+            binding.txtNumItems.text = "1 item"
+        } else {
+            binding.txtNumItems.text = "${trip.savedItemIds.size} items"
+        }
+    }
+
     private fun configureButtons() {
         binding.btnBackIcon.setOnClickListener {
+            (requireParentFragment() as PlanFragment).refreshRecyclerViews()
+            (requireParentFragment() as PlanFragment).scheduleRecyclerViewRefresh()
             this.dismiss()
         }
 
@@ -144,7 +151,10 @@ class TripDialogFragment(
 //                    "tripDialog"
 //                )
                 }
-            }
+            },
+            tripRepo = tripRepo,
+            trip = trip,
+            currentUserId = tripViewModel.getCurrentUserId()
         )
         binding.savedItemsRecyclerView.adapter = adapter
 
@@ -162,8 +172,12 @@ class TripDialogFragment(
     private fun configureObservers() {
         tripViewModel.savedItems.observe(viewLifecycleOwner) { savedItems ->
             adapter.submitList(savedItems)
+            configureSavedItemsCount(savedItems.size)
             hideProgressIndicator()
-            Log.d(TAG, savedItems.toString())
+        }
+
+        tripViewModel.trip.observe(viewLifecycleOwner) {
+            configureSavedItemsCount(it.savedItemIds.size)
         }
     }
 
