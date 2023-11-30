@@ -6,4 +6,6 @@ interface EventRepository {
     suspend fun setEvent(event: Event): String
 
     suspend fun getEventsByUserId(userId: String): List<Event>
+
+    suspend fun getEventsByUserIdAndStartDate(userId: String, startDate: String): List<Event>
 }

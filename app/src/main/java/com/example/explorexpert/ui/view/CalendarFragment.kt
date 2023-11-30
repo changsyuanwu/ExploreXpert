@@ -28,7 +28,9 @@ import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.databinding.FragmentCalendarBinding
 import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
+import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.selects.select
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -50,12 +52,7 @@ class CalendarFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-
-    lateinit var dateTV: TextView
-    lateinit var calendarView: CalendarView
-    lateinit var addBtn: Button
-    lateinit var eventRecyclerView: RecyclerView
-    val allCalendarEvents = mutableMapOf<String, ArrayList<Event>>()
+    private lateinit var selectedDate: String
 
 
     override fun onCreateView(
@@ -64,129 +61,20 @@ class CalendarFragment : Fragment() {
     ): View {
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
         return binding.root
-
-
-        // Inflate the layout for this fragment
-        /*val view = inflater.inflate(R.layout.fragment_calendar, container, false)
-
-
-        // initialize calendar here
-
-        eventRecyclerView = view.findViewById(R.id.eventRecyclerView)
-
-        eventRecyclerView.layoutManager = LinearLayoutManager(activity)*/
-
-
-
-        //for(event in calendarViewModel.events.value!!) {
-
-            /*
-            val date = event.startDate
-            if (allCalendarEvents[date] == null) {
-                val newList: ArrayList<Event> = arrayListOf()
-                newList.add(event)
-                allCalendarEvents[date] = newList
-            } else {
-                allCalendarEvents[date]?.add(event)
-            }*/
-        //}
-
-
-
-        /*
-        val data = ArrayList<CalendarEvent>()
-
-        // This will pass the ArrayList to our Adapter
-        val adapter = CalendarAdapter(data)
-
-        // Setting the Adapter with the recyclerview
-        eventRecyclerView.adapter = adapter*/
-
-        //return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // initialize to current date
+        val formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
+        selectedDate = LocalDateTime.now().format(formatter)
+        binding.dateView.text = selectedDate
+
 
         configureEventsRecyclerView()
         configureObservers()
         configureButtons()
-/*
-        calendarView = view.findViewById(R.id.calendarView) as CalendarView
-        dateTV = view.findViewById(R.id.dateView) as TextView
-
-        //calendarViewModel.fetchEvents()
-
-        Log.d("zzzzzzzzzzz", "SIZE ${calendarViewModel.events.value?.size}")
-
-        //set current date as default
-        var selectedDate: String
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
-        selectedDate = current.format(formatter)
-        dateTV.setText(selectedDate)
-
-        // changing dates (and lists) by clicking dates on calendar
-        calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            selectedDate = (year.toString() + "-" + (month + 1) + "-" + dayOfMonth)
-            dateTV.setText(selectedDate)
-
-            // load list by date selected
-            var currentList = allCalendarEvents[selectedDate]
-            if (currentList == null) {
-                // no list, load an empty list
-                val emptyList: ArrayList<Event> = arrayListOf()
-                currentList = emptyList
-            }
-
-            val adapter = EventAdapter(currentList)
-            eventRecyclerView.adapter = adapter
-        }
-
-        // add events to list
-        addBtn = view.findViewById(R.id.btnEventAdd)
-        addBtn.setOnClickListener {
-            Log.d("aaaaaaaaaaaaaa", "SIZE ${calendarViewModel.events.value?.size}")
-
-            for (event in calendarViewModel.events.value!!) {
-                val date = event.startDate
-                if (allCalendarEvents[date] == null) {
-                    val newList: ArrayList<Event> = arrayListOf()
-                    newList.add(event)
-                    allCalendarEvents[date] = newList
-                } else {
-                    allCalendarEvents[date]?.add(event)
-                }
-            }
-
-
-            /*
-            TO DO: List is not loading, get query seems to be ok, but retrieved list is null
-                - try use debugger
-                - list seems to be loaded when using button listener (ie delay between fetch and loop)
-                -
-             */
-
-            /*
-            val editText = view.findViewById<EditText>(R.id.et_eventInput)
-
-            val value = editText.text.toString()
-            calendarViewModel.createEvent(value)
-            if (value.isNotEmpty()) {
-                var currentList: ArrayList<Event> = arrayListOf()
-                if (allCalendarEvents[selectedDate] == null) {
-                    currentList.add(Event(value))
-                    allCalendarEvents[selectedDate] = currentList
-                } else {
-                    allCalendarEvents[selectedDate]?.add(Event(value))
-                    currentList = allCalendarEvents[selectedDate]!!
-                }
-                val adapter = EventAdapter(currentList)
-                eventRecyclerView.adapter = adapter
-                editText.text = null
-            }*/
-        }*/
     }
 
     private fun configureEventsRecyclerView() {
@@ -198,17 +86,23 @@ class CalendarFragment : Fragment() {
         calendarViewModel.events.observe(viewLifecycleOwner) { events ->
             binding.eventRecyclerView.adapter = EventAdapter(events)
         }
-        calendarViewModel.fetchEvents()
     }
 
     private fun configureButtons() {
         binding.btnEventAdd.setOnClickListener {
             val eventName = binding.etEventInput.text.toString()
-            calendarViewModel.createEvent(eventName)
-            calendarViewModel.fetchEvents()
+            calendarViewModel.createEvent(eventName, selectedDate)
+            calendarViewModel.fetchEventsByStartDate(selectedDate)
+            binding.etEventInput.text = null
         }
+
+        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
+            selectedDate = (year.toString() + "-" + (month + 1) + "-" + dayOfMonth)
+
+            binding.dateView.text = selectedDate
+            calendarViewModel.fetchEventsByStartDate(selectedDate)
+        }
+
     }
-
-
 
 }

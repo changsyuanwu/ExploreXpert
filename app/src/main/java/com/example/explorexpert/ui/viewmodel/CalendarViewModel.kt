@@ -6,10 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.explorexpert.data.model.Event
-import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.EventRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class CalendarViewModel @Inject constructor(
@@ -25,7 +26,9 @@ class CalendarViewModel @Inject constructor(
     val events: LiveData<List<Event>> get() = mutableEvents
 
     init {
-        fetchEvents()
+        // fetch current date
+        val formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
+        fetchEventsByStartDate(LocalDateTime.now().format(formatter))
     }
 
     fun fetchEvents() {
@@ -38,10 +41,21 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun createEvent(eventName: String) {
+    fun fetchEventsByStartDate(startDate: String) {
+        viewModelScope.launch {
+            if (auth.currentUser != null) {
+                val eventsToDisplay = eventRepo.getEventsByUserIdAndStartDate(auth.currentUser!!.uid, startDate)
+                mutableEvents.value = (eventsToDisplay)
+            }
+            Log.d(TAG, "Fetched events for ${startDate}")
+        }
+    }
+
+    fun createEvent(eventName: String, date: String) {
         if (eventName != "" && auth.currentUser != null) {
             val event = Event(
                 name = eventName,
+                startDate = date,
                 ownerUserId = auth.currentUser!!.uid
             )
 
