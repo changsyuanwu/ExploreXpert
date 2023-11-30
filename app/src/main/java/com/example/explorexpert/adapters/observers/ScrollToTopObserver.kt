@@ -14,7 +14,7 @@ class ScrollToTopObserver(
         recycler.scrollToPosition(0)
     }
     override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-        recycler.scrollToPosition(0)
+        //recycler.scrollToPosition(0)
     }
     override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
         recycler.scrollToPosition(0)

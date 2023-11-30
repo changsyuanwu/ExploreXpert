@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.explorexpert.data.model.DateTimeRange
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
@@ -26,32 +27,35 @@ class TripViewModel @Inject constructor(
     private val mutableSavedItems = MutableLiveData<List<SavedItem>>()
     val savedItems: LiveData<List<SavedItem>> get() = mutableSavedItems
 
-    private lateinit var trip: Trip
+
+    private val mutableTrip = MutableLiveData<Trip>()
+    val trip: LiveData<Trip> get() = mutableTrip
 
 
     fun fetchSavedItems() {
         viewModelScope.launch {
-            if (::trip.isInitialized) {
-                val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip)
+            if (trip.value != null) {
+                val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip.value!!)
                 mutableSavedItems.value = savedItemsToDisplay
             }
-            Log.d(TAG, "Fetched items")
         }
 
     }
 
     fun refreshTrip() {
         viewModelScope.launch {
-            val updatedTrip = tripRepo.getTripById(trip.id)
-            if (updatedTrip != null) {
-                setTrip(updatedTrip)
-                fetchSavedItems()
+            if (trip.value != null) {
+                val updatedTrip = tripRepo.getTripById(trip.value!!.id)
+                if (updatedTrip != null) {
+                    setTrip(updatedTrip)
+                    fetchSavedItems()
+                }
             }
         }
     }
 
     fun setTrip(tripToSet: Trip) {
-        trip = tripToSet
+        mutableTrip.value = tripToSet
     }
 
     suspend fun getOwnerUserName(ownerUserId: String): String {
@@ -63,5 +67,57 @@ class TripViewModel @Inject constructor(
             }
         }
         return ""
+    }
+
+    fun deleteTrip(tripId: String) {
+        viewModelScope.launch {
+            tripRepo.deleteTrip(tripId)
+        }
+    }
+
+    fun getCurrentUserId() : String {
+        if (auth.currentUser != null) {
+            return auth.currentUser!!.uid
+        }
+        return ""
+    }
+
+    fun updateTrip(newTripName: String, isPrivate: Boolean) {
+        refreshTrip()
+
+        if (trip.value != null) {
+            val newTrip = trip.value!!.copy(
+                name = newTripName,
+                private = isPrivate,
+            )
+
+            viewModelScope.launch {
+                try {
+                    tripRepo.setTrip(newTrip)
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "Error updating trip name and privacy: ${e.message}", e)
+                }
+            }
+        }
+    }
+
+    fun updateTripDates(datesSelected: DateTimeRange) {
+        refreshTrip()
+
+        if (trip.value != null) {
+            val newTrip = trip.value!!.copy(
+                datesSelected = datesSelected
+            )
+
+            viewModelScope.launch {
+                try {
+                    tripRepo.setTrip(newTrip)
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "Error updating trip with dates: ${e.message}", e)
+                }
+            }
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.example.explorexpert.adapters
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +19,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,6 +49,15 @@ class TripAdapter(
             }
             else {
                 binding.btnSavedItems.text = "${trip.savedItemIds.size} items"
+            }
+
+
+            val btnSavedItems = binding.btnSavedItems.findViewById<MaterialButton>(R.id.btnSavedItems)
+            if (trip.private) {
+                btnSavedItems.setIconResource(R.drawable.outline_lock_24)
+            }
+            else {
+                btnSavedItems.setIconResource(R.drawable.baseline_public_24)
             }
 
 
