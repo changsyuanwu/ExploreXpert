@@ -1,14 +1,12 @@
 package com.example.explorexpert.ui.view
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.databinding.AddNoteBottomSheetBinding
 import com.example.explorexpert.ui.viewmodel.AddTripItemViewModel
-import com.example.explorexpert.ui.viewmodel.PlanViewModel
 import com.example.explorexpert.ui.viewmodel.TripViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +52,7 @@ class AddNoteBottomSheetDialogFragment(
             val desc = binding.txtInputNoteDescription.editText?.text.toString()
             addTripItemViewModel.addNote(title, desc)
             (requireParentFragment() as TripDialogFragment).refreshTrip()
+            (requireParentFragment() as TripDialogFragment).scheduleTripRefresh()
             tripViewModel.fetchSavedItems()
             this.dismiss()
         }

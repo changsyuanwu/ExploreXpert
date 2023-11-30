@@ -39,7 +39,6 @@ class PlanViewModel @Inject constructor(
                 val tripsToDisplay = tripRepo.getTripsByUserId(auth.currentUser!!.uid)
                 mutableTrips.value = (tripsToDisplay)
             }
-            Log.d(TAG, "Fetched trips")
         }
     }
 
@@ -52,8 +51,14 @@ class PlanViewModel @Inject constructor(
                     }
 
                 mutableSavedItems.value = savedItemsToDisplay
-                Log.d(TAG, savedItemsToDisplay.toString())
             }
         }
+    }
+
+    fun getCurrentUserId() : String {
+        if (auth.currentUser != null) {
+            return auth.currentUser!!.uid
+        }
+        return ""
     }
 }

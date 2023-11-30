@@ -48,6 +48,7 @@
                 android:paddingHorizontal="16dp"
                 android:text="0 items"
                 android:textColor="@color/black"
+                style="@style/Widget.Material3.Button"
                 app:icon="@drawable/outline_lock_24"
                 app:iconTint="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"

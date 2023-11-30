@@ -57,11 +57,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_calendar -> swapFragment(calendarFragment)
                 R.id.nav_map -> swapFragment(mapFragment);
                 R.id.nav_weather -> swapFragment(weatherFragment)
-                R.id.nav_plan -> swapFragment(planFragment)
+                R.id.nav_plan -> {
+                    planFragment.refreshRecyclerViews()
+                    swapFragment(planFragment)
+                }
                 else -> false
             }
             true
         }
+
+
     }
 
     // function to swap fragments in the fragment container
@@ -73,5 +78,15 @@ class MainActivity : AppCompatActivity() {
 
     fun getMapFragment(): MapsFragment {
         return mapFragment;
+    }
+
+    fun swapToPlanFragment() {
+        swapFragment(planFragment);
+        binding.bottomNav.selectedItemId = R.id.nav_plan
+    }
+
+    fun swapToWeatherFragment() {
+        swapFragment(weatherFragment);
+        binding.bottomNav.selectedItemId = R.id.nav_weather
     }
 }

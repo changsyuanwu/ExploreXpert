@@ -21,6 +21,8 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Color
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import androidx.fragment.app.Fragment
 import com.example.explorexpert.MainActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,7 +32,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.explorexpert.R
-import com.example.explorexpert.adapters.WeatherAdapter
+import com.example.explorexpert.adapters.ForecastAdapter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.AutocompletePrediction
@@ -43,6 +45,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
+import java.util.Date
+import java.util.Locale
 
 
 private const val TAG = "WeatherFragment"
@@ -52,17 +56,19 @@ class WeatherFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var textView: TextView
     private lateinit var status: TextView
-    private lateinit var weatherRecyclerView: RecyclerView
-    private lateinit var weatherAdapter: WeatherAdapter
     private lateinit var autoCompleteAdapter: ArrayAdapter<AutocompletePrediction>
     private lateinit var appInfo: ApplicationInfo
-    private var weatherItems: MutableList<WeatherAdapter.WeatherItem> = mutableListOf()
     private lateinit var addressTextView: TextView
 
     // Default location (University of Waterloo)
     private var defLatitude = 43.4723
     private var defLongitude = -80.5449
     private lateinit var weatherIconImageView: ImageView
+
+    // Forecast properties
+    private lateinit var forecastRecyclerView: RecyclerView
+    private lateinit var forecastAdapter: ForecastAdapter
+    private val forecastItems: ArrayList<ForecastAdapter.ForecastItem> = ArrayList()
 
 
     override fun onAttach(context: Context) {
@@ -80,12 +86,14 @@ class WeatherFragment : Fragment() {
         textView = view.findViewById(R.id.temp)
         status = view.findViewById(R.id.status)
         addressTextView = view.findViewById(R.id.address)
-        weatherRecyclerView = view.findViewById(R.id.weatherRecyclerView)
-        weatherAdapter = WeatherAdapter(weatherItems)
-        weatherRecyclerView.layoutManager = LinearLayoutManager(context)
-        weatherRecyclerView.adapter = weatherAdapter
         weatherIconImageView = view.findViewById(R.id.weatherIcon)
         loadWeatherIcon(weatherIconImageView, "Snow")
+
+        // Initialize the RecyclerView for forecast
+        forecastRecyclerView = view.findViewById(R.id.forecastRecyclerView)
+        forecastAdapter = ForecastAdapter(forecastItems)
+        forecastRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        forecastRecyclerView.adapter = forecastAdapter
 
         val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
 
@@ -100,15 +108,6 @@ class WeatherFragment : Fragment() {
             searchPlace()
         }
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Stub for grabbing info from map fragment, can move to other parts of module
-        if (isAdded) {
-            println((requireActivity() as MainActivity).getMapFragment().getMarkedAddress())
-        }
     }
 
     private fun searchPlace() {
@@ -142,13 +141,16 @@ class WeatherFragment : Fragment() {
         val appId = appInfo.metaData?.getString("openweather.API_KEY")
         val weatherUrl = "https://api.openweathermap.org/data/2.5/weather?" +
                 "lat=$latitude&lon=$longitude&units=metric&appid=$appId"
+
+        val forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?" +
+                "lat=$latitude&lon=$longitude&units=metric&appid=$appId"
+
         val queue = Volley.newRequestQueue(requireContext())
 
         val stringReq = StringRequest(Request.Method.GET, weatherUrl,
             Response.Listener<String> { response ->
                 try {
                     val obj = JSONObject(response)
-                    Log.i(TAG, "Object: ${obj}")
                     val main = obj.getJSONObject("main")
                     val sys = obj.getJSONObject("sys")
                     val weather = obj.getJSONArray("weather").getJSONObject(0)
@@ -166,11 +168,6 @@ class WeatherFragment : Fragment() {
 
                     loadWeatherIcon(weatherIconImageView, weatherStatus)
 
-                    // Add weather data to the list for RecyclerView
-                    val weatherItem =
-                        WeatherAdapter.WeatherItem(formattedTemp, weather.getString("main"))
-                    weatherItems.add(weatherItem)
-                    weatherAdapter.notifyDataSetChanged()
                     // Fetch travel advisory based on the country code
                     fetchTravelAdvisoryData(country)
 
@@ -183,7 +180,63 @@ class WeatherFragment : Fragment() {
                 textView.text = "Error: ${error.message}"
             })
 
+        val stringReq2 = StringRequest(Request.Method.GET, forecastUrl,
+            Response.Listener<String> { response ->
+                try {
+                    val obj = JSONObject(response)
+                    val forecastList = obj.getJSONArray("list")
+
+                    val newForecastItems: ArrayList<ForecastAdapter.ForecastItem> = ArrayList()
+
+                    // Track unique dates to avoid duplicates
+                    val uniqueDates = HashSet<String>()
+
+                    for (i in 1 until forecastList.length()) {
+                        val forecastObj = forecastList.getJSONObject(i)
+                        val main = forecastObj.getJSONObject("main")
+                        val weather = forecastObj.getJSONArray("weather").getJSONObject(0)
+                        val temp = main.getDouble("temp")
+                        val formattedTemp = String.format("%.1f°C", temp)
+                        val weatherStatus = weather.getString("main")
+                        val dateTxt = forecastObj.getString("dt_txt")
+                        val date = getDate(dateTxt)
+
+                        // Check if the date is already added, if not add the item
+                        if (date !in uniqueDates) {
+                            val forecastItem =
+                                ForecastAdapter.ForecastItem(date, formattedTemp, weatherStatus)
+                            forecastItems.add(forecastItem)
+                            newForecastItems.add(forecastItem)
+                            uniqueDates.add(date)
+                        }
+                    }
+
+                    // Update forecastItems with the new forecast data
+                    forecastItems.clear()
+                    forecastItems.addAll(newForecastItems)
+                    forecastAdapter.notifyDataSetChanged()
+
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+            },
+            Response.ErrorListener { error ->
+                textView.text = "Error: ${error.message}"
+            })
+
+
+
         queue.add(stringReq)
+        queue.add(stringReq2)
+    }
+
+    // Helper function to convert UTC timestamp to date format
+    private fun getDate(dateTxt: String): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.time = sdf.parse(dateTxt) ?: Date()
+        val outputDateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
+        return outputDateFormat.format(calendar.time)
     }
 
     private val startAutocomplete =
@@ -262,7 +315,6 @@ class WeatherFragment : Fragment() {
             val data = obj.getJSONObject("data")
             val advisory = data.getJSONObject(countryCode).getJSONObject("advisory")
             val score = advisory.getDouble("score")
-            Log.i(TAG, "Object: ${score}")
             val ratingBar: RatingBar? = view?.findViewById(R.id.ratingBar)
             val riskMessageTextView: TextView? = view?.findViewById(R.id.riskMessageTextView)
             val travelWarningSection: RelativeLayout? =
