@@ -1,5 +1,7 @@
 package com.example.explorexpert.ui.view
 
+import android.content.DialogInterface
+import android.content.DialogInterface.OnDismissListener
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,17 +37,19 @@ class LocationBottomSheetDialogFragment: BottomSheetDialogFragment() {
     }
 
     private fun configureButtons() {
+        val mainActivity = requireActivity() as MainActivity
         binding.btnNearbyPlaces.setOnClickListener {
             this.dismiss()
         }
         binding.btnAdd.setOnClickListener {
-            (requireActivity() as MainActivity).swapToPlanFragment()
-            // TODO: send info to plan tab
-            this.dismiss()
+            val selectTripBottomSheetDialogFragment = SelectTripBottomSheetDialogFragment()
+            selectTripBottomSheetDialogFragment.show(
+                childFragmentManager,
+                SelectTripBottomSheetDialogFragment.TAG
+            )
         }
         binding.btnWeather.setOnClickListener {
-            (requireActivity() as MainActivity).swapToWeatherFragment()
-            // TODO: set location in weather tab
+            mainActivity.swapToWeatherViaMap()
             this.dismiss()
         }
     }
