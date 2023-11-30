@@ -51,7 +51,6 @@ class EventRepoImplementation @Inject constructor(
                     try {
                         val event = document.toObject(Event::class.java)
                         event?.id = document.id
-                        Log.e(EventRepoImplementation.TAG, "11111111111")
                         event
 
                     } catch (e: Exception) {
@@ -80,7 +79,6 @@ class EventRepoImplementation @Inject constructor(
                     try {
                         val event = document.toObject(Event::class.java)
                         event?.id = document.id
-                        Log.e(EventRepoImplementation.TAG, "11111111111")
                         event
 
                     } catch (e: Exception) {
