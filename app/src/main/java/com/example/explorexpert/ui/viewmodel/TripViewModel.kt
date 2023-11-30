@@ -26,13 +26,15 @@ class TripViewModel @Inject constructor(
     private val mutableSavedItems = MutableLiveData<List<SavedItem>>()
     val savedItems: LiveData<List<SavedItem>> get() = mutableSavedItems
 
-    private lateinit var trip: Trip
+
+    private val mutableTrip = MutableLiveData<Trip>()
+    val trip: LiveData<Trip> get() = mutableTrip
 
 
     fun fetchSavedItems() {
         viewModelScope.launch {
-            if (::trip.isInitialized) {
-                val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip)
+            if (trip.value != null) {
+                val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip.value!!)
                 mutableSavedItems.value = savedItemsToDisplay
             }
             Log.d(TAG, "Fetched items")
@@ -42,16 +44,18 @@ class TripViewModel @Inject constructor(
 
     fun refreshTrip() {
         viewModelScope.launch {
-            val updatedTrip = tripRepo.getTripById(trip.id)
-            if (updatedTrip != null) {
-                setTrip(updatedTrip)
-                fetchSavedItems()
+            if (trip.value != null) {
+                val updatedTrip = tripRepo.getTripById(trip.value!!.id)
+                if (updatedTrip != null) {
+                    setTrip(updatedTrip)
+                    fetchSavedItems()
+                }
             }
         }
     }
 
     fun setTrip(tripToSet: Trip) {
-        trip = tripToSet
+        mutableTrip.value = tripToSet
     }
 
     suspend fun getOwnerUserName(ownerUserId: String): String {
@@ -61,6 +65,13 @@ class TripViewModel @Inject constructor(
             if (owner != null) {
                 return owner.firstName + " " + owner.lastName
             }
+        }
+        return ""
+    }
+
+    fun getCurrentUserId(): String {
+        if (auth.currentUser != null) {
+            return auth.currentUser!!.uid
         }
         return ""
     }
