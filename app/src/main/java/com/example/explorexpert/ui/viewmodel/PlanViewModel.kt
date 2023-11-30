@@ -55,7 +55,7 @@ class PlanViewModel @Inject constructor(
         }
     }
 
-    fun getCurrentUserId(): String {
+    fun getCurrentUserId() : String {
         if (auth.currentUser != null) {
             return auth.currentUser!!.uid
         }

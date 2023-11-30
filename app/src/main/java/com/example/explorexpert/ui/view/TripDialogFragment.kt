@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
@@ -90,28 +89,28 @@ class TripDialogFragment(
 
         showProgressIndicator()
 
-        configureUI()
+        configureUI(trip)
         configureRecyclerView()
         configurePlacesSDK()
         configureButtons()
         configureObservers()
     }
 
-    private fun configureUI() {
-        binding.txtTripTitle.text = trip.name
+    private fun configureUI(tripToUse: Trip) {
+        binding.txtTripTitle.text = tripToUse.name
 
-        configureSavedItemsCount(trip.savedItemIds.size)
+        configureSavedItemsCount(tripToUse.savedItemIds.size)
 
         CoroutineScope(Dispatchers.Main).launch {
-            binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(trip.ownerUserId)}"
+            binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(tripToUse.ownerUserId)}"
         }
     }
 
-    private fun configureSavedItemsCount(savedItemsCount: Int) {
-        if (savedItemsCount == 1) {
+    private fun configureSavedItemsCount(savedItemCount: Int) {
+        if (savedItemCount == 1) {
             binding.txtNumItems.text = "1 item"
         } else {
-            binding.txtNumItems.text = "${trip.savedItemIds.size} items"
+            binding.txtNumItems.text = "$savedItemCount items"
         }
     }
 
@@ -124,6 +123,14 @@ class TripDialogFragment(
 
         binding.btnRefreshIcon.setOnClickListener {
             refreshTrip()
+        }
+
+        binding.btnEditIcon.setOnClickListener {
+            val editTripDialogFragment = EditTripDialogFragment(trip)
+            editTripDialogFragment.show(
+                childFragmentManager,
+                "editTripDialog"
+            )
         }
 
         binding.fabAddNote.setOnClickListener {
@@ -177,7 +184,7 @@ class TripDialogFragment(
         }
 
         tripViewModel.trip.observe(viewLifecycleOwner) {
-            configureSavedItemsCount(it.savedItemIds.size)
+            configureUI(it)
         }
     }
 
@@ -223,7 +230,7 @@ class TripDialogFragment(
                     )
                     addTripItemViewModel.addPlace(place)
                     refreshTrip()
-                    scheduleTripItemsRefresh()
+                    scheduleTripRefresh()
                 }
             } else if (result.resultCode == Activity.RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -239,7 +246,7 @@ class TripDialogFragment(
         tripViewModel.refreshTrip()
     }
 
-    fun scheduleTripItemsRefresh() {
+    fun scheduleTripRefresh() {
         val timer = Timer()
         var executionCount = 0
 

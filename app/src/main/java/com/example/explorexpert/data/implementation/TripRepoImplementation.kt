@@ -264,4 +264,29 @@ class TripRepoImplementation @Inject constructor(
             }
         }
     }
+
+    override suspend fun deleteTrip(tripId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val trip = getTripById(tripId)
+
+                // Don't execute if the trip document can't be found
+                if (trip == null) {
+                    return@withContext
+                }
+
+                trip?.savedItemIds?.forEach { itemId ->
+                    removeSavedItem(itemId)
+                }
+
+                tripCollection
+                    .document(tripId)
+                    .delete()
+                    .await()
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error deleting trip: ${e.message}")
+            }
+        }
+    }
 }

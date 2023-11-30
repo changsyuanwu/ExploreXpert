@@ -37,7 +37,6 @@ class TripViewModel @Inject constructor(
                 val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip.value!!)
                 mutableSavedItems.value = savedItemsToDisplay
             }
-            Log.d(TAG, "Fetched items")
         }
 
     }
@@ -69,10 +68,39 @@ class TripViewModel @Inject constructor(
         return ""
     }
 
-    fun getCurrentUserId(): String {
+    fun deleteTrip(tripId: String) {
+        viewModelScope.launch {
+            tripRepo.deleteTrip(tripId)
+        }
+    }
+
+    fun getCurrentUserId() : String {
         if (auth.currentUser != null) {
             return auth.currentUser!!.uid
         }
         return ""
+    }
+
+    fun updateTrip(oldTrip: Trip, newTripName: String, isPrivate: Boolean) {
+        val newTrip = Trip(
+            id = oldTrip.id,
+            name = newTripName,
+            description = oldTrip.description,
+            private = isPrivate,
+            ownerUserId = oldTrip.ownerUserId,
+            sharedUsers = oldTrip.sharedUsers,
+            savedItemIds = oldTrip.savedItemIds,
+            createdAt = oldTrip.createdAt,
+            updatedAt = oldTrip.updatedAt
+        )
+
+        viewModelScope.launch {
+            try {
+                tripRepo.setTrip(newTrip)
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error updating trip: ${e.message}", e)
+            }
+        }
     }
 }

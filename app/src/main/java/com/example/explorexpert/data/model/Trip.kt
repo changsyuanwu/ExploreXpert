@@ -8,7 +8,7 @@ data class Trip(
     var id: String = UUID.randomUUID().toString(),
     val name: String = "",
     val description: String = "",
-    val isPrivate: Boolean = true,
+    val private: Boolean = true,
     val ownerUserId: String = "",
     val sharedUsers: MutableList<SharedUserRecord> = mutableListOf(),
     val savedItemIds: MutableList<String> = mutableListOf(),
