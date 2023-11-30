@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.SavedItemType
+import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.SavedItemBinding
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
@@ -21,6 +23,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +33,9 @@ import java.util.Locale
 class SavedItemAdapter(
     private val itemClickListener: ItemClickListener,
     private val isInTripDialog: Boolean = true,
+    private val tripRepo: TripRepository,
+    private val trip: Trip? = null,
+    private val currentUserId: String,
 ): ListAdapter<SavedItem, SavedItemAdapter.ViewHolder>(DiffCallback()){
 
     companion object {
@@ -51,6 +57,33 @@ class SavedItemAdapter(
             binding.txtItemName.text = savedItem.title
 
             binding.txtItemDescription.text = savedItem.description
+
+            binding.btnFavIcon.setOnClickListener {
+                val confirmDialog = MaterialAlertDialogBuilder(context)
+                    .setTitle("Remove this item?")
+                    .setMessage("Removing it will remove it from any trips and your saved items.")
+                    .setNegativeButton("Cancel") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Remove") { dialog, which ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            tripRepo.removeSavedItem(savedItem.id)
+
+                            var newItems: List<SavedItem>
+                            // Update the list of items
+                            if (isInTripDialog && trip != null) {
+                                trip.savedItemIds.remove(savedItem.id)
+                                newItems = tripRepo.getSavedItemsFromTrip(trip)
+                            }
+                            else {
+                                newItems = tripRepo.getSavedItemsByUserId(currentUserId)
+                            }
+                            submitList(newItems)
+                            dialog.dismiss()
+                        }
+                    }
+                    .show()
+            }
 
             binding.savedItemContainer.setOnClickListener {
                 itemClickListener.onItemClick(savedItem)
