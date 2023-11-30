@@ -37,6 +37,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Timer
 import javax.inject.Inject
@@ -122,8 +128,22 @@ class TripDialogFragment(
 
     private fun configureSelectedDates(selectedDates: DateTimeRange?) {
         if (selectedDates != null) {
-            val startDate = SimpleDateFormat("MMM dd").format(Date(selectedDates.startTime + 1))
-            val endDate = SimpleDateFormat("MMM dd").format(Date(selectedDates.endTime + 1))
+            val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM dd")
+
+            val startDateTime = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(selectedDates.startTime)
+                    .plus(1, ChronoUnit.DAYS),
+                ZoneId.systemDefault()
+            )
+            val startDate = startDateTime.format(dateTimeFormatter)
+
+            val endDateTime = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(selectedDates.endTime)
+                    .plus(1, ChronoUnit.DAYS),
+                ZoneId.systemDefault()
+            )
+            val endDate = endDateTime.format(dateTimeFormatter)
+
             binding.btnAddDates.text = "$startDate ➡ $endDate"
         }
     }
