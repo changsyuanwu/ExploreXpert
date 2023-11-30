@@ -20,7 +20,9 @@ import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.PlanViewModel
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.timerTask
 
 @AndroidEntryPoint
 class PlanFragment : Fragment() {
@@ -116,7 +118,9 @@ class PlanFragment : Fragment() {
 //                    "tripDialog"
 //                )
                 }
-            }
+            },
+            tripRepo = tripRepo,
+            currentUserId = planViewModel.getCurrentUserId()
         )
 
         binding.savedItemsRecyclerView.adapter = savedItemAdapter
@@ -182,5 +186,29 @@ class PlanFragment : Fragment() {
 
     private fun hideProgressIndicator() {
         binding.progressIndicator.visibility = View.INVISIBLE
+    }
+
+    fun refreshRecyclerViews() {
+        if (this::planViewModel.isInitialized) {
+            planViewModel.fetchTrips()
+            planViewModel.fetchSavedItems()
+        }
+    }
+
+    fun scheduleRecyclerViewRefresh() {
+        val timer = Timer()
+        var executionCount = 0
+
+        timer.scheduleAtFixedRate(
+            timerTask {
+                if (executionCount > 5) {
+                    this.cancel()
+                }
+                executionCount++
+                refreshRecyclerViews()
+            },
+            300,
+            1000
+        )
     }
 }

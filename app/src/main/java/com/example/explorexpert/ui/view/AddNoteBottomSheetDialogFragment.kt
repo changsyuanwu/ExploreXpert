@@ -54,6 +54,7 @@ class AddNoteBottomSheetDialogFragment(
             val desc = binding.txtInputNoteDescription.editText?.text.toString()
             addTripItemViewModel.addNote(title, desc)
             (requireParentFragment() as TripDialogFragment).refreshTrip()
+            (requireParentFragment() as TripDialogFragment).scheduleTripItemsRefresh()
             tripViewModel.fetchSavedItems()
             this.dismiss()
         }

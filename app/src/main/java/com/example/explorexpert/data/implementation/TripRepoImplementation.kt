@@ -202,4 +202,66 @@ class TripRepoImplementation @Inject constructor(
                 return@withContext emptyList()
             }
         }
+
+    private suspend fun getTripsWithSavedItem(savedItemId: String) : List<Trip> =
+        withContext(Dispatchers.IO) {
+            try {
+                val tripsWithSavedItemQueryResult = tripCollection
+                    .whereArrayContains("savedItemIds", savedItemId)
+                    .get()
+                    .await()
+
+                val tripsWithSavedItem = tripsWithSavedItemQueryResult.documents.mapNotNull { doc ->
+                    try {
+                        val trip = doc.toObject(Trip::class.java)
+                        trip?.id = doc.id
+                        trip
+                    }
+                    catch (e: Exception) {
+                        Log.e(TAG, "Errpr casting document to Trip object: ${e.message}")
+                        null
+                    }
+                }
+
+                return@withContext tripsWithSavedItem
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error reading trips with saved item query: ${e.message}")
+                return@withContext emptyList()
+            }
+        }
+
+    private suspend fun removeSavedItemFromTrip(trip: Trip, savedItemId: String) {
+        withContext(Dispatchers.IO) {
+            trip.savedItemIds.remove(savedItemId)
+            tripCollection.document(trip.id)
+                .set(trip)
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "Error removing saved item from trip: ${e.message}")
+                }
+        }
+    }
+
+
+    override suspend fun removeSavedItem(savedItemId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val tripsWithSavedItem = getTripsWithSavedItem(savedItemId)
+
+                // Delete the saved item from all associated trips
+                tripsWithSavedItem.forEach { trip ->
+                    removeSavedItemFromTrip(trip, savedItemId)
+                }
+
+                // Delete the saved item
+                savedItemCollection
+                    .document(savedItemId)
+                    .delete()
+                    .await()
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error removing saved item: ${e.message}")
+            }
+        }
+    }
 }
