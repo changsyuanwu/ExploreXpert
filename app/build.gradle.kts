@@ -135,6 +135,9 @@ dependencies {
 
     // Circular image view
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // Google place search
+    implementation("com.urmich.android:placesearch-ktx:1.1.0")
 }
 
 kapt {
