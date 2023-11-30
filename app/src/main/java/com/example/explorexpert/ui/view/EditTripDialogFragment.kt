@@ -89,7 +89,7 @@ class EditTripDialogFragment (
 
             // If the name is (different and non empty) or privacy setting was toggled, update the trip
             if ((newTripName != trip.name && newTripName != "") || !isPublic != trip.private ) {
-                tripViewModel.updateTrip(trip, newTripName, !isPublic)
+                tripViewModel.updateTrip(newTripName, !isPublic)
             }
 
             refreshGrandparentFragment()
@@ -105,7 +105,7 @@ class EditTripDialogFragment (
 
     private fun refreshGrandparentFragment() {
         ((requireParentFragment() as TripDialogFragment).requireParentFragment() as PlanFragment).refreshRecyclerViews()
-        ((requireParentFragment() as TripDialogFragment).requireParentFragment() as PlanFragment).scheduleRecyclerViewRefresh()
+        ((requireParentFragment() as TripDialogFragment).requireParentFragment() as PlanFragment).scheduleRecyclerViewsRefresh()
     }
 
     private fun showProgressIndicator() {

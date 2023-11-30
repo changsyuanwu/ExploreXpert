@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.SavedItemAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.model.DateTimeRange
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
@@ -30,10 +31,13 @@ import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.timerTask
@@ -100,6 +104,8 @@ class TripDialogFragment(
         binding.txtTripTitle.text = tripToUse.name
 
         configureSavedItemsCount(tripToUse.savedItemIds.size)
+        configureSelectedDates(tripToUse.datesSelected)
+        configureAddDatesButtonListener()
 
         CoroutineScope(Dispatchers.Main).launch {
             binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(tripToUse.ownerUserId)}"
@@ -114,10 +120,18 @@ class TripDialogFragment(
         }
     }
 
+    private fun configureSelectedDates(selectedDates: DateTimeRange?) {
+        if (selectedDates != null) {
+            val startDate = SimpleDateFormat("MMM dd").format(Date(selectedDates.startTime + 1))
+            val endDate = SimpleDateFormat("MMM dd").format(Date(selectedDates.endTime + 1))
+            binding.btnAddDates.text = "$startDate ➡ $endDate"
+        }
+    }
+
     private fun configureButtons() {
         binding.btnBackIcon.setOnClickListener {
             (requireParentFragment() as PlanFragment).refreshRecyclerViews()
-            (requireParentFragment() as PlanFragment).scheduleRecyclerViewRefresh()
+            (requireParentFragment() as PlanFragment).scheduleRecyclerViewsRefresh()
             this.dismiss()
         }
 
@@ -143,6 +157,39 @@ class TripDialogFragment(
 
         binding.fabAddPlace.setOnClickListener {
             startPlaceSearch()
+        }
+    }
+
+    private fun configureAddDatesButtonListener() {
+        binding.btnAddDates.setOnClickListener(null)
+
+        val dateRangePickerBuilder = MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText("Add dates")
+
+        if (trip.datesSelected != null) {
+            val androidxDateSelectedPair = androidx.core.util.Pair<Long, Long>(
+                trip.datesSelected!!.startTime,
+                trip.datesSelected!!.endTime
+            )
+            dateRangePickerBuilder.setSelection(androidxDateSelectedPair)
+        }
+
+        val dateRangePicker = dateRangePickerBuilder.build()
+
+        dateRangePicker.addOnPositiveButtonClickListener {
+            if (dateRangePicker.selection != null) {
+                val selectedDateTimeRange = DateTimeRange(
+                    dateRangePicker.selection!!.first,
+                    dateRangePicker.selection!!.second
+                )
+                configureSelectedDates(selectedDateTimeRange)
+                tripViewModel.updateTripDates(selectedDateTimeRange)
+                refreshTripNowAndLater()
+            }
+        }
+
+        binding.btnAddDates.setOnClickListener {
+            dateRangePicker.show(parentFragmentManager, "tripDateRangePicker")
         }
     }
 
@@ -185,6 +232,8 @@ class TripDialogFragment(
 
         tripViewModel.trip.observe(viewLifecycleOwner) {
             configureUI(it)
+            addTripItemViewModel.setTrip(it)
+            trip = it
         }
     }
 
@@ -229,8 +278,7 @@ class TripDialogFragment(
                         TAG, "Place: ${place.name}, ${place.id}"
                     )
                     addTripItemViewModel.addPlace(place)
-                    refreshTrip()
-                    scheduleTripRefresh()
+                    refreshTripNowAndLater()
                 }
             } else if (result.resultCode == Activity.RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -241,6 +289,12 @@ class TripDialogFragment(
                 Log.e(TAG, "Error during autocomplete: ${status.statusMessage}")
             }
         }
+
+    private fun refreshTripNowAndLater() {
+        refreshTrip()
+        scheduleTripRefresh()
+    }
+
 
     fun refreshTrip() {
         tripViewModel.refreshTrip()
