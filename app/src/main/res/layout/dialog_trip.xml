@@ -133,6 +133,17 @@
                 app:layout_constraintStart_toEndOf="@+id/iconCircle"
                 app:layout_constraintTop_toTopOf="@+id/txtOwner" />
 
+            <Button
+                android:id="@+id/btnAddDates"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Add trip dates"
+                app:icon="@drawable/baseline_edit_calendar_24"
+                app:layout_constraintStart_toStartOf="@id/txtOwner"
+                app:layout_constraintTop_toBottomOf="@id/txtOwner" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/savedItemsRecyclerView"
                 android:layout_width="match_parent"
@@ -143,7 +154,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtOwner" />
+                app:layout_constraintTop_toBottomOf="@id/btnAddDates" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

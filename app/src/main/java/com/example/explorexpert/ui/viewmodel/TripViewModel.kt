@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.explorexpert.data.model.DateTimeRange
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
@@ -37,7 +38,6 @@ class TripViewModel @Inject constructor(
                 val savedItemsToDisplay = tripRepo.getSavedItemsFromTrip(trip.value!!)
                 mutableSavedItems.value = savedItemsToDisplay
             }
-            Log.d(TAG, "Fetched items")
         }
 
     }
@@ -69,10 +69,55 @@ class TripViewModel @Inject constructor(
         return ""
     }
 
-    fun getCurrentUserId(): String {
+    fun deleteTrip(tripId: String) {
+        viewModelScope.launch {
+            tripRepo.deleteTrip(tripId)
+        }
+    }
+
+    fun getCurrentUserId() : String {
         if (auth.currentUser != null) {
             return auth.currentUser!!.uid
         }
         return ""
+    }
+
+    fun updateTrip(newTripName: String, isPrivate: Boolean) {
+        refreshTrip()
+
+        if (trip.value != null) {
+            val newTrip = trip.value!!.copy(
+                name = newTripName,
+                private = isPrivate,
+            )
+
+            viewModelScope.launch {
+                try {
+                    tripRepo.setTrip(newTrip)
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "Error updating trip name and privacy: ${e.message}", e)
+                }
+            }
+        }
+    }
+
+    fun updateTripDates(datesSelected: DateTimeRange) {
+        refreshTrip()
+
+        if (trip.value != null) {
+            val newTrip = trip.value!!.copy(
+                datesSelected = datesSelected
+            )
+
+            viewModelScope.launch {
+                try {
+                    tripRepo.setTrip(newTrip)
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "Error updating trip with dates: ${e.message}", e)
+                }
+            }
+        }
     }
 }

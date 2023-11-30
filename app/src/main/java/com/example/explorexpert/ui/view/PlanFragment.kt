@@ -200,7 +200,7 @@ class PlanFragment : Fragment() {
         }
     }
 
-    fun scheduleRecyclerViewRefresh() {
+    fun scheduleRecyclerViewsRefresh() {
         val timer = Timer()
         var executionCount = 0
 

@@ -62,7 +62,7 @@ class SavedItemAdapter(
                 val confirmDialog = MaterialAlertDialogBuilder(context)
                     .setTitle("Remove this item?")
                     .setMessage("Removing it will remove it from any trips and your saved items.")
-                    .setNegativeButton("Cancel") { dialog, which ->
+                    .setNeutralButton("Cancel") { dialog, which ->
                         dialog.dismiss()
                     }
                     .setPositiveButton("Remove") { dialog, which ->
