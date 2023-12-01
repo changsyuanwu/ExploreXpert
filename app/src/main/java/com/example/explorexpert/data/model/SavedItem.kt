@@ -12,6 +12,7 @@ data class SavedItem(
     val title: String = "",
     val description: String = "",
     val placeId: String = "",
+    val photoURL: String? = null,
     @ServerTimestamp
     val createdAt: Timestamp? = null,
     @ServerTimestamp

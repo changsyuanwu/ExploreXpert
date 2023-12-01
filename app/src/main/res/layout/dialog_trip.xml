@@ -203,12 +203,12 @@
             app:fab_icon="@drawable/outline_sticky_note_2_24"
             app:label_text="Add a note to your trip" />
 
-        <com.nambimobile.widgets.efab.FabOption
-            android:id="@+id/fabAddLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_icon="@drawable/baseline_link_24"
-            app:label_text="Add an external link" />
+<!--        <com.nambimobile.widgets.efab.FabOption-->
+<!--            android:id="@+id/fabAddLink"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:fab_icon="@drawable/baseline_link_24"-->
+<!--            app:label_text="Add an external link" />-->
 
 
     </com.nambimobile.widgets.efab.ExpandableFabLayout>

@@ -87,9 +87,18 @@ class EditTripDialogFragment(
             val newTripName = binding.txtInputTripName.editText?.text.toString()
             val isPublic = binding.switchPrivacy.isChecked
 
-            // If the name is (different and non empty) or privacy setting was toggled, update the trip
+            // Show error if trip name is empty
+            if (newTripName == "") {
+                binding.txtInputTripName.error = "Trip name cannot be empty"
+                return@setOnClickListener
+            }
+            else {
+                binding.txtInputTripName.error = null
+            }
+
+            // If the name is different or privacy setting was toggled, update the trip
             if (
-                (newTripName != trip.name && newTripName != "")
+                (newTripName != trip.name)
                 || !isPublic != trip.private
             ) {
                 tripViewModel.updateTrip(newTripName, !isPublic)
