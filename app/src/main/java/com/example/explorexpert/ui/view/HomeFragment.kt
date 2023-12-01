@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.explorexpert.R
@@ -94,7 +93,9 @@ class HomeFragment : Fragment() {
         val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
 
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), appId)
+            if (appId != null) {
+                Places.initialize(requireContext(), appId)
+            }
         }
         val placesClient = Places.createClient(requireContext())
     }
