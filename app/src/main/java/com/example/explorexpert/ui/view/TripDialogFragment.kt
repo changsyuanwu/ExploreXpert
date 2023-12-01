@@ -159,10 +159,6 @@ class TripDialogFragment(
             this.dismiss()
         }
 
-        binding.btnRefreshIcon.setOnClickListener {
-            refreshTrip()
-        }
-
         binding.btnEditIcon.setOnClickListener {
             val editTripDialogFragment = EditTripDialogFragment(trip)
             editTripDialogFragment.show(
