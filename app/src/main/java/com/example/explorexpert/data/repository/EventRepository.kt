@@ -8,4 +8,6 @@ interface EventRepository {
     suspend fun getEventsByUserId(userId: String): List<Event>
 
     suspend fun getEventsByUserIdAndStartDate(userId: String, startDate: String): List<Event>
+
+    suspend fun getEventsByUserIdAndDate(userId: String, startDate: String): List<Event>
 }

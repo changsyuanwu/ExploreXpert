@@ -67,13 +67,12 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // initialize to current date
-        val formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         selectedDate = LocalDateTime.now().format(formatter)
         binding.dateView.text = selectedDate
 
         // initialize current date list
-        calendarViewModel.fetchEventsByStartDate(selectedDate)
-
+        calendarViewModel.fetchEventsByDate(selectedDate)
         configureEventsRecyclerView()
         configureObservers()
         configureButtons()
@@ -94,14 +93,17 @@ class CalendarFragment : Fragment() {
         binding.btnEventAdd.setOnClickListener {
             val eventName = binding.etEventInput.text.toString()
             calendarViewModel.createEvent(eventName, selectedDate)
-            calendarViewModel.fetchEventsByStartDate(selectedDate)
             binding.etEventInput.text = null
+            calendarViewModel.fetchEventsByDate(selectedDate)
         }
 
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            selectedDate = (year.toString() + "-" + (month + 1) + "-" + dayOfMonth)
+            // pad 0s
+            val monthStr = if (month < 10) "0${month+1}" else month+1
+            val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else dayOfMonth
+            selectedDate = ("$year-$monthStr-$dayStr")
             binding.dateView.text = selectedDate
-            calendarViewModel.fetchEventsByStartDate(selectedDate)
+            calendarViewModel.fetchEventsByDate(selectedDate)
         }
     }
 

@@ -5,16 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.explorexpert.data.model.Trip
-import com.example.explorexpert.databinding.AddNoteBottomSheetBinding
+import com.example.explorexpert.databinding.AddLinkBottomSheetBinding
 import com.example.explorexpert.ui.viewmodel.AddTripItemViewModel
 import com.example.explorexpert.ui.viewmodel.TripViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import me.angrybyte.goose.Article
+import me.angrybyte.goose.Configuration
+import me.angrybyte.goose.ContentExtractor
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
-class AddNoteBottomSheetDialogFragment(
+class AddLinkBottomSheetDialogFragment(
     private val trip: Trip
 ): BottomSheetDialogFragment() {
 
@@ -22,7 +24,7 @@ class AddNoteBottomSheetDialogFragment(
     lateinit var addTripItemViewModel: AddTripItemViewModel
     private lateinit var tripViewModel: TripViewModel
 
-    private var _binding : AddNoteBottomSheetBinding? = null
+    private var _binding : AddLinkBottomSheetBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +38,7 @@ class AddNoteBottomSheetDialogFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = AddNoteBottomSheetBinding.inflate(inflater, container, false)
+        _binding = AddLinkBottomSheetBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -47,27 +49,22 @@ class AddNoteBottomSheetDialogFragment(
     }
 
     private fun configureButtons() {
-        binding.btnAddANoteSave.setOnClickListener {
-            val title = binding.txtInputNoteTitle.editText?.text.toString()
-            val desc = binding.txtInputNoteDescription.editText?.text.toString()
+        binding.btnAddALinkSave.setOnClickListener {
+            val linkURL = binding.txtInputURL.editText?.text.toString()
 
-            if (title == "") {
-                binding.txtInputNoteTitle.error = "Title cannot be empty"
+            if (linkURL == "") {
+                binding.txtAddALink.error = "Link cannot be empty"
                 return@setOnClickListener
             }
             else {
-                binding.txtInputNoteTitle.error = null
+                binding.txtAddALink.error = null
             }
 
-            if (desc == "") {
-                binding.txtInputNoteDescription.error = "Description cannot be empty"
-                return@setOnClickListener
-            }
-            else {
-                binding.txtInputNoteDescription.error = null
-            }
+            val config = Configuration(requireContext().cacheDir.absolutePath)
+            val extractor = ContentExtractor(config)
 
-            addTripItemViewModel.addNote(title, desc)
+            addTripItemViewModel.addLink(linkURL, extractor)
+
             (requireParentFragment() as TripDialogFragment).refreshTrip()
             (requireParentFragment() as TripDialogFragment).scheduleTripRefresh()
             tripViewModel.fetchSavedItems()
@@ -76,6 +73,6 @@ class AddNoteBottomSheetDialogFragment(
     }
 
     companion object {
-        const val TAG: String = "AddNoteBottomSheetDialogFragment"
+        const val TAG: String = "AddLinkBottomSheetDialogFragment"
     }
 }
