@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,172 +7,266 @@
     android:background="#001929"
     tools:context=".ui.view.WeatherFragment">
 
-
     <RelativeLayout
-        android:id="@+id/addressContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
-
-        <ImageView
-            android:id="@+id/locationIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="Location Icon"
-            android:src="@drawable/ic_location_icon" />
-
-        <TextView
-            android:id="@+id/address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/locationIcon"
-            android:paddingStart="8dp"
-            android:text="Loo"
-            android:textColor="#FFFFFF"
-            android:textSize="28sp" />
-
-        <Button
-            android:id="@+id/searchIcon"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentEnd="true"
-            android:clickable="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="Search Icon"
-            android:focusable="true"
-            android:onClick="onSearchIconClick"
-            android:background="@drawable/ic_search_24dp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/weatherInfoContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/addressContainer"
-        android:layout_centerHorizontal="true"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="369dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
-
-            <LinearLayout
-                android:id="@+id/weatherTextContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="25dp">
-
-                <TextView
-                    android:id="@+id/status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rain"
-                    android:textColor="#FFFFFF"
-                    android:textSize="25sp" />
-
-                <TextView
-                    android:id="@+id/temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-thin"
-                    android:text="__°C"
-                    android:textColor="#FFFFFF"
-                    android:textSize="70sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/weatherIcon"
-                android:layout_width="195dp"
-                android:layout_height="match_parent"
-                android:contentDescription="Weather Icon" />
+        android:layout_height="wrap_content">
 
 
-        </LinearLayout>
-
-    </RelativeLayout>
-
-
-    <RelativeLayout
-        android:id="@+id/travelWarningSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/weatherInfoContainer"
-        android:layout_marginTop="0dp"
-        android:padding="16dp"
-        android:background="@drawable/travel_warning_background">
-
-        <TextView
-            android:id="@+id/riskLevelTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:text="Travel Warning"
-            android:textColor="#000000"
-            android:textSize="20sp" />
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="?android:attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/riskLevelTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:numStars="5"
-            android:stepSize="0.1" />
-
-        <TextView
-            android:id="@+id/riskMessageTextView"
+        <RelativeLayout
+            android:id="@+id/addressContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ratingBar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:textColor="#000000"
-            android:textSize="16sp" />
-
-    </RelativeLayout>
-
-    <!-- weather_item.xml -->
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/travelWarningSection"
-        android:layout_marginTop="4dp"
-        android:background="#FFFFFF">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Add a header for the 5-day forecast -->
-            <TextView
+            <ImageView
+                android:id="@+id/locationIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5-Day Forecast"
-                android:textColor="#000"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="Location Icon"
+                android:src="@drawable/ic_location_icon" />
 
-            <!-- RecyclerView for 5-day forecast -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/forecastRecyclerView"
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/locationIcon"
+                android:paddingStart="8dp"
+                android:text="Loo"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp" />
+
+            <Button
+                android:id="@+id/searchIcon"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_search_24dp"
+                android:clickable="true"
+                android:contentDescription="Search Icon"
+                android:focusable="true"
+                android:onClick="onSearchIconClick" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/weatherInfoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/addressContainer"
+            android:layout_centerHorizontal="true"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="369dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
+
+                <LinearLayout
+                    android:id="@+id/weatherTextContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="25dp">
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rain"
+                        android:textColor="#FFFFFF"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-thin"
+                        android:text="__°C"
+                        android:textColor="#FFFFFF"
+                        android:textSize="70sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/weatherIcon"
+                    android:layout_width="195dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Weather Icon" />
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/travelWarningSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weatherInfoContainer"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/travel_warning_background"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/riskLevelTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Travel Warning"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/riskLevelTextView"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:numStars="5"
+                android:stepSize="0.1" />
+
+            <TextView
+                android:id="@+id/riskMessageTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:layout_below="@id/ratingBar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:textColor="#000000"
+                android:textSize="16sp" />
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
-</RelativeLayout>
+        </RelativeLayout>
+
+        <!-- weather_item.xml -->
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/travelWarningSection"
+            android:layout_marginTop="4dp"
+            android:background="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Add a header for the 5-day forecast -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="5-Day Forecast"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- RecyclerView for 5-day forecast -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/forecastRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+        <RelativeLayout
+            android:id="@+id/dateInputContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/forecast"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/historicalWeather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Historical Weather Data"
+                android:textColor="#FFFFFF"
+                android:textSize="25sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/startDateInput"
+                android:layout_below="@id/historicalWeather">
+
+                <EditText
+                    android:id="@+id/startDateText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Enter Start Date"
+                    android:inputType="date"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#999999" />
+
+                <Button
+                    android:id="@+id/select1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/rect_button"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:text="Select Date" />
+            </LinearLayout>
+
+            <!-- End Date Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/startDateInput"
+                android:id="@+id/endDateInput">
+
+                <EditText
+                    android:id="@+id/endDateText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:layout_marginTop="8dp"
+                    android:hint="Enter End Date"
+                    android:inputType="date"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#999999" />
+
+                <Button
+                    android:id="@+id/select2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rect_button"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                android:text="Select Date" />
+            </LinearLayout>
+
+            <!-- Button to Trigger Historical Weather Fetch -->
+            <Button
+                android:id="@+id/fetchHistoricalWeatherButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/endDateInput"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:text="Fetch Historical Weather" />
+        </RelativeLayout>
+    </RelativeLayout>
+</ScrollView>
