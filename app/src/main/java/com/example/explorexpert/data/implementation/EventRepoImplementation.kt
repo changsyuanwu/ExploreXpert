@@ -94,4 +94,59 @@ class EventRepoImplementation @Inject constructor(
             }
         }
 
+    override suspend fun getEventsByUserIdAndDate(userId: String, date: String): List<Event> =
+        withContext(Dispatchers.IO) {
+            try {
+                val ownedEventsQueryResultStart = eventCollection
+                    .whereEqualTo("ownerUserId", userId)
+                    .whereLessThanOrEqualTo("startDate", date)
+                    .orderBy("startDate", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
+
+                val ownedEventsQueryResultEnd = eventCollection
+                    .whereEqualTo("ownerUserId", userId)
+                    .whereGreaterThanOrEqualTo("endDate", date)
+                    .orderBy("endDate", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
+
+                val ownedEventsStart = ownedEventsQueryResultStart.documents.mapNotNull { document ->
+                        try {
+                            val event = document.toObject(Event::class.java)
+                            event?.id = document.id
+                            event
+
+                        } catch (e: Exception) {
+                            Log.e(
+                                EventRepoImplementation.TAG,
+                                "Error casting document to Event object: ${e.message}"
+                            )
+                            null
+                        }
+                    }
+
+                val ownedEventsEnd = ownedEventsQueryResultEnd.documents.mapNotNull { document ->
+                    try {
+                        val event = document.toObject(Event::class.java)
+                        event?.id = document.id
+                        event
+
+                    } catch (e: Exception) {
+                        Log.e(
+                            EventRepoImplementation.TAG,
+                            "Error casting document to Event object: ${e.message}"
+                        )
+                        null
+                    }
+                }
+
+                return@withContext ownedEventsStart.intersect<Event>(ownedEventsEnd.toSet<Event>())
+                    .toList<Event>().sortedByDescending { it.updatedAt }
+            } catch (e: Exception) {
+                Log.e(EventRepoImplementation.TAG, "Error reading Events query: ${e.message}")
+                return@withContext emptyList()
+            }
+        }
+
 }
