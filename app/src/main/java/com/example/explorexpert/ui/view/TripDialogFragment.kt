@@ -145,7 +145,7 @@ class TripDialogFragment(
             )
             val endDate = endDateTime.format(dateTimeFormatter)
 
-            binding.btnAddDates.text = "$startDate ➡ $endDate"
+            binding.btnAddDates.text = "$startDate - $endDate"
         }
         else {
             binding.btnAddDates.text = "Add trip dates"

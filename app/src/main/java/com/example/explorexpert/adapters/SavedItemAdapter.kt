@@ -36,7 +36,7 @@ class SavedItemAdapter(
     private val tripRepo: TripRepository,
     private val trip: Trip? = null,
     private val currentUserId: String,
-): ListAdapter<SavedItem, SavedItemAdapter.ViewHolder>(DiffCallback()){
+): ListAdapter<SavedItem, SavedItemAdapter.ViewHolder>(DiffCallback()) {
 
     companion object {
         const val TAG = "SavedItemAdapter"
