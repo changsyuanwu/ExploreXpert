@@ -37,7 +37,6 @@ class LoginFragment : Fragment() {
     @Inject
     lateinit var authViewModel: AuthViewModel
 
-    private lateinit var navController: NavController
     private var _binding: FragmentLoginBinding? = null
 
     // This property is only valid between onCreateView and
@@ -59,11 +58,13 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = findNavController()
+        showProgressIndicator()
 
         configureGoogleSSO()
         configureButtons()
         configureObservers()
+
+        hideProgressIndicator()
     }
 
     private fun configureObservers() {
@@ -89,6 +90,7 @@ class LoginFragment : Fragment() {
             Observer { loginResult ->
                 loginResult ?: return@Observer
                 if (loginResult.isSuccess) {
+                    hideProgressIndicator()
                     redirectToMainActivity()
                 } else {
                     showLoginFailed(loginResult.message)
@@ -129,6 +131,7 @@ class LoginFragment : Fragment() {
         val passwordEditText = binding.password
 
         binding.btnLoginWithGoogle.setOnClickListener {
+            showProgressIndicator()
             startGoogleSSO()
         }
 
@@ -147,7 +150,11 @@ class LoginFragment : Fragment() {
 //                replace(R.id.auth_nav_host_fragment, fragment)
 //                addToBackStack(null)
 //            }
-            navController.navigate(R.id.action_loginFragment_to_registrationFragment)
+            val registrationFragment = RegistrationFragment()
+            registrationFragment.show(
+                childFragmentManager,
+                "registrationFragment"
+            )
         }
     }
 
@@ -238,6 +245,14 @@ class LoginFragment : Fragment() {
 
     private fun showLoginFailed(errorString: String) {
         Toast.makeText(requireContext(), errorString, Toast.LENGTH_LONG).show()
+    }
+
+    private fun showProgressIndicator() {
+        binding.progressIndicator.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressIndicator() {
+        binding.progressIndicator.visibility = View.INVISIBLE
     }
 
     override fun onDestroyView() {
