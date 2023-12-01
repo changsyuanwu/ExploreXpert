@@ -1,9 +1,9 @@
 package com.example.explorexpert.data.model
 
 data class NearbyPlace(
-    val id: String = "",
-    val name: String = "",
-    val rating: Double = 0.0,
-    val numRatings: Int = 0,
-    val type: String = "",
+    val id: String? = null,
+    val name: String? = null,
+    val rating: Double? = null,
+    val numRatings: Int? = null,
+    val type: String? = null,
 )

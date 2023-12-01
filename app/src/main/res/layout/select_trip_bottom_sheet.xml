@@ -17,13 +17,15 @@
 
     <TextView
         android:id="@+id/txtSelectTrip"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="16dp"
+        android:layout_marginTop="-8dp"
+        android:text="Select a trip to save to:"
         android:textSize="18dp"
         android:textStyle="bold"
-        android:text="Select a Trip"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle" />
 
     <androidx.constraintlayout.widget.ConstraintLayout

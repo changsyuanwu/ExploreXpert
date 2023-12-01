@@ -57,14 +57,16 @@ class AddTripItemViewModel@Inject constructor(
 
     fun addPlace(place: Place) {
         viewModelScope.launch {
-            val item = SavedItem(
-                type = SavedItemType.PLACE,
-                title = place.name.toString(),
-                placeId = place.id.toString(),
-                description = place.address.toString(),
-                ownerUserId = auth.currentUser?.uid.toString(),
-            )
-            tripRepo.addItemToTrip(item, trip)
+            if (place.name != null && place.id != null) {
+                val item = SavedItem(
+                    type = SavedItemType.PLACE,
+                    title = place.name!!.toString(),
+                    placeId = place.id!!.toString(),
+                    description = place.address?.toString() ?: "Address unknown",
+                    ownerUserId = auth.currentUser?.uid.toString(),
+                )
+                tripRepo.addItemToTrip(item, trip)
+            }
         }
     }
 
