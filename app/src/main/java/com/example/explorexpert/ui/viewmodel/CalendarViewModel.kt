@@ -62,13 +62,13 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun createEvent(eventName: String, date: String) {
+    fun createEvent(eventName: String, startDate: String, endDate: String = "") {
         if (eventName != "" && auth.currentUser != null) {
             val event = Event(
                 name = eventName,
-                startDate = date,
+                startDate = startDate,
                 //currently only adds single dates, end dates cant be set
-                endDate = date,
+                endDate = endDate,
                 ownerUserId = auth.currentUser!!.uid
             )
 
