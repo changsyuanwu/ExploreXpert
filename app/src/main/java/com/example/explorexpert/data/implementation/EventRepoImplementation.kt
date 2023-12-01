@@ -2,7 +2,9 @@ package com.example.explorexpert.data.implementation
 
 import android.util.Log
 import com.example.explorexpert.data.model.Event
+import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.EventRepository
+import com.example.explorexpert.data.repository.TripRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CompletableDeferred
@@ -12,7 +14,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class EventRepoImplementation @Inject constructor(
-    db: FirebaseFirestore
+    db: FirebaseFirestore,
 ): EventRepository {
 
     companion object {
@@ -20,6 +22,10 @@ class EventRepoImplementation @Inject constructor(
     }
 
     private val eventCollection = db.collection("events")
+
+    // Can't inject this or we have a cycle
+    private val tripRepo = TripRepoImplementation(db, this)
+
     override suspend fun setEvent(event: Event): String {
         return withContext(Dispatchers.IO) {
             val deferred = CompletableDeferred<String>()
@@ -27,7 +33,7 @@ class EventRepoImplementation @Inject constructor(
             eventCollection.document(event.id)
                 .set(event)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Created an Event with id ${event.id}")
+                    Log.d(TAG, "Created/Updated an Event with id ${event.id}")
                     deferred.complete(event.id)
                 }
                 .addOnFailureListener { e ->
@@ -148,5 +154,45 @@ class EventRepoImplementation @Inject constructor(
                 return@withContext emptyList()
             }
         }
+    override suspend fun getEventById(eventId: String): Event? {
+        return withContext(Dispatchers.IO) {
+            val eventDoc = eventCollection.document(eventId).get().await()
+
+            try {
+                val event = eventDoc.toObject(Event::class.java)
+                return@withContext event
+            } catch (e: Exception) {
+                Log.e(TAG, "Error casting document to event object: ${e.message}")
+                null
+            }
+        }
+    }
+
+    override suspend fun deleteEvent(eventId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val event = getEventById(eventId)
+
+                // Don't execute if the event document can't be found
+                if (event == null) {
+                    return@withContext
+                }
+
+                // If there is a trip associated with the event,
+                //   update it to have no event associated anymore
+                if (event.associatedTripId != null) {
+                    tripRepo.removeAssociatedEventFromTrip(event.associatedTripId)
+                }
+
+                eventCollection
+                    .document(eventId)
+                    .delete()
+                    .await()
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error deleting event: ${e.message}")
+            }
+        }
+    }
 
 }

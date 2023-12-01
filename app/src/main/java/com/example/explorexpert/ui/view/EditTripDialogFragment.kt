@@ -10,6 +10,7 @@ import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.databinding.DialogEditTripBinding
 import com.example.explorexpert.ui.viewmodel.TripViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -101,7 +102,17 @@ class EditTripDialogFragment(
                 (newTripName != trip.name)
                 || !isPublic != trip.private
             ) {
-                tripViewModel.updateTrip(newTripName, !isPublic)
+                tripViewModel.updateTripNameAndPrivacy(newTripName, !isPublic)
+
+                // Show success snackbar
+                val parentFragment = (requireParentFragment() as TripDialogFragment)
+                parentFragment.view?.let { parentView ->
+                    Snackbar.make(
+                        parentView,
+                        "Trip updated.",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
             }
 
             refreshParentFragment()

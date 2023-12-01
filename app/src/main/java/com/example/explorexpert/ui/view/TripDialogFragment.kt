@@ -33,6 +33,7 @@ import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -186,15 +187,21 @@ class TripDialogFragment(
                 )
                 val endDate = endDateTime.format(dateTimeFormatter)
 
-                calendarViewModel.createEvent(
+                val calendarEventId = calendarViewModel.createEvent(
                     eventName = trip.name,
                     startDate = startDate,
-                    endDate = endDate
+                    endDate = endDate,
+                    associatedTripId = trip.id
                 )
 
-                TODO("Need to remove old trip events from calendar when button is pressed multiple times")
-
-                binding.btnAddToCalendar.isEnabled = false
+                if (calendarEventId != null) {
+                    tripViewModel.updateTripCalendarEvent(calendarEventId)
+                    Snackbar.make(
+                        binding.coordinator,
+                        "Trip added to calendar.",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
 

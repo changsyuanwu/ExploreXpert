@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.explorexpert.data.model.DateTimeRange
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.data.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -18,6 +19,7 @@ class TripViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val tripRepo: TripRepository,
     private val userRepo: UserRepository,
+    private val eventRepo: EventRepository,
 ) : ViewModel() {
 
     companion object {
@@ -82,16 +84,35 @@ class TripViewModel @Inject constructor(
         return ""
     }
 
-    fun updateTrip(newTripName: String, isPrivate: Boolean) {
+    fun updateTripNameAndPrivacy(newTripName: String, isPrivate: Boolean) {
         refreshTrip()
 
         if (trip.value != null) {
-            val newTrip = trip.value!!.copy(
-                name = newTripName,
-                private = isPrivate,
-            )
+            val tripSnapshot = trip.value!!
 
             viewModelScope.launch {
+                val newTrip = tripSnapshot.copy(
+                    name = newTripName,
+                    private = isPrivate,
+                )
+
+                // If a calendar event exists, update the name of it
+                if (newTrip.associatedCalendarEventId != null) {
+                    val oldEvent = eventRepo.getEventById(newTrip.associatedCalendarEventId)
+
+                    if (oldEvent != null) {
+                        val newEvent = oldEvent.copy(
+                            name = newTripName
+                        )
+                        try {
+                            eventRepo.setEvent(newEvent)
+                        }
+                        catch (e: Exception) {
+                            Log.e(TAG, "Error updating name for event associated with trip: ${e.message}", e)
+                        }
+                    }
+                }
+
                 try {
                     tripRepo.setTrip(newTrip)
                 }
@@ -116,6 +137,32 @@ class TripViewModel @Inject constructor(
                 }
                 catch (e: Exception) {
                     Log.e(TAG, "Error updating trip with dates: ${e.message}", e)
+                }
+            }
+        }
+    }
+
+    fun updateTripCalendarEvent(calendarEventId: String) {
+        refreshTrip()
+
+        if (trip.value != null) {
+            val tripSnapshot = trip.value!!
+
+            viewModelScope.launch {
+                // Delete old calendar event if it exists
+                if (tripSnapshot.associatedCalendarEventId != null) {
+                    eventRepo.deleteEvent(tripSnapshot.associatedCalendarEventId)
+                }
+
+                val newTrip = tripSnapshot.copy(
+                    associatedCalendarEventId = calendarEventId
+                )
+
+                try {
+                    tripRepo.setTrip(newTrip)
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "Error updating trip with calendar event id: ${e.message}", e)
                 }
             }
         }

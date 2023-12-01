@@ -62,14 +62,15 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun createEvent(eventName: String, startDate: String, endDate: String = "") {
+    fun createEvent(eventName: String, startDate: String, endDate: String = "", associatedTripId: String? = null): String? {
         if (eventName != "" && auth.currentUser != null) {
             val event = Event(
                 name = eventName,
                 startDate = startDate,
                 //currently only adds single dates, end dates cant be set
                 endDate = endDate,
-                ownerUserId = auth.currentUser!!.uid
+                associatedTripId = associatedTripId,
+                ownerUserId = auth.currentUser!!.uid,
             )
 
             viewModelScope.launch {
@@ -77,11 +78,13 @@ class CalendarViewModel @Inject constructor(
                     eventRepo.setEvent(event)
                 }
                 catch (e: Exception) {
-                    Log.e(CalendarViewModel.TAG, "Error creating event in collection: ${e.message}", e)
+                    Log.e(TAG, "Error creating event in collection: ${e.message}", e)
                 }
             }
-        }
-    }
 
+            return event.id
+        }
+        return null
+    }
 
 }

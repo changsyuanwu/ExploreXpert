@@ -11,6 +11,7 @@ data class Event(
     var description: String? = "",
     var startDate: String = "",
     var endDate: String = "",
+    val associatedTripId: String? = null,
     @ServerTimestamp
     val createdAt: Timestamp? = null,
     @ServerTimestamp

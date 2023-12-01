@@ -21,4 +21,6 @@ interface TripRepository {
     suspend fun removeSavedItem(savedItemId: String)
 
     suspend fun deleteTrip(tripId: String)
+
+    suspend fun removeAssociatedEventFromTrip(tripId: String)
 }
