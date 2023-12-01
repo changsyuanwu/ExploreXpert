@@ -2,13 +2,10 @@ package com.example.explorexpert.ui.view
 
 import android.Manifest
 import android.content.Context
-import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
-import android.location.LocationRequest
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,27 +13,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import com.example.explorexpert.MainActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.explorexpert.R
 import com.example.explorexpert.SplashScreenActivity
 import com.example.explorexpert.databinding.FragmentHomeBinding
 import com.example.explorexpert.ui.viewmodel.HomeViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.type.LatLng
 import com.urmich.android.placesearchktx.placesearch.search.NearbySearch
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.timerTask
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -61,6 +58,11 @@ class HomeFragment : Fragment() {
             .getApplicationInfo(requireContext().packageName, PackageManager.GET_META_DATA)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        homeViewModel.refreshCurrentUser()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,11 +81,10 @@ class HomeFragment : Fragment() {
 
         configurePlacesSDK()
         configureButtons()
+        configureObservers()
         configureNavSideBar()
         configurePlacesToExplore()
 
-        // Run this last
-        configureUserDetails()
     }
 
     private fun configurePlacesSDK() {
@@ -110,18 +111,19 @@ class HomeFragment : Fragment() {
                     .setRadius(10000) // radius in meters
                     .setLocation(currentLatLng)
                     .build()
-                val response = nearbySearch.call()
 
-                if (response?.status == "OK") {
-                    response.places.forEach {
+                lifecycleScope.launch {
+                    val response = nearbySearch.call()
 
+                    if (response?.status == "OK") {
+                        response.places.forEach {
+
+                        }
+                    } else {
+                        Log.i(TAG, response.toString())
                     }
                 }
-                else {
-                    Log.i(TAG, response.toString())
-                }
             }
-
         }
     }
 
@@ -137,8 +139,7 @@ class HomeFragment : Fragment() {
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        )
-        {
+        ) {
             requireActivity().requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
@@ -151,26 +152,35 @@ class HomeFragment : Fragment() {
         }
 
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        val currentLocation = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+        val currentLocation =
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
 
         return currentLocation
     }
 
     private fun configureUserDetails() {
-        CoroutineScope(Dispatchers.Main).launch {
-            val currentUserName = homeViewModel.getCurrentUserName()
-            if (currentUserName != "") {
-                binding.txtName.text = currentUserName
-                binding.navigationViewSideBar.findViewById<TextView>(R.id.txtNameSideNav).text =
-                    currentUserName
-            }
+        val currentUserName = homeViewModel.getCurrentUserName()
+        if (currentUserName != "") {
+            binding.txtName.text = currentUserName
 
-            val currentUserEmail = homeViewModel.getCurrentUserEmail()
-            if (currentUserEmail != "") {
-                binding.navigationViewSideBar.findViewById<TextView>(R.id.txtEmailSideNav).text =
-                    currentUserEmail
+            val sideBarNameTextView = binding.navigationViewSideBar.findViewById<TextView>(R.id.txtNameSideNav)
+            if (sideBarNameTextView != null) {
+                sideBarNameTextView.text = currentUserName
             }
+        }
 
+        val currentUserEmail = homeViewModel.getCurrentUserEmail()
+        if (currentUserEmail != "") {
+            val sideBarEmailTextView = binding.navigationViewSideBar.findViewById<TextView>(R.id.txtEmailSideNav)
+            if (sideBarEmailTextView != null) {
+                sideBarEmailTextView.text = currentUserEmail
+            }
+        }
+    }
+
+    private fun configureObservers() {
+        homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            configureUserDetails()
             hideProgressIndicator()
         }
     }
@@ -179,6 +189,14 @@ class HomeFragment : Fragment() {
         binding.navigationViewSideBar.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.btnLogout -> logOut()
+
+                R.id.btnEditProfile -> {
+                    val editProfileDialogFragment = EditProfileDialogFragment()
+                    editProfileDialogFragment.show(
+                        childFragmentManager,
+                        "editProfileDialog"
+                    )
+                }
                 // Add other buttons for side nav bar here
                 else -> {
                     return@setNavigationItemSelectedListener false
@@ -186,6 +204,27 @@ class HomeFragment : Fragment() {
             }
             true
         }
+    }
+
+    fun refreshCurrentUser() {
+        homeViewModel.refreshCurrentUser()
+    }
+
+    fun scheduleCurrentUserRefresh() {
+        val timer = Timer()
+        var executionCount = 0
+
+        timer.scheduleAtFixedRate(
+            timerTask {
+                if (executionCount > 5) {
+                    this.cancel()
+                }
+                executionCount++
+                refreshCurrentUser()
+            },
+            300,
+            1000
+        )
     }
 
     private fun logOut() {
