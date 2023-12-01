@@ -2,6 +2,7 @@ package com.example.explorexpert.ui.view
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.example.explorexpert.MainActivity
 import com.example.explorexpert.adapters.SimpleTripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
 import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.SelectTripBottomSheetBinding
 import com.example.explorexpert.ui.viewmodel.AddTripItemViewModel
 import com.example.explorexpert.ui.viewmodel.PlanViewModel
@@ -22,7 +24,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SelectTripBottomSheetDialogFragment: BottomSheetDialogFragment() {
+class SelectTripBottomSheetDialogFragment(
+    private val isCreatedFromPlaceRecommendedOnHome: Boolean = false,
+    private val placeToAdd: Place? = null,
+): BottomSheetDialogFragment() {
 
     private var _binding: SelectTripBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -34,6 +39,9 @@ class SelectTripBottomSheetDialogFragment: BottomSheetDialogFragment() {
 
     @Inject
     lateinit var planViewModel: PlanViewModel
+
+    @Inject
+    lateinit var tripRepo: TripRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,16 +61,27 @@ class SelectTripBottomSheetDialogFragment: BottomSheetDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        (parentFragment as LocationBottomSheetDialogFragment).dismiss()
+        if (!isCreatedFromPlaceRecommendedOnHome) {
+            (parentFragment as LocationBottomSheetDialogFragment).dismiss()
+        }
     }
 
     private fun configureRecyclerView() {
         simpleTripAdapter = SimpleTripAdapter(
+            tripRepo,
             object : SimpleTripAdapter.ItemClickListener {
                 override fun onItemClick(trip: Trip) {
                     addTripItemViewModel.setTrip(trip);
-                    addPlaceToTripWithID((requireActivity() as MainActivity).getMapFragment().getCurrPlaceID())
-                    (parentFragment as LocationBottomSheetDialogFragment).setTripAdded()
+                    
+                    if (isCreatedFromPlaceRecommendedOnHome) {
+                        if (placeToAdd != null) {
+                            addTripItemViewModel.addPlace(placeToAdd)
+                        }
+                    }
+                    else {
+                        addPlaceToTripWithID((requireActivity() as MainActivity).getMapFragment().getCurrPlaceID())
+                        (parentFragment as LocationBottomSheetDialogFragment).setTripAdded()
+                    }
                     dismiss()
                 }
             }

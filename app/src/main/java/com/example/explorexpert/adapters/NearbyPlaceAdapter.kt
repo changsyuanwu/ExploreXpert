@@ -7,13 +7,14 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.data.model.NearbyPlace
 import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.NearbyPlaceItemBinding
-import com.example.explorexpert.databinding.SavedItemBinding
+import com.example.explorexpert.ui.view.SelectTripBottomSheetDialogFragment
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -28,6 +29,7 @@ import kotlinx.coroutines.tasks.await
 class NearbyPlaceAdapter(
     private val itemClickListener: ItemClickListener,
     private val tripRepo: TripRepository,
+    private val childFragmentManager: FragmentManager,
 ) : ListAdapter<NearbyPlace, NearbyPlaceAdapter.ViewHolder>(DiffCallback()) {
     companion object {
         const val TAG = "NearbyPlaceAdapter"
@@ -44,18 +46,40 @@ class NearbyPlaceAdapter(
         fun bind(nearbyPlace: NearbyPlace) {
             configurePlacesSDK()
 
-            binding.txtPlaceName.text = nearbyPlace.name
+            binding.txtPlaceName.text = nearbyPlace.name.toString()
 
-            binding.txtRating.text = "${nearbyPlace.rating} (${nearbyPlace.numRatings})"
+            if (nearbyPlace.rating != null) {
+                binding.txtRating.text = "${nearbyPlace.rating} (${nearbyPlace.numRatings})"
+            }
+            else {
+                binding.txtRating.text = "Ratings unavailable"
+            }
 
-            binding.txtPlaceType.text = nearbyPlace.type
-                .split("_")
-                .joinToString(" ") {
-                    it.replaceFirstChar(Char::titlecase)
-                }
+            if (nearbyPlace.type != null) {
+                binding.txtPlaceType.text = nearbyPlace.type
+                    .split("_")
+                    .joinToString(" ") {
+                        it.replaceFirstChar(Char::titlecase)
+                    }
+            }
 
             binding.btnFavIcon.setOnClickListener {
-                // Let the user add the place to a trip
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (nearbyPlace.id != null) {
+                        val place = getPlaceById(nearbyPlace.id)
+
+                        // Let the user add the place to a trip
+                        val selectTripBottomSheetDialogFragment =
+                            SelectTripBottomSheetDialogFragment(
+                                isCreatedFromPlaceRecommendedOnHome = true,
+                                placeToAdd = place
+                            )
+                        selectTripBottomSheetDialogFragment.show(
+                            childFragmentManager,
+                            SelectTripBottomSheetDialogFragment.TAG
+                        )
+                    }
+                }
             }
 
             binding.itemContainer.setOnClickListener {
@@ -64,12 +88,14 @@ class NearbyPlaceAdapter(
 
             // load image from google places
             CoroutineScope(Dispatchers.Main).launch {
-                val place = getPlaceById(nearbyPlace.id)
+                if (nearbyPlace.id != null) {
+                    val place = getPlaceById(nearbyPlace.id)
 
-                if (place != null) {
-                    val placePhotoBitmap = getPlacePhoto(place)
-                    if (placePhotoBitmap != null) {
-                        binding.imgPlace.setImageBitmap(placePhotoBitmap)
+                    if (place != null) {
+                        val placePhotoBitmap = getPlacePhoto(place)
+                        if (placePhotoBitmap != null) {
+                            binding.imgPlace.setImageBitmap(placePhotoBitmap)
+                        }
                     }
                 }
             }
@@ -99,7 +125,12 @@ class NearbyPlaceAdapter(
 
         private suspend fun getPlaceById(placeId: String): Place? {
             // Which fields to get from the place data
-            val placeFields = listOf(Place.Field.NAME, Place.Field.PHOTO_METADATAS)
+            val placeFields = listOf(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.ADDRESS,
+                Place.Field.PHOTO_METADATAS
+            )
 
             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
 

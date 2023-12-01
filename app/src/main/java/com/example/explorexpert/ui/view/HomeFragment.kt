@@ -147,11 +147,61 @@ class HomeFragment : Fragment() {
 
                     for (i in 0 until results.length()) {
                         val currentResult = results.getJSONObject(i)
-                        val id = currentResult.getString("place_id")
-                        val name = currentResult.getString("name")
-                        val rating = currentResult.getDouble("rating")
-                        val numRatings = currentResult.getInt("user_ratings_total")
-                        val type = currentResult.getJSONArray("types").getString(0)
+
+                        var id: String? = null
+                        try {
+                            id = currentResult.getString("place_id")
+                        } catch (e: Exception) {
+                            Log.e(
+                                TAG,
+                                "Could not parse place_id for nearby place result: $currentResult",
+                                e
+                            )
+                        }
+
+                        var name: String? = null
+                        try {
+                            name = currentResult.getString("name")
+                        } catch (e: Exception) {
+                            Log.e(
+                                TAG,
+                                "Could not parse name for nearby place result: $currentResult",
+                                e
+                            )
+                        }
+
+                        var rating: Double? = null
+                        try {
+                            rating = currentResult.getDouble("rating")
+                        } catch (e: Exception) {
+                            Log.e(
+                                TAG,
+                                "Could not parse rating for nearby place result: $currentResult",
+                                e
+                            )
+                        }
+
+                        var numRatings: Int? = null
+                        try {
+                            numRatings = currentResult.getInt("user_ratings_total")
+                        } catch (e: Exception) {
+                            Log.e(
+                                TAG,
+                                "Could not parse number of ratings for nearby place result: $currentResult",
+                                e
+                            )
+                        }
+
+                        var type: String? = null
+                        try {
+                            type = currentResult.getJSONArray("types").getString(0)
+                        } catch (e: Exception) {
+                            Log.e(
+                                TAG,
+                                "Could not parse type for nearby place result: $currentResult",
+                                e
+                            )
+                        }
 
                         val currentPlace = NearbyPlace(
                             id,
@@ -212,7 +262,8 @@ class HomeFragment : Fragment() {
         if (currentUserName != "") {
             binding.txtName.text = currentUserName
 
-            val sideBarNameTextView = binding.navigationViewSideBar.findViewById<TextView>(R.id.txtNameSideNav)
+            val sideBarNameTextView =
+                binding.navigationViewSideBar.findViewById<TextView>(R.id.txtNameSideNav)
             if (sideBarNameTextView != null) {
                 sideBarNameTextView.text = currentUserName
             }
@@ -220,19 +271,24 @@ class HomeFragment : Fragment() {
 
         val currentUserEmail = homeViewModel.getCurrentUserEmail()
         if (currentUserEmail != "") {
-            val sideBarEmailTextView = binding.navigationViewSideBar.findViewById<TextView>(R.id.txtEmailSideNav)
+            val sideBarEmailTextView =
+                binding.navigationViewSideBar.findViewById<TextView>(R.id.txtEmailSideNav)
             if (sideBarEmailTextView != null) {
                 sideBarEmailTextView.text = currentUserEmail
             }
         }
 
         if (user.profilePictureURL != null) {
-            val sideBarUserProfilePictureImgView = binding.navigationViewSideBar.findViewById<CircleImageView>(R.id.imgSideBarProfilePic)
+            val sideBarUserProfilePictureImgView =
+                binding.navigationViewSideBar.findViewById<CircleImageView>(R.id.imgSideBarProfilePic)
 
             ImageLoaderUtil.loadImageIntoView(binding.imgProfilePic, user.profilePictureURL!!)
 
             if (sideBarUserProfilePictureImgView != null) {
-                ImageLoaderUtil.loadImageIntoView(sideBarUserProfilePictureImgView, user.profilePictureURL!!)
+                ImageLoaderUtil.loadImageIntoView(
+                    sideBarUserProfilePictureImgView,
+                    user.profilePictureURL!!
+                )
             }
         }
     }
@@ -241,10 +297,11 @@ class HomeFragment : Fragment() {
         nearbyPlacesAdapter = NearbyPlaceAdapter(
             itemClickListener = object : NearbyPlaceAdapter.ItemClickListener {
                 override fun onItemClick(nearbyPlace: NearbyPlace) {
-                   // Do something
+                    // Do something
                 }
             },
-            tripRepo = tripRepo
+            tripRepo = tripRepo,
+            childFragmentManager = childFragmentManager,
         )
 
         binding.nearbyPlacesRecyclerView.adapter = nearbyPlacesAdapter
