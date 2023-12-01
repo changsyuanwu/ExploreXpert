@@ -80,12 +80,8 @@ class MainActivity : AppCompatActivity() {
         return mapFragment;
     }
 
-    fun swapToPlanFragment() {
-        swapFragment(planFragment);
-        binding.bottomNav.selectedItemId = R.id.nav_plan
-    }
-
-    fun swapToWeatherFragment() {
+    fun swapToWeatherViaMap() {
+        weatherFragment.setMapLocation(mapFragment.getCurrLatLng())
         swapFragment(weatherFragment);
         binding.bottomNav.selectedItemId = R.id.nav_weather
     }
