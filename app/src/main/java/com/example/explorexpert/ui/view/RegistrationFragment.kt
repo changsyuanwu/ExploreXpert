@@ -7,27 +7,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.example.explorexpert.R
 import com.example.explorexpert.databinding.FragmentRegistrationBinding
 import com.example.explorexpert.ui.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RegistrationFragment : Fragment() {
+class RegistrationFragment : DialogFragment() {
 
     @Inject
     lateinit var authViewModel: AuthViewModel
 
-    private lateinit var navController: NavController
     private var _binding: FragmentRegistrationBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, R.style.FullScreenDialogSlideLeftStyle)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +47,7 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = findNavController()
+
 
         configureButtons()
         configureObservers()
@@ -74,7 +80,7 @@ class RegistrationFragment : Fragment() {
             Observer { registerResult ->
                 registerResult ?: return@Observer
                 if (registerResult.isSuccess) {
-                    goBackToLoginPage()
+                    this.dismiss()
                 } else {
                     showRegisterFailed(registerResult.message)
                 }
@@ -113,15 +119,11 @@ class RegistrationFragment : Fragment() {
         }
 
         binding.btnBack.setOnClickListener {
-            goBackToLoginPage()
+            this.dismiss()
         }
     }
 
     private fun showRegisterFailed(errorString: String) {
         Toast.makeText(requireContext(), errorString, Toast.LENGTH_LONG).show()
-    }
-
-    private fun goBackToLoginPage() {
-        findNavController().popBackStack()
     }
 }
