@@ -3,6 +3,7 @@ package com.example.explorexpert.data.implementation
 import android.util.Log
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
+import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.data.repository.TripRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -13,7 +14,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TripRepoImplementation @Inject constructor(
-    db: FirebaseFirestore
+    db: FirebaseFirestore,
+    private val eventRepo: EventRepository,
 ) : TripRepository {
 
     companion object {
@@ -30,7 +32,7 @@ class TripRepoImplementation @Inject constructor(
             tripCollection.document(trip.id)
                 .set(trip)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Created a trip with id ${trip.id}")
+                    Log.d(TAG, "Created/Updated a trip with id ${trip.id}")
                     deferred.complete(trip.id)
                 }
                 .addOnFailureListener { e ->
@@ -275,8 +277,14 @@ class TripRepoImplementation @Inject constructor(
                     return@withContext
                 }
 
+                // Remove any saved items associated with the trip
                 trip?.savedItemIds?.forEach { itemId ->
                     removeSavedItem(itemId)
+                }
+
+                // If the associated calendar event is not null, delete it
+                trip.associatedCalendarEventId?.let { eventId ->
+                    eventRepo.deleteEvent(eventId)
                 }
 
                 tripCollection
@@ -286,6 +294,27 @@ class TripRepoImplementation @Inject constructor(
             }
             catch (e: Exception) {
                 Log.e(TAG, "Error deleting trip: ${e.message}")
+            }
+        }
+    }
+
+    override suspend fun removeAssociatedEventFromTrip(tripId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val trip = getTripById(tripId)
+
+                if (trip == null) {
+                    return@withContext
+                }
+
+                val newTrip = trip.copy(
+                    associatedCalendarEventId = null
+                )
+
+                setTrip(newTrip)
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error removing associated trip id from trip: ${e.message}")
             }
         }
     }

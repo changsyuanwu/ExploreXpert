@@ -13,6 +13,7 @@ data class Trip(
     val datesSelected: DateTimeRange? = null,
     val sharedUsers: MutableList<SharedUserRecord> = mutableListOf(),
     val savedItemIds: MutableList<String> = mutableListOf(),
+    val associatedCalendarEventId: String? = null,
     @ServerTimestamp
     val createdAt: Timestamp? = null,
     @ServerTimestamp
