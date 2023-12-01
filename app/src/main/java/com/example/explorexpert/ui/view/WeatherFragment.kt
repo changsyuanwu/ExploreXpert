@@ -40,6 +40,7 @@ import com.example.explorexpert.adapters.ForecastAdapter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.AutocompletePrediction
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
@@ -76,6 +77,7 @@ class WeatherFragment : Fragment() {
     private lateinit var forecastAdapter: ForecastAdapter
     private val forecastItems: ArrayList<ForecastAdapter.ForecastItem> = ArrayList()
 
+    private var mapLatLng: LatLng? = null
 
     private lateinit var startDateInput: Button
     private lateinit var startDateText: EditText
@@ -172,7 +174,15 @@ class WeatherFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        obtainLocation()
+        if (mapLatLng == null) {
+            obtainLocation()
+        } else {
+            val latlng = mapLatLng as LatLng
+
+            // Clear mapLatLng to obtain current location on next swap
+            mapLatLng = null
+            getTemp(latlng.latitude, latlng.longitude)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -188,6 +198,10 @@ class WeatherFragment : Fragment() {
                     getTemp(defLatitude, defLongitude)
                 }
             }
+    }
+
+    fun setMapLocation(latlng: LatLng) {
+        mapLatLng = latlng
     }
 
     private fun getTemp(latitude: Double, longitude: Double) {
