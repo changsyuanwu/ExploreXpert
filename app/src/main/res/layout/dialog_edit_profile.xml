@@ -8,7 +8,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    tools:context=".ui.view.EditTripDialogFragment">
+    tools:context=".ui.view.EditProfileDialogFragment">
 
     <!-- Circular progress indicator -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
+        android:elevation="2dp"
         app:trackCornerRadius="8dp" />
 
     <com.google.android.material.appbar.AppBarLayout
@@ -64,126 +65,120 @@
             >
 
             <TextView
-                android:id="@+id/txtEdiTrip"
+                android:id="@+id/txtEditProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
-                android:text="Edit Trip"
+                android:text="Edit Profile"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgProfilePic"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_user"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintTop_toBottomOf="@id/txtEditProfile" />
+
+            <!-- Circular progress indicator -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/profilePictureProgressIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:elevation="5dp"
+                app:trackCornerRadius="8dp"
+                app:layout_constraintTop_toTopOf="@id/imgProfilePic"
+                app:layout_constraintBottom_toBottomOf="@id/imgProfilePic"
+                app:layout_constraintStart_toStartOf="@id/imgProfilePic"
+                app:layout_constraintEnd_toEndOf="@id/imgProfilePic"
+                />
+
+            <Button
+                android:id="@+id/btnEditPhoto"
+                style="@style/Widget.Material3.Button.TonalButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:paddingVertical="12dp"
+                android:text="Edit photo"
+                android:textSize="16sp"
+                app:icon="@drawable/baseline_edit_24"
+                app:layout_constraintEnd_toEndOf="@id/imgProfilePic"
+                app:layout_constraintStart_toStartOf="@id/imgProfilePic"
+                app:layout_constraintTop_toBottomOf="@id/imgProfilePic" />
+
             <TextView
-                android:id="@+id/txtTripName"
+                android:id="@+id/txtFirstName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:text="Trip name"
+                android:text="First name"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtEdiTrip" />
+                app:layout_constraintTop_toBottomOf="@+id/btnEditPhoto" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/txtInputTripName"
+                android:id="@+id/txtInputFirstName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
-                android:hint="Ex: Weekend in Vancouver"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/txtTripName"
-                app:layout_constraintTop_toBottomOf="@id/txtTripName">
+                app:layout_constraintStart_toStartOf="@id/txtFirstName"
+                app:layout_constraintTop_toBottomOf="@id/txtFirstName">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="John"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <View
-                android:id="@+id/divider1"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="?android:attr/listDivider"
-                android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/txtInputTripName" />
-
             <TextView
-                android:id="@+id/txtPrivacy"
+                android:id="@+id/txtLastName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="12dp"
-                android:text="Privacy"
-                android:textSize="24sp"
+                android:layout_marginTop="16dp"
+                android:text="Last name"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider1"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/txtInputFirstName" />
 
-            <TextView
-                android:id="@+id/txtMakeTripPublic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Make this trip public"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/txtPrivacy"
-                app:layout_constraintTop_toBottomOf="@id/txtPrivacy" />
-
-            <TextView
-                android:id="@+id/txtPublicTripDescription"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtInputLastName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="Public trips can be viewed by anyone on ExploreXpert"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@id/txtMakeTripPublic"
-                app:layout_constraintTop_toBottomOf="@id/txtMakeTripPublic"
-                app:layout_constraintEnd_toStartOf="@id/switchPrivacy"
-                />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switchPrivacy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
-                app:layout_constraintTop_toTopOf="@id/txtPublicTripDescription"
-                app:layout_constraintBottom_toBottomOf="@id/txtPublicTripDescription"
                 app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="@id/txtLastName"
+                app:layout_constraintTop_toBottomOf="@id/txtLastName">
 
-            <View
-                android:id="@+id/divider2"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:background="?android:attr/listDivider"
-                android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/txtPublicTripDescription" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Doe"
+                    />
 
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:paddingVertical="12dp"
-                android:text="Delete this trip"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:backgroundTint="#B71C1C"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider2" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btnSave"
@@ -200,8 +195,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
-
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

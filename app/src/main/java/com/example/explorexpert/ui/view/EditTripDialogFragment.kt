@@ -14,9 +14,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditTripDialogFragment (
+class EditTripDialogFragment(
     private var trip: Trip
-): DialogFragment() {
+) : DialogFragment() {
 
     @Inject
     lateinit var tripViewModel: TripViewModel
@@ -36,7 +36,7 @@ class EditTripDialogFragment (
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DialogEditTripBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -88,7 +88,10 @@ class EditTripDialogFragment (
             val isPublic = binding.switchPrivacy.isChecked
 
             // If the name is (different and non empty) or privacy setting was toggled, update the trip
-            if ((newTripName != trip.name && newTripName != "") || !isPublic != trip.private ) {
+            if (
+                (newTripName != trip.name && newTripName != "")
+                || !isPublic != trip.private
+            ) {
                 tripViewModel.updateTrip(newTripName, !isPublic)
             }
 

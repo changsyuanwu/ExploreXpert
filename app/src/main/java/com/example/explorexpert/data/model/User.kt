@@ -6,5 +6,5 @@ data class User(
     val lastName: String = "",
     val email: String = "",
     val verified: Boolean = false,
-    val profilePictureURL: String? = null
+    var profilePictureURL: String? = null
 )
