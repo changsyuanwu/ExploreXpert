@@ -90,6 +90,20 @@
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintTop_toBottomOf="@id/txtEditProfile" />
 
+            <!-- Circular progress indicator -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/profilePictureProgressIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:elevation="5dp"
+                app:trackCornerRadius="8dp"
+                app:layout_constraintTop_toTopOf="@id/imgProfilePic"
+                app:layout_constraintBottom_toBottomOf="@id/imgProfilePic"
+                app:layout_constraintStart_toStartOf="@id/imgProfilePic"
+                app:layout_constraintEnd_toEndOf="@id/imgProfilePic"
+                />
+
             <Button
                 android:id="@+id/btnEditPhoto"
                 style="@style/Widget.Material3.Button.TonalButton.Icon"

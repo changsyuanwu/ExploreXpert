@@ -18,8 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.explorexpert.R
 import com.example.explorexpert.SplashScreenActivity
+import com.example.explorexpert.data.model.User
 import com.example.explorexpert.databinding.FragmentHomeBinding
 import com.example.explorexpert.ui.viewmodel.HomeViewModel
+import com.example.explorexpert.utils.ImageLoaderUtil
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.libraries.places.api.Places
@@ -27,6 +29,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.urmich.android.placesearchktx.placesearch.search.NearbySearch
 import dagger.hilt.android.AndroidEntryPoint
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -158,7 +161,7 @@ class HomeFragment : Fragment() {
         return currentLocation
     }
 
-    private fun configureUserDetails() {
+    private fun configureUserDetails(user: User) {
         val currentUserName = homeViewModel.getCurrentUserName()
         if (currentUserName != "") {
             binding.txtName.text = currentUserName
@@ -176,11 +179,19 @@ class HomeFragment : Fragment() {
                 sideBarEmailTextView.text = currentUserEmail
             }
         }
+
+        if (user.profilePictureURL != null) {
+            val sideBarUserProfilePictureImgView = binding.navigationViewSideBar.findViewById<CircleImageView>(R.id.imgSideBarProfilePic)
+
+            ImageLoaderUtil.loadImageIntoView(binding.imgProfilePic, user.profilePictureURL!!)
+            ImageLoaderUtil.loadImageIntoView(sideBarUserProfilePictureImgView, user.profilePictureURL!!)
+            //hideProfilePictureProgressIndicator()
+        }
     }
 
     private fun configureObservers() {
         homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
-            configureUserDetails()
+            configureUserDetails(user)
             hideProgressIndicator()
         }
     }

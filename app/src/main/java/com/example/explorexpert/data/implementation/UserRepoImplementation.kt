@@ -28,7 +28,7 @@ class UserRepoImplementation @Inject constructor(
             userCollection.document(user.id)
                 .set(user)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Created an user with id ${user.id}")
+                    Log.d(TAG, "Created/Updated an user: ${user.toString()}")
                     deferred.complete(user.id)
                 }
                 .addOnFailureListener { e ->

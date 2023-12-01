@@ -27,8 +27,9 @@ class HomeViewModel @Inject constructor(
 
     fun refreshCurrentUser() {
         viewModelScope.launch {
-            mutableCurrentUser.value = userRepo.getUserById(auth.currentUser!!.uid)
-            Log.d(ProfileViewModel.TAG, currentUser.value.toString())
+            if (auth.currentUser!= null) {
+                mutableCurrentUser.value = userRepo.getUserById(auth.currentUser!!.uid)
+            }
         }
     }
 
