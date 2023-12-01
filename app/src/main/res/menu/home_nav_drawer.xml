@@ -14,27 +14,9 @@
         </menu>
     </item>
     <item
-        android:id="@+id/preferencesItem"
-        android:title="Preferences">
-        <menu>
-            <item
-                android:id="@+id/btnNotifications"
-                android:checkable="true"
-                android:icon="@drawable/outline_notifications_24"
-                android:title="Notifications"
-                app:showAsAction="ifRoom" />
-        </menu>
-    </item>
-    <item
         android:id="@+id/accountItem"
         android:title="Account">
         <menu>
-            <item
-                android:id="@+id/btnChangePassword"
-                android:checkable="true"
-                android:icon="@drawable/outline_lock_24"
-                android:title="Change Password"
-                app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/btnLogout"
                 android:checkable="true"
