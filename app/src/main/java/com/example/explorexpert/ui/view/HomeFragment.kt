@@ -185,8 +185,10 @@ class HomeFragment : Fragment() {
             val sideBarUserProfilePictureImgView = binding.navigationViewSideBar.findViewById<CircleImageView>(R.id.imgSideBarProfilePic)
 
             ImageLoaderUtil.loadImageIntoView(binding.imgProfilePic, user.profilePictureURL!!)
-            ImageLoaderUtil.loadImageIntoView(sideBarUserProfilePictureImgView, user.profilePictureURL!!)
-            //hideProfilePictureProgressIndicator()
+
+            if (sideBarUserProfilePictureImgView != null) {
+                ImageLoaderUtil.loadImageIntoView(sideBarUserProfilePictureImgView, user.profilePictureURL!!)
+            }
         }
     }
 
