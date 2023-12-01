@@ -1,0 +1,10 @@
+<!-- rectangle_button_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Set the solid color for the button -->
+    <solid android:color="@color/design_default_color_on_primary" />
+
+    <!-- Set the corner radius to 0dp for sharp edges -->
+    <corners android:radius="0dp" />
+</shape>

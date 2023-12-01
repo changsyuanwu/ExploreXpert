@@ -1,11 +1,17 @@
 package com.example.explorexpert.ui.view
 
+import HistoricalWeatherFragment
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -14,17 +20,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import android.graphics.Color
-import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import androidx.fragment.app.Fragment
-import com.example.explorexpert.MainActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -62,13 +66,22 @@ class WeatherFragment : Fragment() {
 
     // Default location (University of Waterloo)
     private var defLatitude = 43.4723
+    private var latitude  = 43.4723
     private var defLongitude = -80.5449
+    private var longitude = -80.5449
     private lateinit var weatherIconImageView: ImageView
 
     // Forecast properties
     private lateinit var forecastRecyclerView: RecyclerView
     private lateinit var forecastAdapter: ForecastAdapter
     private val forecastItems: ArrayList<ForecastAdapter.ForecastItem> = ArrayList()
+
+
+    private lateinit var startDateInput: Button
+    private lateinit var startDateText: EditText
+    private lateinit var endDateInput: Button
+    private lateinit var endDateText: EditText
+    private lateinit var fetchButton: Button
 
 
     override fun onAttach(context: Context) {
@@ -88,6 +101,44 @@ class WeatherFragment : Fragment() {
         addressTextView = view.findViewById(R.id.address)
         weatherIconImageView = view.findViewById(R.id.weatherIcon)
         loadWeatherIcon(weatherIconImageView, "Snow")
+
+
+        startDateText = view.findViewById<EditText>(R.id.startDateText)
+        startDateInput = view.findViewById<Button>(R.id.select1)
+        endDateText = view.findViewById<EditText>(R.id.endDateText)
+        endDateInput = view.findViewById<Button>(R.id.select2)
+        fetchButton = view.findViewById<Button>(R.id.fetchHistoricalWeatherButton)
+
+        startDateInput.setOnClickListener { view: View? ->
+            showDatePickerDialog(
+                startDateText
+            )
+        }
+        endDateInput.setOnClickListener { view: View? ->
+            showDatePickerDialog(
+                endDateText
+            )
+        }
+
+        fetchButton.setOnClickListener {
+            val startDate = startDateText.text.toString()
+            val endDate = endDateText.text.toString()
+
+            val historicalWeatherFragment = HistoricalWeatherFragment()
+            val bundle = Bundle()
+            bundle.putDouble("latitude", latitude)
+            bundle.putDouble("longitude", longitude)
+            bundle.putString("startDate", startDate)
+            bundle.putString("endDate", endDate)
+            historicalWeatherFragment.arguments = bundle
+
+            // Navigate to HistoricalWeatherFragment
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, historicalWeatherFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
 
         // Initialize the RecyclerView for forecast
         forecastRecyclerView = view.findViewById(R.id.forecastRecyclerView)
@@ -129,7 +180,9 @@ class WeatherFragment : Fragment() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
-                    getTemp(location.latitude, location.longitude)
+                    latitude = location.latitude
+                    longitude = location.longitude
+                    getTemp(latitude, longitude)
                 } else {
                     println("Location is null")
                     getTemp(defLatitude, defLongitude)
@@ -141,6 +194,9 @@ class WeatherFragment : Fragment() {
         val appId = appInfo.metaData?.getString("openweather.API_KEY")
         val weatherUrl = "https://api.openweathermap.org/data/2.5/weather?" +
                 "lat=$latitude&lon=$longitude&units=metric&appid=$appId"
+        Log.i(
+            TAG,
+            "API key: $appId"        )
 
         val forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?" +
                 "lat=$latitude&lon=$longitude&units=metric&appid=$appId"
@@ -249,8 +305,8 @@ class WeatherFragment : Fragment() {
                         TAG,
                         "Place: ${place.latLng?.latitude}, ${place.latLng?.longitude}, ${place.address}"
                     )
-                    val latitude = place.latLng?.latitude ?: defLatitude
-                    val longitude = place.latLng?.longitude ?: defLongitude
+                    latitude = place.latLng?.latitude ?: defLatitude
+                    longitude = place.latLng?.longitude ?: defLongitude
                     getTemp(latitude, longitude)
                 }
             } else if (result.resultCode == Activity.RESULT_CANCELED) {
@@ -283,6 +339,14 @@ class WeatherFragment : Fragment() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    private fun convertToRFC3339(dateString: String): String {
+        val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()) // Modify the input format according to your date input
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault()) // RFC3339 format
+
+        val date = inputFormat.parse(dateString)
+        return outputFormat.format(date)
     }
 
 
@@ -356,6 +420,29 @@ class WeatherFragment : Fragment() {
         // Update RelativeLayout background color
         travelWarningSection?.setBackgroundColor(color)
     }
+
+
+    // Function to show the DatePickerDialog
+    private fun showDatePickerDialog(dateInput: EditText) {
+        val calendar = Calendar.getInstance()
+        val year = calendar[Calendar.YEAR]
+        val month = calendar[Calendar.MONTH]
+        val day = calendar[Calendar.DAY_OF_MONTH]
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { _, selectedYear, selectedMonth, selectedDay ->
+                val formattedDay = String.format("%02d", selectedDay)
+                val selectedDate = "$selectedYear-${selectedMonth + 1}-$formattedDay"
+                dateInput.setText(selectedDate)
+            },
+            year, month, day
+        )
+
+        datePickerDialog.show()
+    }
+
+
 
 
 }
