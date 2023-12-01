@@ -69,7 +69,7 @@ class ProfileViewModel @Inject constructor(
             viewModelScope.launch {
                 val currentUserSnapshot = currentUser.value!!
 
-                val uploadedNewProfilePhotoUrl = uploadUserProfilePicture(newProfilePhotoUri!!)
+                val uploadedNewProfilePhotoUrl = uploadUserProfilePicture(newProfilePhotoUri)
 
                 val newUser = currentUserSnapshot.copy(
                     profilePictureURL = uploadedNewProfilePhotoUrl
