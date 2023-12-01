@@ -144,6 +144,18 @@
                 app:layout_constraintStart_toStartOf="@id/txtOwner"
                 app:layout_constraintTop_toBottomOf="@id/txtOwner" />
 
+            <Button
+                android:id="@+id/btnAddToCalendar"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Add to calendar"
+                app:icon="@drawable/baseline_add_24"
+                app:layout_constraintStart_toEndOf="@id/btnAddDates"
+                app:layout_constraintTop_toBottomOf="@id/txtOwner" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/savedItemsRecyclerView"
                 android:layout_width="match_parent"

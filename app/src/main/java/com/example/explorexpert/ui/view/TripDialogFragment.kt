@@ -36,14 +36,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.Date
 import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.timerTask
@@ -111,7 +108,7 @@ class TripDialogFragment(
 
         configureSavedItemsCount(tripToUse.savedItemIds.size)
         configureSelectedDates(tripToUse.datesSelected)
-        configureAddDatesButtonListener()
+        configureAddDatesButton()
 
         CoroutineScope(Dispatchers.Main).launch {
             binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(tripToUse.ownerUserId)}"
@@ -170,6 +167,10 @@ class TripDialogFragment(
             )
         }
 
+        binding.btnAddToCalendar.setOnClickListener {
+            // add event to calendar
+        }
+
         binding.fabAddNote.setOnClickListener {
             val addNoteBottomSheetDialogFragment = AddNoteBottomSheetDialogFragment(trip)
             addNoteBottomSheetDialogFragment.show(
@@ -183,7 +184,7 @@ class TripDialogFragment(
         }
     }
 
-    private fun configureAddDatesButtonListener() {
+    private fun configureAddDatesButton() {
         binding.btnAddDates.setOnClickListener(null)
 
         val dateRangePickerBuilder = MaterialDatePicker.Builder.dateRangePicker()
@@ -195,6 +196,10 @@ class TripDialogFragment(
                 trip.datesSelected!!.endTime
             )
             dateRangePickerBuilder.setSelection(androidxDateSelectedPair)
+            binding.btnAddToCalendar.visibility = View.VISIBLE
+        }
+        else {
+            binding.btnAddToCalendar.visibility = View.GONE
         }
 
         val dateRangePicker = dateRangePickerBuilder.build()
