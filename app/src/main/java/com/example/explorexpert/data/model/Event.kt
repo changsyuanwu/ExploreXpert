@@ -10,6 +10,7 @@ data class Event(
     var id: String = UUID.randomUUID().toString(),
     var description: String? = "",
     var startDate: String = "",
+    var endDate: String = "",
     @ServerTimestamp
     val createdAt: Timestamp? = null,
     @ServerTimestamp
