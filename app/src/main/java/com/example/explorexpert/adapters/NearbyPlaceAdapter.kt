@@ -46,7 +46,7 @@ class NearbyPlaceAdapter(
 
             binding.txtPlaceName.text = nearbyPlace.name
 
-            binding.txtRating.text = nearbyPlace.rating.toString()
+            binding.txtRating.text = "${nearbyPlace.rating} (${nearbyPlace.numRatings})"
 
             binding.txtPlaceType.text = nearbyPlace.type
                 .split("_")
