@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.explorexpert.data.model.NearbyPlace
 import com.example.explorexpert.data.model.User
 import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.data.repository.UserRepository
@@ -20,6 +21,9 @@ class HomeViewModel @Inject constructor(
 
     private val mutableCurrentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = mutableCurrentUser
+
+    private val mutableNearbyPlaces = MutableLiveData<List<NearbyPlace>>()
+    val nearbyPlaces: LiveData<List<NearbyPlace>> get() = mutableNearbyPlaces
 
     fun logOut() {
         auth.signOut()
@@ -48,5 +52,9 @@ class HomeViewModel @Inject constructor(
             return auth.currentUser!!.email.toString()
         }
         return ""
+    }
+
+    fun setNearbyPlaces(nearbyPlacesToSet: List<NearbyPlace>) {
+        mutableNearbyPlaces.value = nearbyPlacesToSet
     }
 }

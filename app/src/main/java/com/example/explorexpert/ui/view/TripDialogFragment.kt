@@ -145,7 +145,7 @@ class TripDialogFragment(
             )
             val endDate = endDateTime.format(dateTimeFormatter)
 
-            binding.btnAddDates.text = "$startDate ➡ $endDate"
+            binding.btnAddDates.text = "$startDate - $endDate"
         }
         else {
             binding.btnAddDates.text = "Add trip dates"
@@ -157,10 +157,6 @@ class TripDialogFragment(
             (requireParentFragment() as PlanFragment).refreshRecyclerViews()
             (requireParentFragment() as PlanFragment).scheduleRecyclerViewsRefresh()
             this.dismiss()
-        }
-
-        binding.btnRefreshIcon.setOnClickListener {
-            refreshTrip()
         }
 
         binding.btnEditIcon.setOnClickListener {

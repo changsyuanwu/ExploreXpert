@@ -14,25 +14,30 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.explorexpert.R
 import com.example.explorexpert.SplashScreenActivity
+import com.example.explorexpert.adapters.NearbyPlaceAdapter
+import com.example.explorexpert.data.model.NearbyPlace
 import com.example.explorexpert.data.model.User
+import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.FragmentHomeBinding
 import com.example.explorexpert.ui.viewmodel.HomeViewModel
 import com.example.explorexpert.utils.ImageLoaderUtil
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.urmich.android.placesearchktx.placesearch.search.NearbySearch
 import dagger.hilt.android.AndroidEntryPoint
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.json.JSONObject
 import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.timerTask
@@ -47,7 +52,12 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var homeViewModel: HomeViewModel
 
+    @Inject
+    lateinit var tripRepo: TripRepository
+
     private lateinit var appInfo: ApplicationInfo
+
+    private lateinit var nearbyPlacesAdapter: NearbyPlaceAdapter
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -85,8 +95,8 @@ class HomeFragment : Fragment() {
         configureButtons()
         configureObservers()
         configureNavSideBar()
-        configurePlacesToExplore()
-
+        configureNearbyPlacesToExplore()
+        configureNearbyPlacesRecyclerView()
     }
 
     private fun configurePlacesSDK() {
@@ -100,35 +110,72 @@ class HomeFragment : Fragment() {
         val placesClient = Places.createClient(requireContext())
     }
 
-    private fun configurePlacesToExplore() {
+    private fun configureNearbyPlacesToExplore() {
         CoroutineScope(Dispatchers.Main).launch {
-            val currentLocation = getCurrentLocation()
-
-            if (currentLocation != null) {
-                val currentLatLng = com.google.android.gms.maps.model.LatLng(
-                    currentLocation.latitude,
-                    currentLocation.longitude
-                )
-
-                val nearbySearch = NearbySearch.Builder()
-                    .setType(Place.Type.POINT_OF_INTEREST)
-                    .setRadius(10000) // radius in meters
-                    .setLocation(currentLatLng)
-                    .build()
-
-                lifecycleScope.launch {
-                    val response = nearbySearch.call()
-
-                    if (response?.status == "OK") {
-                        response.places.forEach {
-
-                        }
-                    } else {
-                        Log.i(TAG, response.toString())
-                    }
-                }
-            }
+            getNearbyLocations()
         }
+    }
+
+    private suspend fun getNearbyLocations() {
+        val apiKey = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
+
+        val currentLocation = getCurrentLocation()
+
+        if (currentLocation == null) {
+            return
+        }
+
+        val nearbySearchReq = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
+                "location=${currentLocation.latitude}%2C${currentLocation.longitude}" +
+                "&radius=10000" + // Radius in meters
+                "&type=tourist_attraction" +
+                "&key=$apiKey"
+
+        val queue = Volley.newRequestQueue(requireContext())
+
+        var collected = 0
+
+        val stringReq = StringRequest(
+            Request.Method.GET,
+            nearbySearchReq,
+            { response ->
+                try {
+                    val obj = JSONObject(response)
+                    val results = obj.getJSONArray("results")
+
+                    val nearbyPlaces = mutableListOf<NearbyPlace>()
+
+                    for (i in 0 until results.length()) {
+                        val currentResult = results.getJSONObject(i)
+                        val id = currentResult.getString("place_id")
+                        val name = currentResult.getString("name")
+                        val rating = currentResult.getDouble("rating")
+                        val numRatings = currentResult.getInt("user_ratings_total")
+                        val type = currentResult.getJSONArray("types").getString(0)
+
+                        val currentPlace = NearbyPlace(
+                            id,
+                            name,
+                            rating,
+                            numRatings,
+                            type,
+                        )
+                        nearbyPlaces.add(currentPlace)
+                    }
+
+                    homeViewModel.setNearbyPlaces(nearbyPlaces)
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error while parsing nearby places: ${e.message}", e)
+                    e.printStackTrace()
+                }
+            },
+            { error ->
+                Log.e(TAG, "Error getting nearby places: ${error.message}")
+            }
+        )
+
+        queue.add(stringReq)
     }
 
     private suspend fun getCurrentLocation(): Location? {
@@ -156,10 +203,8 @@ class HomeFragment : Fragment() {
         }
 
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        val currentLocation =
-            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
 
-        return currentLocation
+        return fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
     }
 
     private fun configureUserDetails(user: User) {
@@ -192,10 +237,32 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun configureNearbyPlacesRecyclerView() {
+        nearbyPlacesAdapter = NearbyPlaceAdapter(
+            itemClickListener = object : NearbyPlaceAdapter.ItemClickListener {
+                override fun onItemClick(nearbyPlace: NearbyPlace) {
+                   // Do something
+                }
+            },
+            tripRepo = tripRepo
+        )
+
+        binding.nearbyPlacesRecyclerView.adapter = nearbyPlacesAdapter
+
+        val nearbyPlacesLayoutManager = LinearLayoutManager(requireContext())
+        nearbyPlacesLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        binding.nearbyPlacesRecyclerView.layoutManager = nearbyPlacesLayoutManager
+    }
+
     private fun configureObservers() {
         homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             configureUserDetails(user)
+        }
+
+        homeViewModel.nearbyPlaces.observe(viewLifecycleOwner) { nearbyPlaces ->
+            nearbyPlacesAdapter.submitList(nearbyPlaces)
             hideProgressIndicator()
+            Log.d(TAG, nearbyPlaces.toString())
         }
     }
 
