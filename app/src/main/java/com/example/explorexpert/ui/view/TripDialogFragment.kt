@@ -23,6 +23,7 @@ import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.DialogTripBinding
 import com.example.explorexpert.ui.viewmodel.AddTripItemViewModel
+import com.example.explorexpert.ui.viewmodel.CalendarViewModel
 import com.example.explorexpert.ui.viewmodel.TripViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
@@ -55,6 +56,9 @@ class TripDialogFragment(
 
     @Inject
     lateinit var addTripItemViewModel: AddTripItemViewModel
+
+    @Inject
+    lateinit var calendarViewModel: CalendarViewModel
 
     @Inject
     lateinit var tripRepo: TripRepository
@@ -169,6 +173,33 @@ class TripDialogFragment(
 
         binding.btnAddToCalendar.setOnClickListener {
             // add event to calendar
+            if (trip.datesSelected != null) {
+                val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+                val startDateTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(trip.datesSelected!!.startTime)
+                        .plus(1, ChronoUnit.DAYS),
+                    ZoneId.systemDefault()
+                )
+                val startDate = startDateTime.format(dateTimeFormatter)
+
+                val endDateTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(trip.datesSelected!!.endTime)
+                        .plus(1, ChronoUnit.DAYS),
+                    ZoneId.systemDefault()
+                )
+                val endDate = endDateTime.format(dateTimeFormatter)
+
+                calendarViewModel.createEvent(
+                    eventName = trip.name,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+
+                TODO("Need to remove old trip events from calendar when button is pressed multiple times")
+
+                binding.btnAddToCalendar.isEnabled = false
+            }
         }
 
         binding.fabAddNote.setOnClickListener {
