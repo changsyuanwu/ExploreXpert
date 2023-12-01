@@ -181,6 +181,15 @@ class TripDialogFragment(
         binding.fabAddPlace.setOnClickListener {
             startPlaceSearch()
         }
+
+        // Need to find library to extract details from URL, current one doesnt work
+//        binding.fabAddLink.setOnClickListener {
+//            val addLinkBottomSheetDialogFragment = AddLinkBottomSheetDialogFragment(trip)
+//            addLinkBottomSheetDialogFragment.show(
+//                childFragmentManager,
+//                AddLinkBottomSheetDialogFragment.TAG
+//            )
+//        }
     }
 
     private fun configureAddDatesButtonListener() {
