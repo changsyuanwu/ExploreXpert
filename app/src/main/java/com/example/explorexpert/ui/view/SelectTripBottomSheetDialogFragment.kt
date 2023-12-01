@@ -62,6 +62,7 @@ class SelectTripBottomSheetDialogFragment: BottomSheetDialogFragment() {
                 override fun onItemClick(trip: Trip) {
                     addTripItemViewModel.setTrip(trip);
                     addPlaceToTripWithID((requireActivity() as MainActivity).getMapFragment().getCurrPlaceID())
+                    (parentFragment as LocationBottomSheetDialogFragment).setTripAdded()
                     dismiss()
                 }
             }

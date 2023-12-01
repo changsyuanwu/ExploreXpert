@@ -14,8 +14,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.AlertDialog
 import androidx.fragment.app.Fragment
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.explorexpert.R
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -28,14 +31,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 
 
@@ -47,6 +52,9 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     private var currSecondaryAddr: String = ""
     private var currPlaceID: String = ""
 
+    private var nearbyPlacesNames: ArrayList<String> = arrayListOf()
+    private var nearbyPlacesLatLngs: ArrayList<LatLng> = arrayListOf()
+
     private var defaultLatLng = LatLng(43.4723, -80.5449)
 
     private lateinit var appInfo: ApplicationInfo
@@ -55,9 +63,11 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var searchButton: Button
     private lateinit var selectLocationButton: Button
+    private lateinit var view: View
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        private val TAG = "MapsFragment"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +81,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view: View = inflater.inflate(R.layout.fragment_maps, container, false)
+        view = inflater.inflate(R.layout.fragment_maps, container, false)
 
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -91,7 +101,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                     }
                 } else if (result.resultCode == AutocompleteActivity.RESULT_ERROR) {
                     val status = Autocomplete.getStatusFromIntent(result.data)
-                    Log.e("MapsFragment", "Error during autocomplete: ${status.statusMessage}")
+                    Log.e(TAG, "Error during autocomplete: ${status.statusMessage}")
                 }
             }
 
@@ -141,6 +151,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
         map.setOnMyLocationButtonClickListener(object : GoogleMap.OnMyLocationButtonClickListener {
             override fun onMyLocationButtonClick(): Boolean {
+                // TODO: can be null here
                 val location = map.getMyLocation()
                 val latlng = LatLng(location.latitude, location.longitude)
                 generatePlace(latlng)
@@ -219,7 +230,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
             markLocation(latlng)
         }.addOnFailureListener { exception: Exception? ->
             if (exception is ApiException) {
-                Log.e("MapsFragment", "${exception.statusCode}")
+                Log.e(TAG, "${exception.statusCode}")
             }
         }
     }
@@ -234,11 +245,75 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         selectLocationButton.visibility = if (currPlaceID == "") { View.GONE } else { View.VISIBLE }
     }
 
-//    fun getNearbyLocations() {
-//        val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-//        val request = FindCurrentPlaceRequest.newInstance(placeFields)
-//
-//    }
+    private fun suggestNearbyLocations() {
+        if (nearbyPlacesNames.size != 0) {
+            val listener = DialogInterface.OnClickListener { dialog, which ->
+                val selectedLatLng = nearbyPlacesLatLngs[which]
+                generatePlace(selectedLatLng)
+            }
+            val cs: Array<CharSequence> = nearbyPlacesNames.toArray(arrayOfNulls<CharSequence>(nearbyPlacesNames.size))
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Pick a Suggestion")
+                .setItems(cs, listener)
+                .show()
+        } else {
+            Snackbar.make(view, "No suggestions available.", Snackbar.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    fun getNearbyLocations() {
+        nearbyPlacesNames.clear()
+        nearbyPlacesLatLngs.clear()
+
+        val apiKey = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
+        val nearbySearchReq = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
+                "location=${(currLatLng as LatLng).latitude}%2C${(currLatLng as LatLng).longitude}" +
+                "&radius=5000" +
+                "&type=point_of_interest" +
+                "&key=$apiKey"
+
+        val queue = Volley.newRequestQueue(requireContext())
+
+        var collected = 0
+
+        val stringReq = StringRequest(
+            Request.Method.GET, nearbySearchReq,
+            Response.Listener<String> { response ->
+                try {
+                    val obj = JSONObject(response)
+                    val results = obj.getJSONArray("results")
+
+                    for (i in 0 until results.length()) {
+                        val currResult = results.getJSONObject(i)
+                        val location = currResult.getJSONObject("geometry")
+                            .getJSONObject("location")
+                        val latitude = location.getDouble("lat")
+                        val longitude = location.getDouble("lng")
+
+                        val name = currResult.getString("name")
+
+                        if (name != "") {
+                            nearbyPlacesNames.add(name)
+                            nearbyPlacesLatLngs.add(LatLng(latitude, longitude))
+                            collected++
+
+                            if (collected >= 5) break
+                        }
+                    }
+                    suggestNearbyLocations()
+                } catch (e: JSONException) {
+                    Log.e(TAG, "Error, didn't make it")
+                    e.printStackTrace()
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Error: ${error.message}")
+            })
+
+        queue.add(stringReq)
+    }
 
     fun getCurrPlaceID(): String {
         return currPlaceID
