@@ -304,7 +304,6 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                     }
                     suggestNearbyLocations()
                 } catch (e: JSONException) {
-                    Log.e(TAG, "Error, didn't make it")
                     e.printStackTrace()
                 }
             },
