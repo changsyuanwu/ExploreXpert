@@ -71,6 +71,8 @@ class CalendarFragment : Fragment() {
         selectedDate = LocalDateTime.now().format(formatter)
         binding.dateView.text = selectedDate
 
+        // initialize current date list
+        calendarViewModel.fetchEventsByStartDate(selectedDate)
 
         configureEventsRecyclerView()
         configureObservers()
@@ -98,11 +100,9 @@ class CalendarFragment : Fragment() {
 
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
             selectedDate = (year.toString() + "-" + (month + 1) + "-" + dayOfMonth)
-
             binding.dateView.text = selectedDate
             calendarViewModel.fetchEventsByStartDate(selectedDate)
         }
-
     }
 
 }
