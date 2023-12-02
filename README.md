@@ -9,6 +9,9 @@ We are aiming to simplify and enhance travel planning experiences by building a 
 * @uwaterloo.ca
 
 ## Screenshots/Videos
+### Home screen
+![Home screen](screenshots/home_screen.png)
+
 Optional, but often helpful to have a screenshot or demo-video for new users.
 
 ## Quick-Start Instructions
