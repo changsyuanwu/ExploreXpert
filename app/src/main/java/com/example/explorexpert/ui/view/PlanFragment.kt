@@ -112,15 +112,11 @@ class PlanFragment : Fragment() {
             itemClickListener =  object : SavedItemAdapter.ItemClickListener {
                 override fun onItemClick(savedItem: SavedItem) {
                     // Summon dialog for showing saved item details
-//                val tripDialogFragment = TripDialogFragment(trip)
-//                tripDialogFragment.show(
-//                    childFragmentManager,
-//                    "tripDialog"
-//                )
                 }
             },
             tripRepo = tripRepo,
-            currentUserId = planViewModel.getCurrentUserId()
+            currentUserId = planViewModel.getCurrentUserId(),
+            childFragmentManager = childFragmentManager,
         )
 
         binding.savedItemsRecyclerView.adapter = savedItemAdapter

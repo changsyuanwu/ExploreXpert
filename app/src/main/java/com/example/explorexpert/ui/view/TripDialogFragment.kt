@@ -73,6 +73,8 @@ class TripDialogFragment(
 
     private lateinit var appInfo: ApplicationInfo
 
+    private var isBeingViewedByOwner = true
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         appInfo = requireContext().packageManager
@@ -86,6 +88,8 @@ class TripDialogFragment(
         tripViewModel.setTrip(trip)
         addTripItemViewModel.setTrip(trip)
         tripViewModel.fetchSavedItems()
+
+        isBeingViewedByOwner = trip.ownerUserId == tripViewModel.getCurrentUserId()
     }
 
     override fun onCreateView(
@@ -102,10 +106,6 @@ class TripDialogFragment(
 
         showProgressIndicator()
 
-        if (isCreatedFromRecommendationsOnHome) {
-            hideNonOwnerFeatures()
-        }
-
         configureUI(trip)
         configureRecyclerView()
         configurePlacesSDK()
@@ -117,6 +117,7 @@ class TripDialogFragment(
         binding.btnAddDates.visibility = View.GONE
         binding.btnAddToCalendar.visibility = View.GONE
         binding.fabLayout.visibility = View.GONE
+        binding.btnEditIcon.visibility = View.GONE
         binding.btnSaveIcon.visibility = View.VISIBLE
     }
 
@@ -129,6 +130,10 @@ class TripDialogFragment(
 
         CoroutineScope(Dispatchers.Main).launch {
             binding.txtOwner.text = "By ${tripViewModel.getOwnerUserName(tripToUse.ownerUserId)}"
+        }
+
+        if (!isBeingViewedByOwner) {
+            hideNonOwnerFeatures()
         }
     }
 
@@ -167,8 +172,11 @@ class TripDialogFragment(
 
     private fun configureButtons() {
         binding.btnBackIcon.setOnClickListener {
-            (requireParentFragment() as PlanFragment).refreshRecyclerViews()
-            (requireParentFragment() as PlanFragment).scheduleRecyclerViewsRefresh()
+            if (!isCreatedFromRecommendationsOnHome) {
+                (requireParentFragment() as PlanFragment).refreshRecyclerViews()
+                (requireParentFragment() as PlanFragment).scheduleRecyclerViewsRefresh()
+            }
+
             this.dismiss()
         }
 
@@ -181,7 +189,11 @@ class TripDialogFragment(
         }
 
         binding.btnSaveIcon.setOnClickListener {
-
+            val createTripCopyBottomSheetDialogFragment = CreateTripCopyBottomSheetDialogFragment(trip)
+            createTripCopyBottomSheetDialogFragment.show(
+                childFragmentManager,
+                CreateTripBottomSheetDialogFragment.TAG
+            )
         }
 
         binding.btnAddToCalendar.setOnClickListener {
@@ -295,7 +307,8 @@ class TripDialogFragment(
             },
             tripRepo = tripRepo,
             trip = trip,
-            currentUserId = tripViewModel.getCurrentUserId()
+            currentUserId = tripViewModel.getCurrentUserId(),
+            childFragmentManager = childFragmentManager,
         )
         binding.savedItemsRecyclerView.adapter = adapter
 

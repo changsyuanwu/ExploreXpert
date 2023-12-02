@@ -1,4 +1,4 @@
-package com.example.explorexpert.adapters
+package com.example. explorexpert.adapters
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.ui.text.capitalize
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,12 +18,14 @@ import com.example.explorexpert.data.model.SavedItemType
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.SavedItemBinding
+import com.example.explorexpert.ui.view.SelectTripBottomSheetDialogFragment
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +39,7 @@ class SavedItemAdapter(
     private val tripRepo: TripRepository,
     private val trip: Trip? = null,
     private val currentUserId: String,
+    private val childFragmentManager: FragmentManager,
 ): ListAdapter<SavedItem, SavedItemAdapter.ViewHolder>(DiffCallback()) {
 
     companion object {
@@ -43,6 +47,8 @@ class SavedItemAdapter(
     }
 
     private lateinit var appInfo: ApplicationInfo
+
+    private var isBeingViewedByOwner = true
 
     inner class ViewHolder(private val binding: SavedItemBinding): RecyclerView.ViewHolder(binding.root) {
 
@@ -52,37 +58,21 @@ class SavedItemAdapter(
         fun bind(savedItem: SavedItem) {
             configurePlacesSDK()
 
+            if (trip != null && currentUserId != trip.ownerUserId) {
+                isBeingViewedByOwner = false
+            }
+
             binding.txtItemType.text = savedItem.type.toString()
 
             binding.txtItemName.text = savedItem.title
 
             binding.txtItemDescription.text = savedItem.description
 
-            binding.btnFavIcon.setOnClickListener {
-                val confirmDialog = MaterialAlertDialogBuilder(context)
-                    .setTitle("Remove this item?")
-                    .setMessage("Removing it will remove it from any trips and your saved items.")
-                    .setNeutralButton("Cancel") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton("Remove") { dialog, which ->
-                        CoroutineScope(Dispatchers.Main).launch {
-                            tripRepo.removeSavedItem(savedItem.id)
-
-                            var newItems: List<SavedItem>
-                            // Update the list of items
-                            if (isInTripDialog && trip != null) {
-                                trip.savedItemIds.remove(savedItem.id)
-                                newItems = tripRepo.getSavedItemsFromTrip(trip)
-                            }
-                            else {
-                                newItems = tripRepo.getSavedItemsByUserId(currentUserId)
-                            }
-                            submitList(newItems)
-                            dialog.dismiss()
-                        }
-                    }
-                    .show()
+            if (isBeingViewedByOwner) {
+                configureUIForOwner(savedItem)
+            }
+            else {
+                configureUIForNonOwner(savedItem)
             }
 
             binding.savedItemContainer.setOnClickListener {
@@ -116,6 +106,53 @@ class SavedItemAdapter(
                 SavedItemType.BLANK -> {
                     // Do nothing
                 }
+            }
+        }
+
+        private fun configureUIForOwner(savedItem: SavedItem) {
+            binding.btnFavIcon.setOnClickListener {
+                val confirmDialog = MaterialAlertDialogBuilder(context)
+                    .setTitle("Remove this item?")
+                    .setMessage("Removing it will remove it from any trips and your saved items.")
+                    .setNeutralButton("Cancel") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Remove") { dialog, which ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            tripRepo.removeSavedItem(savedItem.id)
+
+                            var newItems: List<SavedItem>
+                            // Update the list of items
+                            if (isInTripDialog && trip != null) {
+                                trip.savedItemIds.remove(savedItem.id)
+                                newItems = tripRepo.getSavedItemsFromTrip(trip)
+                            }
+                            else {
+                                newItems = tripRepo.getSavedItemsByUserId(currentUserId)
+                            }
+                            submitList(newItems)
+                            dialog.dismiss()
+                        }
+                    }
+                    .show()
+            }
+        }
+
+        private fun configureUIForNonOwner(savedItem: SavedItem) {
+            val btnFavIcon = binding.btnFavIcon.findViewById<MaterialButton>(R.id.btnFavIcon)
+            btnFavIcon.setIconResource(R.drawable.baseline_favorite_border_24)
+            btnFavIcon.setIconTintResource(R.color.black)
+
+            binding.btnFavIcon.setOnClickListener {
+                // Open trip selector
+                val selectTripBottomSheetDialogFragment = SelectTripBottomSheetDialogFragment(
+                    isCreatedFromNonOwnerViewingSavedItem = true,
+                    savedItemToCopy = savedItem
+                )
+                selectTripBottomSheetDialogFragment.show(
+                    childFragmentManager,
+                    SelectTripBottomSheetDialogFragment.TAG
+                )
             }
         }
 

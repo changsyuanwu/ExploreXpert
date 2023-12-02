@@ -24,4 +24,6 @@ interface TripRepository {
     suspend fun removeAssociatedEventFromTrip(tripId: String)
 
     suspend fun getRandomPublicTrips(numRandomTrips: Int, currentUserId: String): List<Trip>
+
+    suspend fun createCopyOfTrip(newTripName: String, currentUserId: String, tripToCopy: Trip): String?
 }

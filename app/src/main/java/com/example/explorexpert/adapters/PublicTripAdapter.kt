@@ -61,6 +61,10 @@ class PublicTripAdapter(
                 binding.btnSavedItems.text = "${publicTrip.savedItemIds.size} items"
             }
 
+            binding.itemContainer.setOnClickListener {
+                itemClickListener.onItemClick(publicTrip)
+            }
+
             CoroutineScope(Dispatchers.Main).launch {
                 val tripOwner = userRepo.getUserById(publicTrip.ownerUserId)
                 if (tripOwner != null) {

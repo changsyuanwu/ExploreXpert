@@ -325,6 +325,14 @@ class HomeFragment : Fragment() {
             itemClickListener = object : PublicTripAdapter.ItemClickListener {
                 override fun onItemClick(trip: Trip) {
                     // Open trip dialog
+                    val tripDialogFragment = TripDialogFragment(
+                        trip,
+                        isCreatedFromRecommendationsOnHome = true
+                    )
+                    tripDialogFragment.show(
+                        childFragmentManager,
+                        TripDialogFragment.TAG
+                    )
                 }
             },
             childFragmentManager = childFragmentManager,
