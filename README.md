@@ -20,6 +20,7 @@ Optional, but often helpful to have a screenshot or demo-video for new users.
 ## Project Documents
 * [Project Proposal](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Project-Proposal)
 * [Meeting Minutes](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Meeting-Minutes)
+* [Design & Architecture](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Design-Doc)
 
 ## Software Releases
 * [Releases](https://git.uwaterloo.ca/c275wu/cs346-project/-/releases)
