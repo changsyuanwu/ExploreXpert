@@ -17,7 +17,6 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.R
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -100,7 +99,10 @@ class AuthViewModel @Inject constructor(
                                         false,
                                         "Registration successful but failed to update display name."
                                     )
-                                    Log.d(TAG, "Registration successful but failed to update display name for UID ${user.uid}.")
+                                    Log.d(
+                                        TAG,
+                                        "Registration successful but failed to update display name for UID ${user.uid}."
+                                    )
                                 }
                             }
                     }
@@ -221,7 +223,6 @@ class AuthViewModel @Inject constructor(
                             firstName,
                             lastName,
                             user.email,
-                            verified = true
                         )
                     }
                 } else {
@@ -238,10 +239,14 @@ class AuthViewModel @Inject constructor(
         firstName: String,
         lastName: String,
         email: String?,
-        verified: Boolean = false
     ) {
-        if (userId != null && firstName != null && lastName != null && email != null) {
-            val user = User(userId, firstName, lastName, email, verified = verified)
+        if (email != null) {
+            val user = User(
+                userId,
+                firstName,
+                lastName,
+                email,
+            )
             viewModelScope.launch {
                 try {
                     if (userRepo.getUserById(userId) == null) {
@@ -270,7 +275,8 @@ class AuthViewModel @Inject constructor(
         } else if (!isPasswordValid(password)) {
             _registerFormState.value = RegisterFormState(passwordError = "Password is too short")
         } else if (!doPasswordsMatch(password, confirmPassword)) {
-            _registerFormState.value = RegisterFormState(confirmPasswordError = "Passwords do not match!")
+            _registerFormState.value =
+                RegisterFormState(confirmPasswordError = "Passwords do not match!")
         } else {
             _registerFormState.value = RegisterFormState(isDataValid = true)
         }
