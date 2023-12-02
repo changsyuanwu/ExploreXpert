@@ -17,6 +17,7 @@ import me.angrybyte.goose.Article
 import me.angrybyte.goose.ContentExtractor
 import me.angrybyte.goose.network.GooseDownloader
 import java.net.URL
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -114,6 +115,19 @@ class AddTripItemViewModel@Inject constructor(
                 )
                 Log.e(TAG, "Failed to add link to trip: ${e.message}", e)
             }
+        }
+    }
+
+    fun addCopyOfSavedItem(savedItemToCopy: SavedItem) {
+        viewModelScope.launch {
+            val newItem = savedItemToCopy.copy(
+                id = UUID.randomUUID().toString(),
+                ownerUserId = auth.currentUser?.uid.toString(),
+                createdAt = null,
+                updatedAt = null,
+            )
+
+            tripRepo.addItemToTrip(newItem, trip)
         }
     }
 }

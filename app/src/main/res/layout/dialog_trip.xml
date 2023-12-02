@@ -53,6 +53,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/btnBackIcon" />
 
+            <Button
+                android:id="@+id/btnSaveIcon"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:contentDescription="save"
+                android:visibility="gone"
+                app:icon="@drawable/baseline_save_alt_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnBackIcon" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -158,8 +170,10 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.nambimobile.widgets.efab.ExpandableFabLayout
+        android:id="@+id/fabLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <!-- The next 3 Views will only display in portrait orientation -->
         <com.nambimobile.widgets.efab.Overlay

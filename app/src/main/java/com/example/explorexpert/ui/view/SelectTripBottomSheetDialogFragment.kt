@@ -2,7 +2,6 @@ package com.example.explorexpert.ui.view
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.explorexpert.MainActivity
 import com.example.explorexpert.adapters.SimpleTripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.TripRepository
 import com.example.explorexpert.databinding.SelectTripBottomSheetBinding
@@ -20,14 +20,17 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelectTripBottomSheetDialogFragment(
     private val isCreatedFromPlaceRecommendedOnHome: Boolean = false,
+    private val isCreatedFromNonOwnerViewingSavedItem: Boolean = false,
     private val placeToAdd: Place? = null,
-): BottomSheetDialogFragment() {
+    private val savedItemToCopy: SavedItem? = null,
+) : BottomSheetDialogFragment() {
 
     private var _binding: SelectTripBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -47,7 +50,7 @@ class SelectTripBottomSheetDialogFragment(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = SelectTripBottomSheetBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -61,9 +64,18 @@ class SelectTripBottomSheetDialogFragment(
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        if (!isCreatedFromPlaceRecommendedOnHome) {
+        if (!isCreatedFromPlaceRecommendedOnHome && !isCreatedFromNonOwnerViewingSavedItem) {
             (parentFragment as LocationBottomSheetDialogFragment).dismiss()
         }
+    }
+
+    private fun showAddToTripSuccessSnackbar(tripName: String) {
+        val parentFrag = requireParentFragment()
+        Snackbar.make(
+            parentFrag.view as View,
+            "Successfully added to $tripName",
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private fun configureRecyclerView() {
@@ -71,15 +83,27 @@ class SelectTripBottomSheetDialogFragment(
             tripRepo,
             object : SimpleTripAdapter.ItemClickListener {
                 override fun onItemClick(trip: Trip) {
-                    addTripItemViewModel.setTrip(trip);
-                    
+                    // Set the trip to the one that was clicked on
+                    addTripItemViewModel.setTrip(trip)
+
                     if (isCreatedFromPlaceRecommendedOnHome) {
                         if (placeToAdd != null) {
                             addTripItemViewModel.addPlace(placeToAdd)
+
+                            showAddToTripSuccessSnackbar(trip.name)
+                        }
+                    }
+                    else if (isCreatedFromNonOwnerViewingSavedItem) {
+                        if (savedItemToCopy != null) {
+                            addTripItemViewModel.addCopyOfSavedItem(savedItemToCopy)
+
+                            showAddToTripSuccessSnackbar(trip.name)
                         }
                     }
                     else {
-                        addPlaceToTripWithID((requireActivity() as MainActivity).getMapFragment().getCurrPlaceID())
+                        addPlaceToTripWithID(
+                            (requireActivity() as MainActivity).getMapFragment().getCurrPlaceID()
+                        )
                         (parentFragment as LocationBottomSheetDialogFragment).setTripAdded()
                     }
                     dismiss()

@@ -5,12 +5,14 @@ import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.data.repository.TripRepository
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 class TripRepoImplementation @Inject constructor(
@@ -63,23 +65,6 @@ class TripRepoImplementation @Inject constructor(
                         null
                     }
                 }
-
-                // Add support for shared trips later
-//                val sharedWithTripsQueryResult = tripCollection
-//                    .where
-//                    .get()
-//                    .await()
-//
-//                val sharedWithTrips = sharedWithTripsQueryResult.documents.mapNotNull { document ->
-//                    try {
-//                        val trip = document.toObject(Trip::class.java)
-//                        trip?.id = document.id
-//                        trip
-//                    } catch (e: Exception) {
-//                        Log.e(TAG, "Error casting document to trip object: ${e.message}")
-//                        null
-//                    }
-//                }
 
                 return@withContext ownedTrips
             } catch (e: Exception) {
@@ -205,7 +190,7 @@ class TripRepoImplementation @Inject constructor(
             }
         }
 
-    private suspend fun getTripsWithSavedItem(savedItemId: String) : List<Trip> =
+    private suspend fun getTripsWithSavedItem(savedItemId: String): List<Trip> =
         withContext(Dispatchers.IO) {
             try {
                 val tripsWithSavedItemQueryResult = tripCollection
@@ -218,16 +203,14 @@ class TripRepoImplementation @Inject constructor(
                         val trip = doc.toObject(Trip::class.java)
                         trip?.id = doc.id
                         trip
-                    }
-                    catch (e: Exception) {
-                        Log.e(TAG, "Errpr casting document to Trip object: ${e.message}")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error casting document to Trip object: ${e.message}")
                         null
                     }
                 }
 
                 return@withContext tripsWithSavedItem
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Error reading trips with saved item query: ${e.message}")
                 return@withContext emptyList()
             }
@@ -260,8 +243,7 @@ class TripRepoImplementation @Inject constructor(
                     .document(savedItemId)
                     .delete()
                     .await()
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Error removing saved item: ${e.message}")
             }
         }
@@ -277,8 +259,14 @@ class TripRepoImplementation @Inject constructor(
                     return@withContext
                 }
 
+                // Delete the trip first so it doesn't show in UI anymore
+                tripCollection
+                    .document(tripId)
+                    .delete()
+                    .await()
+
                 // Remove any saved items associated with the trip
-                trip?.savedItemIds?.forEach { itemId ->
+                trip.savedItemIds.forEach { itemId ->
                     removeSavedItem(itemId)
                 }
 
@@ -287,12 +275,7 @@ class TripRepoImplementation @Inject constructor(
                     eventRepo.deleteEvent(eventId)
                 }
 
-                tripCollection
-                    .document(tripId)
-                    .delete()
-                    .await()
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Error deleting trip: ${e.message}")
             }
         }
@@ -312,9 +295,155 @@ class TripRepoImplementation @Inject constructor(
                 )
 
                 setTrip(newTrip)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error removing associated trip id from trip: ${e.message}")
+            }
+        }
+    }
+
+    private suspend fun getRandomPublicTrip(): Trip? =
+        withContext(Dispatchers.IO) {
+            try {
+                val randomUUID = UUID.randomUUID().toString()
+                val closestTripQueryResult = tripCollection
+                    .whereGreaterThanOrEqualTo("id", randomUUID)
+                    .whereEqualTo("private", false)
+                    .orderBy("id")
+                    .limit(1)
+                    .get()
+                    .await()
+
+                try {
+                    val closestTrip = closestTripQueryResult
+                        .documents
+                        .first()
+                        .toObject(Trip::class.java)
+                    return@withContext closestTrip
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error casting random query result to trip object: ${e.message}", e)
+                    return@withContext null
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error query random trip: ${e.message}", e)
+                return@withContext null
+            }
+        }
+
+    private suspend fun getNumPublicTrips(): Long? =
+        withContext(Dispatchers.IO) {
+            try {
+                val countQuery = tripCollection
+                    .whereEqualTo("private", false)
+                    .count()
+
+                val task = countQuery.get(AggregateSource.SERVER).await()
+
+                return@withContext task.count
+            } catch (e: Exception) {
+                Log.e(TAG, "Error counting number of public trips: ${e.message}", e)
+                return@withContext null
+            }
+        }
+
+    private suspend fun getAllPublicTrips(currentUserId: String): List<Trip> =
+        withContext(Dispatchers.IO) {
+            try {
+                // Get all public trips that do not belong to the current user
+                val publicTripsQueryResult = tripCollection
+                    .whereEqualTo("private", false)
+                    .whereNotEqualTo("ownerUserId", currentUserId)
+                    .get()
+                    .await()
+
+                val publicTrips = publicTripsQueryResult.documents.mapNotNull { doc ->
+                    try {
+                        val trip = doc.toObject(Trip::class.java)
+                        trip?.id = doc.id
+                        trip
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error casting document to Trip object: ${e.message}", e)
+                        null
+                    }
+                }
+
+                return@withContext publicTrips
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting public trips: ${e.message}", e)
+                return@withContext emptyList()
+            }
+        }
+
+    override suspend fun getRandomPublicTrips(
+        numRandomTrips: Int,
+        currentUserId: String
+    ): List<Trip> =
+        withContext(Dispatchers.IO) {
+            try {
+                val allPublicTrips = getAllPublicTrips(currentUserId)
+
+                if (allPublicTrips.isEmpty()) {
+                    return@withContext emptyList()
+                }
+
+                if (allPublicTrips.size < numRandomTrips) {
+                    return@withContext allPublicTrips.shuffled()
+                }
+
+                return@withContext allPublicTrips
+                    .shuffled()
+                    .take(numRandomTrips)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting random public trips: ${e.message}", e)
+                return@withContext emptyList()
+            }
+        }
+
+    private suspend fun createCopiesOfSavedItems(
+        savedItemsToCopy: List<SavedItem>,
+        currentUserId: String
+    ): List<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val copiedItemIds = savedItemsToCopy.map { itemToCopy ->
+                    val newItem = itemToCopy.copy(
+                        id = UUID.randomUUID().toString(),
+                        ownerUserId = currentUserId,
+                        createdAt = null,
+                        updatedAt = null,
+                    )
+                    return@map saveItemToCollection(newItem)
+                }
+
+                return@withContext copiedItemIds
             }
             catch (e: Exception) {
-                Log.e(TAG, "Error removing associated trip id from trip: ${e.message}")
+                Log.e(TAG, "Error creating copies of saved items: ${e.message}", e)
+                return@withContext emptyList()
+            }
+        }
+    }
+
+    override suspend fun createCopyOfTrip(
+        newTripName: String,
+        currentUserId: String,
+        tripToCopy: Trip
+    ): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val savedItemsToCopy = getSavedItemsFromTrip(tripToCopy)
+
+                val copiedSavedItemsIds = createCopiesOfSavedItems(savedItemsToCopy, currentUserId)
+
+                val newTrip = Trip(
+                    name = newTripName,
+                    ownerUserId = currentUserId,
+                    savedItemIds = copiedSavedItemsIds.toMutableList()
+                )
+
+                return@withContext setTrip(newTrip)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error creating copy of trip: ${e.message}", e)
+                return@withContext null
             }
         }
     }

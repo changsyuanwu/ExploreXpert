@@ -28,9 +28,24 @@ class CreateTripViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     tripRepo.setTrip(trip)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     Log.e(TAG, "Error creating trip in collection: ${e.message}", e)
+                }
+            }
+        }
+    }
+
+    fun createTripFromCopy(tripName: String, tripToCopy: Trip) {
+        if (tripName != "" && auth.currentUser != null) {
+            viewModelScope.launch {
+                try {
+                    tripRepo.createCopyOfTrip(
+                        tripName,
+                        auth.currentUser!!.uid,
+                        tripToCopy
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error creating copy of trip: ${e.message}", e)
                 }
             }
         }

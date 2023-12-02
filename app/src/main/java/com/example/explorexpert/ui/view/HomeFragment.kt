@@ -21,9 +21,12 @@ import com.android.volley.toolbox.Volley
 import com.example.explorexpert.R
 import com.example.explorexpert.SplashScreenActivity
 import com.example.explorexpert.adapters.NearbyPlaceAdapter
+import com.example.explorexpert.adapters.PublicTripAdapter
 import com.example.explorexpert.data.model.NearbyPlace
+import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.model.User
 import com.example.explorexpert.data.repository.TripRepository
+import com.example.explorexpert.data.repository.UserRepository
 import com.example.explorexpert.databinding.FragmentHomeBinding
 import com.example.explorexpert.ui.viewmodel.HomeViewModel
 import com.example.explorexpert.utils.ImageLoaderUtil
@@ -55,9 +58,14 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var tripRepo: TripRepository
 
+    @Inject
+    lateinit var userRepo: UserRepository
+
     private lateinit var appInfo: ApplicationInfo
 
     private lateinit var nearbyPlacesAdapter: NearbyPlaceAdapter
+
+    private lateinit var publicTripsAdapter: PublicTripAdapter
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -73,6 +81,8 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         homeViewModel.refreshCurrentUser()
+        homeViewModel.getRandomPublicTrips()
+        getNearbyPlacesToExplore()
     }
 
     override fun onCreateView(
@@ -95,8 +105,8 @@ class HomeFragment : Fragment() {
         configureButtons()
         configureObservers()
         configureNavSideBar()
-        configureNearbyPlacesToExplore()
         configureNearbyPlacesRecyclerView()
+        configurePublicTripsRecyclerView()
     }
 
     private fun configurePlacesSDK() {
@@ -110,7 +120,7 @@ class HomeFragment : Fragment() {
         val placesClient = Places.createClient(requireContext())
     }
 
-    private fun configureNearbyPlacesToExplore() {
+    private fun getNearbyPlacesToExplore() {
         CoroutineScope(Dispatchers.Main).launch {
             getNearbyLocations()
         }
@@ -297,10 +307,9 @@ class HomeFragment : Fragment() {
         nearbyPlacesAdapter = NearbyPlaceAdapter(
             itemClickListener = object : NearbyPlaceAdapter.ItemClickListener {
                 override fun onItemClick(nearbyPlace: NearbyPlace) {
-                    // Do something
+                    // Do something or do nothing
                 }
             },
-            tripRepo = tripRepo,
             childFragmentManager = childFragmentManager,
         )
 
@@ -311,6 +320,33 @@ class HomeFragment : Fragment() {
         binding.nearbyPlacesRecyclerView.layoutManager = nearbyPlacesLayoutManager
     }
 
+    private fun configurePublicTripsRecyclerView() {
+        publicTripsAdapter = PublicTripAdapter(
+            itemClickListener = object : PublicTripAdapter.ItemClickListener {
+                override fun onItemClick(trip: Trip) {
+                    // Open trip dialog
+                    val tripDialogFragment = TripDialogFragment(
+                        trip,
+                        isCreatedFromRecommendationsOnHome = true
+                    )
+                    tripDialogFragment.show(
+                        childFragmentManager,
+                        TripDialogFragment.TAG
+                    )
+                }
+            },
+            childFragmentManager = childFragmentManager,
+            tripRepo = tripRepo,
+            userRepo = userRepo,
+        )
+
+        binding.publicTripsRecyclerView.adapter = publicTripsAdapter
+
+        val publicTripsLayoutManager = LinearLayoutManager(requireContext())
+        publicTripsLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        binding.publicTripsRecyclerView.layoutManager = publicTripsLayoutManager
+    }
+
     private fun configureObservers() {
         homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             configureUserDetails(user)
@@ -319,7 +355,10 @@ class HomeFragment : Fragment() {
         homeViewModel.nearbyPlaces.observe(viewLifecycleOwner) { nearbyPlaces ->
             nearbyPlacesAdapter.submitList(nearbyPlaces)
             hideProgressIndicator()
-            Log.d(TAG, nearbyPlaces.toString())
+        }
+
+        homeViewModel.publicTrips.observe(viewLifecycleOwner) { publicTrips ->
+            publicTripsAdapter.submitList(publicTrips)
         }
     }
 

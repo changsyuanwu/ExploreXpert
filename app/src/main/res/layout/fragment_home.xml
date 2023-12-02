@@ -63,7 +63,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="24dp"
+                >
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardUserProfile"
@@ -138,26 +140,79 @@
 
                 <TextView
                     android:id="@+id/txtExploreNearby"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginHorizontal="24dp"
                     android:layout_marginTop="24dp"
                     android:text="Explore nearby"
-                    android:textSize="30sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cardUserProfile" />
+                    app:layout_constraintTop_toBottomOf="@id/cardUserProfile"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/txtExploreNearbyDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Nearby places you might be interested in"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/txtExploreNearby"
+                    app:layout_constraintTop_toBottomOf="@id/txtExploreNearby"
+                    app:layout_constraintEnd_toEndOf="@id/txtExploreNearby"
+                    />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/nearbyPlacesRecyclerView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:minHeight="350dp"
                     android:layout_marginTop="8dp"
                     android:clipToPadding="false"
                     android:paddingLeft="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txtExploreNearby" />
+                    app:layout_constraintTop_toBottomOf="@id/txtExploreNearbyDescription" />
+
+                <TextView
+                    android:id="@+id/txtExploreTrips"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Explore trips by other users"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/nearbyPlacesRecyclerView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/txtExploreTripsDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Get inspired or trace someone else's steps"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/txtExploreTrips"
+                    app:layout_constraintTop_toBottomOf="@id/txtExploreTrips"
+                    app:layout_constraintEnd_toEndOf="@id/txtExploreTrips"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/publicTripsRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="350dp"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:paddingLeft="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/txtExploreTripsDescription" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
