@@ -49,7 +49,8 @@ import kotlin.concurrent.timerTask
 
 @AndroidEntryPoint
 class TripDialogFragment(
-    private var trip: Trip
+    private var trip: Trip,
+    private val isCreatedFromRecommendationsOnHome: Boolean = false,
 ) : DialogFragment() {
 
     @Inject
@@ -101,11 +102,22 @@ class TripDialogFragment(
 
         showProgressIndicator()
 
+        if (isCreatedFromRecommendationsOnHome) {
+            hideNonOwnerFeatures()
+        }
+
         configureUI(trip)
         configureRecyclerView()
         configurePlacesSDK()
         configureButtons()
         configureObservers()
+    }
+
+    private fun hideNonOwnerFeatures() {
+        binding.btnAddDates.visibility = View.GONE
+        binding.btnAddToCalendar.visibility = View.GONE
+        binding.fabLayout.visibility = View.GONE
+        binding.btnSaveIcon.visibility = View.VISIBLE
     }
 
     private fun configureUI(tripToUse: Trip) {
@@ -166,6 +178,10 @@ class TripDialogFragment(
                 childFragmentManager,
                 "editTripDialog"
             )
+        }
+
+        binding.btnSaveIcon.setOnClickListener {
+
         }
 
         binding.btnAddToCalendar.setOnClickListener {

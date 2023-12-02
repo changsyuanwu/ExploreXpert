@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/itemContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingVertical="24dp"
+    android:paddingHorizontal="12dp"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="20dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgTrip"
+                android:layout_width="250dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:1"
+                android:scaleType="centerCrop"
+                android:contentDescription="image of item"
+                app:srcCompat="@drawable/placeholder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <Button
+                android:id="@+id/btnSavedItems"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:backgroundTint="@color/white"
+                android:paddingHorizontal="16dp"
+                android:text="0 items"
+                android:textColor="@color/black"
+                app:icon="@drawable/baseline_public_24"
+                app:iconTint="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/txtTripName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Trip name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/cardImage"
+        app:layout_constraintStart_toStartOf="@id/cardImage"
+        app:layout_constraintTop_toBottomOf="@id/cardImage" />
+
+    <TextView
+        android:id="@+id/txtTripOwner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="By ExploreExpert"
+        android:scrollHorizontally="false"
+        app:layout_constraintEnd_toEndOf="@id/txtTripName"
+        app:layout_constraintStart_toStartOf="@id/txtTripName"
+        app:layout_constraintTop_toBottomOf="@id/txtTripName"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

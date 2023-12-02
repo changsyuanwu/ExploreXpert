@@ -2,7 +2,6 @@ package com.example.explorexpert.data.repository
 
 import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
-import com.example.explorexpert.data.model.User
 
 interface TripRepository {
 
@@ -23,4 +22,6 @@ interface TripRepository {
     suspend fun deleteTrip(tripId: String)
 
     suspend fun removeAssociatedEventFromTrip(tripId: String)
+
+    suspend fun getRandomPublicTrips(numRandomTrips: Int, currentUserId: String): List<Trip>
 }

@@ -5,12 +5,14 @@ import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.data.repository.TripRepository
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 class TripRepoImplementation @Inject constructor(
@@ -63,23 +65,6 @@ class TripRepoImplementation @Inject constructor(
                         null
                     }
                 }
-
-                // Add support for shared trips later
-//                val sharedWithTripsQueryResult = tripCollection
-//                    .where
-//                    .get()
-//                    .await()
-//
-//                val sharedWithTrips = sharedWithTripsQueryResult.documents.mapNotNull { document ->
-//                    try {
-//                        val trip = document.toObject(Trip::class.java)
-//                        trip?.id = document.id
-//                        trip
-//                    } catch (e: Exception) {
-//                        Log.e(TAG, "Error casting document to trip object: ${e.message}")
-//                        null
-//                    }
-//                }
 
                 return@withContext ownedTrips
             } catch (e: Exception) {
@@ -220,7 +205,7 @@ class TripRepoImplementation @Inject constructor(
                         trip
                     }
                     catch (e: Exception) {
-                        Log.e(TAG, "Errpr casting document to Trip object: ${e.message}")
+                        Log.e(TAG, "Error casting document to Trip object: ${e.message}")
                         null
                     }
                 }
@@ -318,4 +303,105 @@ class TripRepoImplementation @Inject constructor(
             }
         }
     }
+
+    private suspend fun getRandomPublicTrip(): Trip? =
+        withContext(Dispatchers.IO) {
+            try {
+                val randomUUID = UUID.randomUUID().toString()
+                val closestTripQueryResult = tripCollection
+                    .whereGreaterThanOrEqualTo("id", randomUUID)
+                    .whereEqualTo("private", false)
+                    .orderBy("id")
+                    .limit(1)
+                    .get()
+                    .await()
+
+                try {
+                    val closestTrip = closestTripQueryResult
+                        .documents
+                        .first()
+                        .toObject(Trip::class.java)
+                    return@withContext closestTrip
+                }
+                catch (e: Exception) {
+                    Log.e(TAG, "Error casting random query result to trip object: ${e.message}", e)
+                    return@withContext null
+                }
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error query random trip: ${e.message}", e)
+                return@withContext null
+            }
+        }
+
+    private suspend fun getNumPublicTrips(): Long? =
+        withContext(Dispatchers.IO) {
+            try {
+                val countQuery = tripCollection
+                    .whereEqualTo("private", false)
+                    .count()
+
+                val task = countQuery.get(AggregateSource.SERVER).await()
+
+                return@withContext task.count
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error counting number of public trips: ${e.message}", e)
+                return@withContext null
+            }
+        }
+
+    private suspend fun getAllPublicTrips(currentUserId: String): List<Trip> =
+        withContext(Dispatchers.IO) {
+            try {
+                // Get all public trips that do not belong to the current user
+                val publicTripsQueryResult = tripCollection
+                    .whereEqualTo("private", false)
+                    .whereNotEqualTo("ownerUserId", currentUserId)
+                    .get()
+                    .await()
+
+                val publicTrips = publicTripsQueryResult.documents.mapNotNull { doc ->
+                    try {
+                        val trip = doc.toObject(Trip::class.java)
+                        trip?.id = doc.id
+                        trip
+                    }
+                    catch (e: Exception) {
+                        Log.e(TAG, "Error casting document to Trip object: ${e.message}", e)
+                        null
+                    }
+                }
+
+                return@withContext publicTrips
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error getting public trips: ${e.message}", e)
+                return@withContext emptyList()
+            }
+        }
+
+    override suspend fun getRandomPublicTrips(numRandomTrips: Int, currentUserId: String): List<Trip> =
+        withContext(Dispatchers.IO) {
+            try {
+                val allPublicTrips = getAllPublicTrips(currentUserId)
+
+                if (allPublicTrips.isEmpty()) {
+                    return@withContext emptyList()
+                }
+
+                if (allPublicTrips.size < numRandomTrips) {
+                    return@withContext allPublicTrips.shuffled()
+                }
+
+                return@withContext allPublicTrips
+                    .shuffled()
+                    .take(numRandomTrips)
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "Error getting random public trips: ${e.message}", e)
+                return@withContext emptyList()
+            }
+        }
+
 }
