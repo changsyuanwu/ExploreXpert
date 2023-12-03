@@ -199,7 +199,7 @@ class TripDialogFragment(
         binding.btnAddToCalendar.setOnClickListener {
             // add event to calendar
             if (trip.datesSelected != null) {
-                val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
 
                 val startDateTime = LocalDateTime.ofInstant(
                     Instant.ofEpochMilli(trip.datesSelected!!.startTime)

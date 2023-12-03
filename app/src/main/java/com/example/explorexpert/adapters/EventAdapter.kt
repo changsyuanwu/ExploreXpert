@@ -29,7 +29,7 @@ class EventAdapter(
         if (item.startDate == item.endDate) {
             holder.eventDateTextView.text = item.startDate
         } else {
-            val dateRange = item.startDate + "   ---   " + item.endDate
+            val dateRange = item.startDate + " - " + item.endDate
             holder.eventDateTextView.text = dateRange
         }
 

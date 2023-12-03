@@ -27,8 +27,7 @@ class CalendarViewModel @Inject constructor(
 
     init {
         // fetch current date
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        //fetchEventsByStartDate(LocalDateTime.now().format(formatter))
+        val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
         fetchEventsByDate(LocalDateTime.now().format(formatter))
     }
 
@@ -42,16 +41,6 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun fetchEventsByStartDate(startDate: String) {
-        viewModelScope.launch {
-            if (auth.currentUser != null) {
-                val eventsToDisplay = eventRepo.getEventsByUserIdAndStartDate(auth.currentUser!!.uid, startDate)
-                mutableEvents.value = (eventsToDisplay)
-            }
-            Log.d(TAG, "Fetched events for ${startDate}")
-        }
-    }
-
     fun fetchEventsByDate(startDate: String) {
         viewModelScope.launch {
             if (auth.currentUser != null) {
@@ -62,12 +51,11 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun createEvent(eventName: String, startDate: String, endDate: String = "", associatedTripId: String? = null): String? {
+    fun createEvent(eventName: String, startDate: String, endDate: String, associatedTripId: String? = null): String? {
         if (eventName != "" && auth.currentUser != null) {
             val event = Event(
                 name = eventName,
                 startDate = startDate,
-                //currently only adds single dates, end dates cant be set
                 endDate = endDate,
                 associatedTripId = associatedTripId,
                 ownerUserId = auth.currentUser!!.uid,

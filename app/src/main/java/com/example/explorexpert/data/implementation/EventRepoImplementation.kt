@@ -91,34 +91,6 @@ class EventRepoImplementation @Inject constructor(
             }
         }
 
-    override suspend fun getEventsByUserIdAndStartDate(userId: String, startDate: String): List<Event> =
-        withContext(Dispatchers.IO) {
-            try {
-                val ownedEventsQueryResult = eventCollection
-                    .whereEqualTo("ownerUserId", userId)
-                    .whereEqualTo("startDate", startDate)
-                    .orderBy("updatedAt", Query.Direction.DESCENDING)
-                    .get()
-                    .await()
-                val ownedEvents = ownedEventsQueryResult.documents.mapNotNull { document ->
-                    try {
-                        val event = document.toObject(Event::class.java)
-                        event?.id = document.id
-                        event
-
-                    } catch (e: Exception) {
-                        Log.e(EventRepoImplementation.TAG, "Error casting document to Event object: ${e.message}")
-                        null
-                    }
-                }
-
-                return@withContext ownedEvents
-            } catch (e: Exception) {
-                Log.e(EventRepoImplementation.TAG, "Error reading Events query: ${e.message}")
-                return@withContext emptyList()
-            }
-        }
-
     override suspend fun getEventsByUserIdAndDate(userId: String, date: String): List<Event> =
         withContext(Dispatchers.IO) {
             try {

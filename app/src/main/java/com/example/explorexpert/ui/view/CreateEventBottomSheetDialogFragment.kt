@@ -120,12 +120,12 @@ class CreateEventBottomSheetDialogFragment(
 
     }
     private fun convertDateStringToLong(date: String): Long {
-        val df = SimpleDateFormat("yyyy-MM-dd")
+        val df = SimpleDateFormat("yyyy/MM/dd")
         return df.parse(date).time
     }
 
     private fun convertLongToDateString(long: Long): String {
-        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
 
         val dateTime = LocalDateTime.ofInstant(
             Instant.ofEpochMilli(long)

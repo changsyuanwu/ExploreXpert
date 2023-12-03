@@ -15,7 +15,9 @@ import com.example.explorexpert.databinding.FragmentCalendarBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.timerTask
@@ -52,12 +54,17 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // initialize to current date
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
         selectedDate = LocalDateTime.now().format(formatter)
         binding.dateView.text = selectedDate
 
+        // display current date
+        var englishFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
+        binding.dateView.text = LocalDateTime.now().format(englishFormatter)
+
         // initialize current date list
         calendarViewModel.fetchEventsByDate(selectedDate)
+
         configureEventsRecyclerView()
         configureObservers()
         configureButtons()
@@ -66,14 +73,13 @@ class CalendarFragment : Fragment() {
     private fun configureEventsRecyclerView() {
         val eventLayoutManager = LinearLayoutManager(requireContext())
         binding.eventRecyclerView.layoutManager = eventLayoutManager
-        // Pad the bottom of the event recycler view so we can scroll past the "create a event" button
+
+        // Pad the bottom of the event recycler view so we can scroll past the "create a event" button (from PlanFragment)
         val eventRecyclerViewBottomPadding =
             binding.btnCreateAnEvent.height + dpToPixels(binding.btnCreateAnEvent.marginBottom) + dpToPixels(
                 34
             )
         binding.eventRecyclerView.updatePadding(bottom = eventRecyclerViewBottomPadding)
-
-
     }
     private fun configureObservers() {
         calendarViewModel.events.observe(viewLifecycleOwner) { events ->
@@ -94,11 +100,20 @@ class CalendarFragment : Fragment() {
             // pad 0s
             val monthStr = if (month < 10) "0${month+1}" else month+1
             val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else dayOfMonth
-            selectedDate = ("$year-$monthStr-$dayStr")
-            binding.dateView.text = selectedDate
+            selectedDate = ("$year/$monthStr/$dayStr")
+
+            // display date as english
+            val englishFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
+            var dateString = ("$year-$monthStr-$dayStr") + "T00:00:00.000Z"
+            binding.dateView.text = englishFormatter.format(OffsetDateTime.parse(dateString))
+
             calendarViewModel.fetchEventsByDate(selectedDate)
         }
     }
+
+    private fun displayEnglishDate(year: String, month: String, day: String) {
+    }
+
 
     fun refreshRecyclerViews() {
         if (this::calendarViewModel.isInitialized) {
