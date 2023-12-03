@@ -5,30 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.CalendarView
-import android.widget.EditText
-import android.widget.TextView
 import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.explorexpert.R
 import com.example.explorexpert.adapters.EventAdapter
-import com.example.explorexpert.adapters.SavedItemAdapter
-import com.example.explorexpert.adapters.observers.ScrollToTopObserver
-import com.example.explorexpert.data.implementation.EventRepoImplementation
-import com.example.explorexpert.data.model.Event
-import com.example.explorexpert.data.model.SavedItem
 import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.databinding.FragmentCalendarBinding
-import com.example.explorexpert.databinding.FragmentPlanBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.selects.select
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Timer
@@ -97,13 +82,6 @@ class CalendarFragment : Fragment() {
     }
 
     private fun configureButtons() {
-        binding.btnEventAdd.setOnClickListener {
-            val eventName = binding.etEventInput.text.toString()
-            calendarViewModel.createEvent(eventName, selectedDate)
-            binding.etEventInput.text = null
-            calendarViewModel.fetchEventsByDate(selectedDate)
-        }
-
         binding.btnCreateAnEvent.setOnClickListener {
             val createEventBottomSheetDialogFragment = CreateEventBottomSheetDialogFragment(selectedDate)
             createEventBottomSheetDialogFragment.show(
