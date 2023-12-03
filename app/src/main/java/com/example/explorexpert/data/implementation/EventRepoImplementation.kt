@@ -45,6 +45,25 @@ class EventRepoImplementation @Inject constructor(
         }
     }
 
+    override suspend fun setEventWithDates(event: Event): String {
+        return withContext(Dispatchers.IO) {
+            val deferred = CompletableDeferred<String>()
+
+            eventCollection.document(event.id)
+                .set(event)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Created/Updated an Event with id ${event.id}")
+                    deferred.complete(event.id)
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Failed to create Event with id ${event.id}", e)
+                    deferred.completeExceptionally(e)
+                }
+
+            deferred.await()
+        }
+    }
+
     override suspend fun getEventsByUserId(userId: String): List<Event> =
         withContext(Dispatchers.IO) {
             try {

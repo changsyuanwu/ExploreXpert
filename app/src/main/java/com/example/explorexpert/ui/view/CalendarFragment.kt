@@ -18,12 +18,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.explorexpert.R
 import com.example.explorexpert.adapters.EventAdapter
 import com.example.explorexpert.adapters.SavedItemAdapter
-import com.example.explorexpert.adapters.TripAdapter
 import com.example.explorexpert.adapters.observers.ScrollToTopObserver
 import com.example.explorexpert.data.implementation.EventRepoImplementation
 import com.example.explorexpert.data.model.Event
 import com.example.explorexpert.data.model.SavedItem
-import com.example.explorexpert.data.model.Trip
 import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.databinding.FragmentCalendarBinding
 import com.example.explorexpert.databinding.FragmentPlanBinding
@@ -33,7 +31,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.selects.select
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.timerTask
 
 @AndroidEntryPoint
 class CalendarFragment : Fragment() {
@@ -81,6 +81,13 @@ class CalendarFragment : Fragment() {
     private fun configureEventsRecyclerView() {
         val eventLayoutManager = LinearLayoutManager(requireContext())
         binding.eventRecyclerView.layoutManager = eventLayoutManager
+        // Pad the bottom of the event recycler view so we can scroll past the "create a event" button
+        val eventRecyclerViewBottomPadding =
+            binding.btnCreateAnEvent.height + dpToPixels(binding.btnCreateAnEvent.marginBottom) + dpToPixels(
+                34
+            )
+        binding.eventRecyclerView.updatePadding(bottom = eventRecyclerViewBottomPadding)
+
 
     }
     private fun configureObservers() {
@@ -97,6 +104,14 @@ class CalendarFragment : Fragment() {
             calendarViewModel.fetchEventsByDate(selectedDate)
         }
 
+        binding.btnCreateAnEvent.setOnClickListener {
+            val createEventBottomSheetDialogFragment = CreateEventBottomSheetDialogFragment(selectedDate)
+            createEventBottomSheetDialogFragment.show(
+                childFragmentManager,
+                CreateEventBottomSheetDialogFragment.TAG
+            )
+        }
+
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
             // pad 0s
             val monthStr = if (month < 10) "0${month+1}" else month+1
@@ -105,6 +120,34 @@ class CalendarFragment : Fragment() {
             binding.dateView.text = selectedDate
             calendarViewModel.fetchEventsByDate(selectedDate)
         }
+    }
+
+    fun refreshRecyclerViews() {
+        if (this::calendarViewModel.isInitialized) {
+            calendarViewModel.fetchEventsByDate(selectedDate)
+        }
+    }
+
+    fun scheduleRecyclerViewsRefresh() {
+        val timer = Timer()
+        var executionCount = 0
+
+        timer.scheduleAtFixedRate(
+            timerTask {
+                if (executionCount > 5) {
+                    this.cancel()
+                }
+                executionCount++
+                refreshRecyclerViews()
+            },
+            300,
+            1000
+        )
+    }
+
+    private fun dpToPixels(dp: Int): Int {
+        val scale = resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
     }
 
 }
