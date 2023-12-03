@@ -15,6 +15,7 @@ class EventAdapter(
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val eventTextView: TextView = itemView.findViewById(R.id.tvEvent)
+        val eventDateTextView: TextView = itemView.findViewById(R.id.tvEventDate)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.event_item, parent, false)
@@ -24,6 +25,14 @@ class EventAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = eventItems[position]
         holder.eventTextView.text = item.name
+
+        if (item.startDate == item.endDate) {
+            holder.eventDateTextView.text = item.startDate
+        } else {
+            val dateRange = item.startDate + " - " + item.endDate
+            holder.eventDateTextView.text = dateRange
+        }
+
     }
 
     override fun getItemCount(): Int {
