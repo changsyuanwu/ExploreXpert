@@ -10,10 +10,15 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.explorexpert.adapters.EventAdapter
+import com.example.explorexpert.adapters.observers.ScrollToTopObserver
+import com.example.explorexpert.data.model.Event
 import com.example.explorexpert.data.repository.EventRepository
 import com.example.explorexpert.databinding.FragmentCalendarBinding
 import com.example.explorexpert.ui.viewmodel.CalendarViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -59,7 +64,7 @@ class CalendarFragment : Fragment() {
         binding.dateView.text = selectedDate
 
         // display current date
-        var englishFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
+        val englishFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
         binding.dateView.text = LocalDateTime.now().format(englishFormatter)
 
         // initialize current date list
@@ -71,8 +76,28 @@ class CalendarFragment : Fragment() {
     }
 
     private fun configureEventsRecyclerView() {
+
+        eventAdapter = EventAdapter(
+            object : EventAdapter.ItemClickListener {
+                override fun onItemClick(event: Event) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        eventRepo.deleteEvent(event.id)
+                        calendarViewModel.fetchEventsByDate(selectedDate)
+                    }
+                }
+            }
+        )
+
+        binding.eventRecyclerView.adapter = eventAdapter
+
+        // display events
         val eventLayoutManager = LinearLayoutManager(requireContext())
         binding.eventRecyclerView.layoutManager = eventLayoutManager
+
+
+        eventAdapter.registerAdapterDataObserver(
+            ScrollToTopObserver(binding.eventRecyclerView)
+        )
 
         // Pad the bottom of the event recycler view so we can scroll past the "create a event" button (from PlanFragment)
         val eventRecyclerViewBottomPadding =
@@ -83,7 +108,7 @@ class CalendarFragment : Fragment() {
     }
     private fun configureObservers() {
         calendarViewModel.events.observe(viewLifecycleOwner) { events ->
-            binding.eventRecyclerView.adapter = EventAdapter(events)
+            eventAdapter.submitList(events)
         }
     }
 
@@ -102,18 +127,14 @@ class CalendarFragment : Fragment() {
             val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else dayOfMonth
             selectedDate = ("$year/$monthStr/$dayStr")
 
-            // display date as english
+            // display date in english
             val englishFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
-            var dateString = ("$year-$monthStr-$dayStr") + "T00:00:00.000Z"
+            val dateString = ("$year-$monthStr-$dayStr") + "T00:00:00.000Z"
             binding.dateView.text = englishFormatter.format(OffsetDateTime.parse(dateString))
 
             calendarViewModel.fetchEventsByDate(selectedDate)
         }
     }
-
-    private fun displayEnglishDate(year: String, month: String, day: String) {
-    }
-
 
     fun refreshRecyclerViews() {
         if (this::calendarViewModel.isInitialized) {
