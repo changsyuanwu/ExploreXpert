@@ -14,6 +14,9 @@ With the intent of being a one-stop solution, our app offers personalized recomm
 ### Home screen
 ![Home screen](screenshots/home_screen.png)
 
+### Maps screen
+![Maps screen](screenshots/maps_screen.png)
+
 ### Weather screens
 ![Weather screen 1](screenshots/weather_screen1.png)
 ![Weather screen 2](screenshots/weather_screen2.png)
