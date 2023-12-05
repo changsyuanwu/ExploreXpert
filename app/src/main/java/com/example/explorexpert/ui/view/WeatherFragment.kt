@@ -20,7 +20,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -54,7 +53,7 @@ import java.util.Date
 import java.util.Locale
 
 
-private const val TAG = "WeatherFragment"
+const val TAG = "WeatherFragment"
 
 class WeatherFragment : Fragment() {
 
@@ -102,7 +101,6 @@ class WeatherFragment : Fragment() {
         status = view.findViewById(R.id.status)
         addressTextView = view.findViewById(R.id.address)
         weatherIconImageView = view.findViewById(R.id.weatherIcon)
-        loadWeatherIcon(weatherIconImageView, "Snow")
 
 
         startDateText = view.findViewById<EditText>(R.id.startDateText)
@@ -125,6 +123,7 @@ class WeatherFragment : Fragment() {
         fetchButton.setOnClickListener {
             val startDate = startDateText.text.toString()
             val endDate = endDateText.text.toString()
+            val address = addressTextView.text.toString()
 
             val historicalWeatherFragment = HistoricalWeatherFragment()
             val bundle = Bundle()
@@ -132,6 +131,7 @@ class WeatherFragment : Fragment() {
             bundle.putDouble("longitude", longitude)
             bundle.putString("startDate", startDate)
             bundle.putString("endDate", endDate)
+            bundle.putString("address", address)
             historicalWeatherFragment.arguments = bundle
 
             // Navigate to HistoricalWeatherFragment
@@ -144,9 +144,12 @@ class WeatherFragment : Fragment() {
 
         // Initialize the RecyclerView for forecast
         forecastRecyclerView = view.findViewById(R.id.forecastRecyclerView)
-        forecastAdapter = ForecastAdapter(forecastItems)
+        forecastAdapter = ForecastAdapter(forecastItems, requireContext())
         forecastRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         forecastRecyclerView.adapter = forecastAdapter
+
+
+
 
         val appId = appInfo.metaData?.getString("com.google.android.geo.API_KEY")
 
@@ -236,6 +239,7 @@ class WeatherFragment : Fragment() {
                     val weatherStatus = weather.getString("main")
                     status.text = weatherStatus
 
+                    Log.i(TAG, "Weather status received: '$weatherStatus'")
                     loadWeatherIcon(weatherIconImageView, weatherStatus)
 
                     // Fetch travel advisory based on the country code
@@ -270,11 +274,12 @@ class WeatherFragment : Fragment() {
                         val weatherStatus = weather.getString("main")
                         val dateTxt = forecastObj.getString("dt_txt")
                         val date = getDate(dateTxt)
+                        val weatherIcon = weather.getString("icon")
 
                         // Check if the date is already added, if not add the item
                         if (date !in uniqueDates) {
                             val forecastItem =
-                                ForecastAdapter.ForecastItem(date, formattedTemp, weatherStatus)
+                                ForecastAdapter.ForecastItem(date, formattedTemp, weatherStatus, weatherIcon)
                             forecastItems.add(forecastItem)
                             newForecastItems.add(forecastItem)
                             uniqueDates.add(date)
@@ -335,14 +340,14 @@ class WeatherFragment : Fragment() {
 
     // Modify loadWeatherIcon method to handle different weather statuses
     private fun loadWeatherIcon(imageView: ImageView, weatherStatus: String) {
-        Log.d(TAG, "Weather status received: '$weatherStatus'")
+        Log.i(TAG, "Weather status received: '$weatherStatus'")
         val imageName: String = when (weatherStatus) {
-            "Clear" -> "clear_sky.png"
-            "Clouds" -> "cloudy.png"
+            "Thunderstorm" -> "thunderstorm.png"
+            "Clouds" -> "cloud.png"
             "Rain" -> "rainy.png"
             "Snow" -> "snow.png"
             // Add more cases as needed for other weather statuses
-            else -> "snow.png"
+            else -> "clear_sky.png"
         }
 
         try {
@@ -355,13 +360,6 @@ class WeatherFragment : Fragment() {
         }
     }
 
-    private fun convertToRFC3339(dateString: String): String {
-        val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()) // Modify the input format according to your date input
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault()) // RFC3339 format
-
-        val date = inputFormat.parse(dateString)
-        return outputFormat.format(date)
-    }
 
 
     /////////////////////////////////////////////////////////////////////////////

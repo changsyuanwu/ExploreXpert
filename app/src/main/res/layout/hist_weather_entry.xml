@@ -2,19 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
 
     <!-- Date TextView -->
-    <TextView
-        android:id="@+id/dateTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="18sp"
-        android:textColor="#000000"
-        android:gravity="center"
-        android:padding="8dp"
-        android:text="Rain"/>
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Rain"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
 
     <!-- Average Temperature TextView -->
     <TextView
@@ -23,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="18sp"
-        android:textColor="#000000"
+        android:textColor="#FFF"
         android:gravity="center"
         android:padding="8dp"
         android:text="Rain"/>
@@ -35,8 +40,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="18sp"
-        android:textColor="#000000"
+        android:textColor="#FFF"
         android:gravity="center"
         android:padding="8dp"
         android:text="Rain"/>
-</LinearLayout>
+
+    </LinearLayout>
+   </LinearLayout>

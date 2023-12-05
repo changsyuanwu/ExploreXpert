@@ -2,36 +2,58 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/dateTextView"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="18sp"
-        android:textColor="#000000"
-        android:gravity="center"
-        android:padding="8dp"/>
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/temperatureTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="18sp"
-        android:textColor="#000000"
-        android:gravity="center"
-        android:padding="8dp"/>
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textColor="#FFFF"
+            android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/weatherConditionTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="18sp"
-        android:textColor="#000000"
-        android:gravity="center"
-        android:padding="8dp"/>
+        <TextView
+            android:id="@+id/temperatureTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="6dp"
+            android:textColor="#FFFF"
+            android:textSize="18sp" />
 
+        <TextView
+            android:id="@+id/weatherConditionTextView"
+            android:layout_width="51dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="6dp"
+            android:textColor="#FFFF"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/weatherIconImageView"
+            android:layout_width="15dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="Weather Icon"
+            android:padding="0dp" />
+
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCC" />
 </LinearLayout>
