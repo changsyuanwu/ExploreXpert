@@ -11,6 +11,10 @@ With the intent of being a one-stop solution, our app offers personalized recomm
 * @uwaterloo.ca
 
 ## Screenshots/Videos
+
+### Login screen
+![Login screen](screenshots/login.png)
+
 ### Home screens
 ![Home screen](screenshots/home_screen.png)
 ![Home add place to trip](screenshots/home_save_place_to_trip.png)
