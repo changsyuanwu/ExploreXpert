@@ -14,6 +14,11 @@ With the intent of being a one-stop solution, our app offers personalized recomm
 ### Home screen
 ![Home screen](screenshots/home_screen.png)
 
+### Weather screens
+![Weather screen 1](screenshots/weather_screen1.png)
+![Weather screen 2](screenshots/weather_screen2.png)
+![Historical weather screen](screenshots/historical_weather_screen.png)
+
 Optional, but often helpful to have a screenshot or demo-video for new users.
 
 ## Quick-Start Instructions
