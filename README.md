@@ -21,6 +21,9 @@
 ![Plan tab trip details](screenshots/trip_details.png)
 ![Plan tab edit trip](screenshots/edit_trip.png)
 
+### Maps screen
+![Maps screen](screenshots/maps_screen.png)
+
 ### Weather screens
 ![Weather screen 1](screenshots/weather_screen1.png)
 ![Weather screen 2](screenshots/weather_screen2.png)
