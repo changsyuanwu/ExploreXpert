@@ -11,8 +11,16 @@ With the intent of being a one-stop solution, our app offers personalized recomm
 * @uwaterloo.ca
 
 ## Screenshots/Videos
-### Home screen
+### Home screens
 ![Home screen](screenshots/home_screen.png)
+![Home add place to trip](screenshots/home_save_place_to_trip.png)
+![Home save copy of trip](screenshots/save_copy_of_trip.png)
+
+### Plan screens
+![Plan tab trips](screenshots/plan_trips.png)
+![Plan tab saved items](screenshots/plan_saved_items.png)
+![Plan tab trip details](screenshots/trip_details.png)
+![Plan tab edit trip](screenshots/edit_trip.png)
 
 ### Weather screens
 ![Weather screen 1](screenshots/weather_screen1.png)
