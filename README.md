@@ -29,6 +29,9 @@
 ![Weather screen 2](screenshots/weather_screen2.png)
 ![Historical weather screen](screenshots/historical_weather_screen.png)
 
+## Calendar screens
+![Calendar screen 1](screenshots/calendar_screen1.png)
+![Calendar screen 2](screenshots/calendar_screen2.png)
 
 ## Quick-Start Instructions
 * [Quick Start Guide (WIP)](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Quick-Start-Guide)
