@@ -29,7 +29,6 @@
 ![Weather screen 2](screenshots/weather_screen2.png)
 ![Historical weather screen](screenshots/historical_weather_screen.png)
 
-Optional, but often helpful to have a screenshot or demo-video for new users.
 
 ## Quick-Start Instructions
 * [Quick Start Guide (WIP)](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Quick-Start-Guide)
@@ -39,6 +38,7 @@ Optional, but often helpful to have a screenshot or demo-video for new users.
 * [Goals and Requirements](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Requirements)
 * [Meeting Minutes](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Meeting-Minutes)
 * [Design & Architecture](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Design-Doc)
+* [Discussion](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Discussion)
 
 ## Software Releases
 * [Releases](https://git.uwaterloo.ca/c275wu/cs346-project/-/releases)
