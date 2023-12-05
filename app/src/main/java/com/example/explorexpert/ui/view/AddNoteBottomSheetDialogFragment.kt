@@ -70,7 +70,6 @@ class AddNoteBottomSheetDialogFragment(
             addTripItemViewModel.addNote(title, desc)
             (requireParentFragment() as TripDialogFragment).refreshTrip()
             (requireParentFragment() as TripDialogFragment).scheduleTripRefresh()
-            tripViewModel.fetchSavedItems()
             this.dismiss()
         }
     }
