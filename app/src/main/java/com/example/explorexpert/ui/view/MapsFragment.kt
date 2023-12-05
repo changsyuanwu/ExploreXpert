@@ -43,7 +43,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-
 class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                         GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     private var currLatLng: LatLng? = null
@@ -143,6 +142,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
+            generatePlace(currLatLng ?: defaultLatLng)
             return
         }
 
@@ -151,10 +151,23 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
         map.setOnMyLocationButtonClickListener(object : GoogleMap.OnMyLocationButtonClickListener {
             override fun onMyLocationButtonClick(): Boolean {
-                // TODO: can be null here
-                val location = map.getMyLocation()
-                val latlng = LatLng(location.latitude, location.longitude)
-                generatePlace(latlng)
+                try {
+                    val locationResult = fusedLocationClient.lastLocation
+                    if (isAdded) {
+                        locationResult.addOnCompleteListener(requireActivity()) { task ->
+                            if (task.isSuccessful) {
+                                val currLoc = task.result
+                                if (currLoc != null) {
+                                    generatePlace(LatLng(currLoc.latitude, currLoc.longitude))
+                                } else {
+                                    Log.e(TAG, "Exception: %s", task.exception)
+                                }
+                            }
+                        }
+                    }
+                } catch (e: SecurityException) {
+                    Log.e(TAG, e.message, e)
+                }
                 return false
             }
         })
