@@ -45,6 +45,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -144,6 +145,15 @@ class WeatherFragment : Fragment() {
             val startDate = startDateText.text.toString()
             val endDate = endDateText.text.toString()
             val address = addressTextView.text.toString()
+
+            if (startDate == "" || endDate == "" || address == "") {
+                Snackbar.make(
+                    this.requireView(),
+                    "Please select dates!",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
             val historicalWeatherFragment = HistoricalWeatherFragment()
             val bundle = Bundle()
