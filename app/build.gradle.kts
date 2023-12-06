@@ -99,6 +99,14 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Optional -- Robolectric environment
+    testImplementation("androidx.test:core:1.5.0")
+    // Optional -- Mockito framework
+    testImplementation("org.mockito:mockito-core:5.8.0")
+    // Optional -- mockito-kotlin
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    // Optional -- Mockk framework
+    testImplementation("io.mockk:mockk:1.13.8")
 
     // Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.44")
@@ -145,8 +153,6 @@ dependencies {
 
     // Goose (for web content extraction)
     implementation("me.angrybyte.goose:goose:1.8.0")
-
-
 }
 
 kapt {
