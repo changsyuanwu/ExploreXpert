@@ -120,6 +120,26 @@ class WeatherFragment : Fragment() {
             )
         }
 
+        val startAutocomplete =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val intent = result.data
+                    if (intent != null) {
+                        val place = Autocomplete.getPlaceFromIntent(intent)
+                        latitude = place.latLng?.latitude ?: defLatitude
+                        longitude = place.latLng?.longitude ?: defLongitude
+                        getTemp(latitude, longitude)
+                    }
+                } else if (result.resultCode == Activity.RESULT_CANCELED) {
+                    // The user canceled the operation.
+                    Log.i(TAG, "User canceled autocomplete")
+                } else if (result.resultCode == AutocompleteActivity.RESULT_ERROR) {
+                    // Handle Autocomplete error
+                    val status = Autocomplete.getStatusFromIntent(result.data)
+                    Log.e(TAG, "Error during autocomplete: ${status.statusMessage}")
+                }
+            }
+
         fetchButton.setOnClickListener {
             val startDate = startDateText.text.toString()
             val endDate = endDateText.text.toString()
@@ -161,16 +181,16 @@ class WeatherFragment : Fragment() {
         // Setup search button click listener
         val searchButton: Button = view.findViewById(R.id.searchIcon)
         searchButton.setOnClickListener {
-            searchPlace()
+            val placeFields = listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+            val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeFields)
+                .build(requireContext())
+            startAutocomplete.launch(intent)
         }
         return view
     }
 
     private fun searchPlace() {
-        val placeFields = listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placeFields)
-            .build(requireContext())
-        startAutocomplete.launch(intent)
+
     }
 
 
@@ -314,29 +334,6 @@ class WeatherFragment : Fragment() {
         return outputDateFormat.format(calendar.time)
     }
 
-    private val startAutocomplete =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data
-                if (intent != null) {
-                    val place = Autocomplete.getPlaceFromIntent(intent)
-                    Log.i(
-                        TAG,
-                        "Place: ${place.latLng?.latitude}, ${place.latLng?.longitude}, ${place.address}"
-                    )
-                    latitude = place.latLng?.latitude ?: defLatitude
-                    longitude = place.latLng?.longitude ?: defLongitude
-                    getTemp(latitude, longitude)
-                }
-            } else if (result.resultCode == Activity.RESULT_CANCELED) {
-                // The user canceled the operation.
-                Log.i(TAG, "User canceled autocomplete")
-            } else if (result.resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // Handle Autocomplete error
-                val status = Autocomplete.getStatusFromIntent(result.data)
-                Log.e(TAG, "Error during autocomplete: ${status.statusMessage}")
-            }
-        }
 
     // Modify loadWeatherIcon method to handle different weather statuses
     private fun loadWeatherIcon(imageView: ImageView, weatherStatus: String) {
