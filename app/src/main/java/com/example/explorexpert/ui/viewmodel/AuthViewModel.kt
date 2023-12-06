@@ -3,6 +3,7 @@ package com.example.explorexpert.ui.viewmodel
 import android.content.Intent
 import android.util.Log
 import android.util.Patterns
+import androidx.core.util.PatternsCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -285,11 +286,10 @@ class AuthViewModel @Inject constructor(
     // A basic username validation check
     // Just checks for wh
     private fun isEmailValid(email: String): Boolean {
-        return if (email.contains("@")) {
-            Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        } else {
-            email.isNotBlank()
+        if (email.contains("@")) {
+            return PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
         }
+        return false
     }
 
     // A placeholder password validation check

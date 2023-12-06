@@ -56,8 +56,11 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/*"
         }
+    }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -93,12 +96,23 @@ dependencies {
 
     // Testing stuff
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
+    //androidTestImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Optional -- Robolectric environment
+    androidTestImplementation("androidx.test:core:1.5.0")
+    // Optional -- Mockito framework
+    androidTestImplementation("org.mockito:mockito-core:5.8.0")
+    // Optional -- mockito-kotlin
+    androidTestImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    // Optional -- Mockk framework
+    androidTestImplementation("io.mockk:mockk:1.13.8")
+    androidTestImplementation("org.mockito:mockito-android:5.8.0")
 
     // Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.44")
