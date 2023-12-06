@@ -78,7 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="68dp"
-        android:text="Add trip dates"
+        android:text="Add event dates"
         app:icon="@drawable/baseline_edit_calendar_24"
         app:layout_constraintBottom_toBottomOf="@+id/btnBottomSheetCreateEvent"
         app:layout_constraintEnd_toStartOf="@+id/btnBottomSheetCreateEvent"
