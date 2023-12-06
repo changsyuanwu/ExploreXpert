@@ -244,10 +244,10 @@ class WeatherFragment : Fragment() {
             Response.Listener<String> { response ->
                 try {
                     val obj = JSONObject(response)
+
                     val main = obj.getJSONObject("main")
                     val sys = obj.getJSONObject("sys")
                     val weather = obj.getJSONArray("weather").getJSONObject(0)
-
                     val temp = main.getDouble("temp")
                     val formattedTemp = String.format("%.1f°C", temp)
                     val city = obj.getString("name")
@@ -271,7 +271,19 @@ class WeatherFragment : Fragment() {
                 }
             },
             Response.ErrorListener { error ->
-                textView.text = "Error: ${error.message}"
+                // Handle different types of errors from the API
+                val errorMessage = when (error) {
+                    is com.android.volley.TimeoutError -> "Request Timeout. Please check your internet connection."
+                    is com.android.volley.NoConnectionError -> "No Internet Connection. Please check your network settings."
+                    is com.android.volley.NetworkError -> "Network Error. Please try again later."
+                    is com.android.volley.ServerError -> "Server Error. Please try again later."
+                    is com.android.volley.ParseError -> "Parse Error. Please try again later."
+                    else -> "An error occurred. Please try again later."
+                }
+                // Set the text size for the error message
+                textView.textSize = 25f // Change the text size (16f is an example size)
+
+                textView.text = errorMessage
             })
 
         val stringReq2 = StringRequest(Request.Method.GET, forecastUrl,
