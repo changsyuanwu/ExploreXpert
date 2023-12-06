@@ -224,7 +224,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
         return addressStr
     }
 
-    private fun getPlaceFromAddress(addr: String, latlng: LatLng) {
+    fun getPlaceFromAddress(addr: String, latlng: LatLng) {
         val request = FindAutocompletePredictionsRequest.builder().setQuery(addr).build()
         val placesClient = Places.createClient(requireContext())
         placesClient.findAutocompletePredictions(request).addOnSuccessListener { response: FindAutocompletePredictionsResponse ->
@@ -333,5 +333,17 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback,
 
     fun getCurrLatLng(): LatLng {
         return currLatLng ?: defaultLatLng
+    }
+
+    fun getMapFragment(): SupportMapFragment {
+        return mapFragment
+    }
+
+    fun getPrimaryAddr(): String {
+        return currPrimaryAddr
+    }
+
+    fun getSecondaryAddr(): String {
+        return currSecondaryAddr
     }
 }

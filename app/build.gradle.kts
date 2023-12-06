@@ -153,6 +153,8 @@ dependencies {
 
     // Goose (for web content extraction)
     implementation("me.angrybyte.goose:goose:1.8.0")
+
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
 }
 
 kapt {
