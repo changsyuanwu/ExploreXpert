@@ -1,22 +1,5 @@
-# CS346 Project (ExploreXpert)
-
-## Team Members
-
-* Chang-Syuan Wu (c275wu), Mick Wang (m479wang), Richard Zhang (r468zhan), Yi Bo Cheng (ybcheng)
-* @uwaterloo.ca
-
-## Quick-Start Instructions
-* [Quick Start Guide](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Quick-Start-Guide)
-
-## Project Documents
-* [Project Proposal](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Project-Proposal)
-* [Goals and Requirements](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Requirements)
-* [Meeting Minutes](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Meeting-Minutes)
-* [Design & Architecture](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Design-&-Architecture)
-* [Discussion](https://git.uwaterloo.ca/c275wu/cs346-project/-/wikis/Discussion)
-
-## Software Releases
-* [Releases](https://git.uwaterloo.ca/c275wu/cs346-project/-/releases)
+# ExploreXpert
+Travel planning Android app created as part of the CS346 course at the University of Waterloo
 
 ## Screenshots/Videos
 
@@ -45,6 +28,3 @@
 ## Calendar screens
 ![Calendar screen 1](screenshots/calendar_screen1.png)
 ![Calendar screen 2](screenshots/calendar_screen2.png)
-
-## License
-For open source projects, say how it is licensed.
